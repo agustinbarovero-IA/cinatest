@@ -85,17 +85,35 @@ html,body{
 .toolbar button:hover:not(:disabled){background:rgba(255,255,255,.18)}
 .toolbar button:disabled{opacity:.45;cursor:not-allowed}
 .meta-panel{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:14px;
+  display:block;
 }
-.breadcrumbs,.module-counter{
-  padding:10px 14px;
+.data-strip{
+  display:grid;
+  grid-template-columns:repeat(8,minmax(0,1fr));
+  gap:10px;
+}
+.data-box{
+  min-height:58px;
   border-radius:14px;
-  background:rgba(255,255,255,.08);
-  font-size:.9rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:10px;
+  font-size:.82rem;
+  font-weight:700;
+  text-transform:uppercase;
+  color:#fff;
+  box-shadow:var(--shadow-main);
 }
+.data-box-1{background:linear-gradient(135deg,#001F60,#002A80)}
+.data-box-2{background:linear-gradient(135deg,#36B0C9,#2898AC)}
+.data-box-3{background:linear-gradient(135deg,#00BBB4,#009F99)}
+.data-box-4{background:linear-gradient(135deg,#00A887,#00846B)}
+.data-box-5{background:linear-gradient(135deg,#007A4C,#005E3A)}
+.data-box-6{background:linear-gradient(135deg,#1E3A8A,#1D4ED8)}
+.data-box-7{background:linear-gradient(135deg,#0F766E,#0D9488)}
+.data-box-8{background:linear-gradient(135deg,#065F46,#047857)}
 .workspace{
   overflow:auto;
   display:flex;
@@ -177,15 +195,20 @@ html,body{
     grid-template-columns:repeat(4,minmax(140px,1fr));
     width:min(100%, 900px);
   }
+  .data-strip{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+  }
 }
 @media(max-width:780px){
   html,body{overflow:auto}
   .topbar{grid-template-columns:1fr}
-  .meta-panel{flex-direction:column;align-items:stretch}
   .menu-grid.layout-4x4,
   .menu-grid.layout-8x2{
     grid-template-columns:repeat(2,minmax(130px,1fr));
     width:100%;
+  }
+  .data-strip{
+    grid-template-columns:repeat(2,minmax(0,1fr));
   }
   .tile{font-size:.9rem}
 }
@@ -198,7 +221,7 @@ html,body{
       <img src="cina_logo_principal.png" alt="CINA">
       <div class="brand-copy">
         <h1 id="screenTitle">BIENVENIDOS AL SISTEMA DE GRUPO CINA</h1>
-        <p id="screenSubtitle">ACCESO RÁPIDO A LOS MÓDULOS DEL SISTEMA</p>
+        <p id="screenSubtitle">SISTEMA DE GESTION DE OPERACIONES</p>
       </div>
     </div>
     <div class="toolbar">
@@ -209,8 +232,16 @@ html,body{
   </header>
 
   <section class="meta-panel">
-    <div class="breadcrumbs" id="breadcrumb">INICIO</div>
-    <div class="module-counter" id="moduleCounter">16 MÓDULOS</div>
+    <div class="data-strip">
+      <div class="data-box data-box-1">CONTENEDOR</div>
+      <div class="data-box data-box-2">CONTENEDOR</div>
+      <div class="data-box data-box-3">CONTENEDOR</div>
+      <div class="data-box data-box-4">CONTENEDOR</div>
+      <div class="data-box data-box-5">CONTENEDOR</div>
+      <div class="data-box data-box-6">CONTENEDOR</div>
+      <div class="data-box data-box-7">CONTENEDOR</div>
+      <div class="data-box data-box-8">CONTENEDOR</div>
+    </div>
   </section>
 
   <main class="workspace">
@@ -417,8 +448,6 @@ const iconMap = {
 
 const historyStack = [];
 const menuGrid = document.getElementById('menuGrid');
-const moduleCounter = document.getElementById('moduleCounter');
-const breadcrumb = document.getElementById('breadcrumb');
 const screenTitle = document.getElementById('screenTitle');
 const screenSubtitle = document.getElementById('screenSubtitle');
 const backBtn = document.getElementById('backBtn');
@@ -432,11 +461,6 @@ function getInitials(text){
 
 function getGridLayout(count){
   return count > 8 ? 'layout-8x2' : 'layout-4x4';
-}
-
-function buildBreadcrumb(node){
-  if(node.title === 'INICIO') return 'INICIO';
-  return ['INICIO', ...historyStack.map(item => item.title), node.title].join(' / ');
 }
 
 function formatTitle(title){
@@ -461,11 +485,8 @@ function openModule(url){
 
 function renderNode(node){
   const items = node.children || [];
-
   screenTitle.textContent = historyStack.length ? node.title : 'BIENVENIDOS AL SISTEMA DE GRUPO CINA';
-  screenSubtitle.textContent = 'ACCESO RÁPIDO A LOS MÓDULOS DEL SISTEMA';
-  breadcrumb.textContent = buildBreadcrumb(node);
-  moduleCounter.textContent = `${items.length || 1} MÓDULOS`;
+  screenSubtitle.textContent = 'SISTEMA DE GESTION DE OPERACIONES';
 
   menuGrid.className = `menu-grid ${getGridLayout(items.length || 1)}`;
   menuGrid.innerHTML = '';
