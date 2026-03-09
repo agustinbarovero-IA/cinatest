@@ -108,6 +108,7 @@ html,body{
 }
 .data-box.green{background:linear-gradient(135deg,#047857,#059669)}
 .data-box.red{background:linear-gradient(135deg,#b91c1c,#dc2626)}
+.data-box.orange{background:linear-gradient(135deg,#ea580c,#f97316)}
 .data-box.yellow{background:linear-gradient(135deg,#ca8a04,#eab308); color:#111827}
 .data-box.qr{background:linear-gradient(135deg,#001F60,#36B0C9); cursor:pointer; transition:transform .18s ease, filter .18s ease}
 .data-box.qr:hover{transform:translateY(-2px);filter:brightness(1.05)}
@@ -118,8 +119,35 @@ html,body{
   gap:8px;
   width:100%;
 }
-.data-number{font-size:1.5rem;font-weight:800}
+.data-stack{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  line-height:1;
+  gap:4px;
+}
+.data-number{font-size:1.9rem;font-weight:800}
 .data-icon{font-size:1.2rem;font-weight:800}
+.data-icon-round{
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  border:2px solid currentColor;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:.95rem;
+  font-weight:900;
+  flex-shrink:0;
+}
+.data-label{
+  font-size:.62rem;
+  font-weight:700;
+  letter-spacing:.2px;
+  text-transform:uppercase;
+  opacity:.95;
+}
 .data-qr-icon{
   width:28px;
   height:28px;
@@ -228,6 +256,7 @@ html,body{
   }
   .data-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
   .tile{font-size:.9rem}
+  #fullscreenBtn{display:none}
 }
 </style>
 </head>
@@ -254,11 +283,11 @@ html,body{
       <div class="data-box green">TUNEL 2: 35<br>28/02/2026 01:00</div>
       <div class="data-box green">TUNEL 9: 45<br>27/02/2026 02:00</div>
       <div class="data-box green">TUNEL 10: 40<br>06/03/2026 21:00</div>
-      <div class="data-box green">20 VEHICULOS EN PLANTA</div>
-      <div class="data-box green">6500 ESTIBAS TOTAL</div>
+      <div class="data-box green"><div class="data-stack"><span class="data-number">20</span><span class="data-label">VEHICULOS</span></div></div>
+      <div class="data-box green"><div class="data-stack"><span class="data-number">6500</span><span class="data-label">ESTIBAS EN PLANTA</span></div></div>
       <div class="data-box qr" id="qrBox"><div class="data-content"><span class="data-qr-icon"></span><span>SCAN QR</span></div></div>
-      <div class="data-box red"><div class="data-content"><span class="data-icon">⚠</span><span class="data-number">1050</span></div></div>
-      <div class="data-box yellow"><div class="data-content"><span class="data-icon">⚠</span><span class="data-number">189</span></div></div>
+      <div class="data-box orange"><div class="data-content"><span class="data-icon-round">!</span><div class="data-stack"><span class="data-number">1050</span><span class="data-label">SIN UBICACION</span></div></div></div>
+      <div class="data-box red"><div class="data-content"><span class="data-icon-round">!</span><div class="data-stack"><span class="data-number">189</span><span class="data-label">VENCIDAS</span></div></div></div>
     </div>
   </section>
 
