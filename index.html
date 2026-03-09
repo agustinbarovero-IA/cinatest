@@ -10,8 +10,8 @@
   --bg-deep:#00174a;
   --bg-dark:#000f30;
   --text:#ffffff;
-  --text-soft:rgba(255,255,255,.8);
-  --shadow-main:0 22px 45px rgba(0,0,0,.28);
+  --text-soft:rgba(255,255,255,.82);
+  --shadow-main:0 18px 38px rgba(0,0,0,.28);
   --radius-lg:22px;
   --gap:18px;
   --grid-max:1320px;
@@ -81,39 +81,60 @@ html,body{
   border-radius:12px;
   font-weight:600;
   cursor:pointer;
+  transition:background .18s ease, transform .18s ease;
 }
-.toolbar button:hover:not(:disabled){background:rgba(255,255,255,.18)}
+.toolbar button:hover:not(:disabled){background:rgba(255,255,255,.18);transform:translateY(-1px)}
 .toolbar button:disabled{opacity:.45;cursor:not-allowed}
-.meta-panel{
-  display:block;
-}
+.toolbar .btn-user{background:linear-gradient(135deg,#36B0C9,#00A887)}
+.meta-panel{display:block}
 .data-strip{
   display:grid;
   grid-template-columns:repeat(8,minmax(0,1fr));
   gap:10px;
 }
 .data-box{
-  min-height:58px;
+  min-height:68px;
   border-radius:14px;
   display:flex;
   align-items:center;
   justify-content:center;
   text-align:center;
-  padding:10px;
+  padding:10px 12px;
   font-size:.82rem;
   font-weight:700;
-  text-transform:uppercase;
   color:#fff;
   box-shadow:var(--shadow-main);
+  line-height:1.15;
 }
-.data-box-1{background:linear-gradient(135deg,#001F60,#002A80)}
-.data-box-2{background:linear-gradient(135deg,#36B0C9,#2898AC)}
-.data-box-3{background:linear-gradient(135deg,#00BBB4,#009F99)}
-.data-box-4{background:linear-gradient(135deg,#00A887,#00846B)}
-.data-box-5{background:linear-gradient(135deg,#007A4C,#005E3A)}
-.data-box-6{background:linear-gradient(135deg,#1E3A8A,#1D4ED8)}
-.data-box-7{background:linear-gradient(135deg,#0F766E,#0D9488)}
-.data-box-8{background:linear-gradient(135deg,#065F46,#047857)}
+.data-box.green{background:linear-gradient(135deg,#047857,#059669)}
+.data-box.red{background:linear-gradient(135deg,#b91c1c,#dc2626)}
+.data-box.yellow{background:linear-gradient(135deg,#ca8a04,#eab308); color:#111827}
+.data-box.qr{background:linear-gradient(135deg,#001F60,#36B0C9); cursor:pointer; transition:transform .18s ease, filter .18s ease}
+.data-box.qr:hover{transform:translateY(-2px);filter:brightness(1.05)}
+.data-content{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  width:100%;
+}
+.data-number{font-size:1.5rem;font-weight:800}
+.data-icon{font-size:1.2rem;font-weight:800}
+.data-qr-icon{
+  width:28px;
+  height:28px;
+  border:2px solid #fff;
+  position:relative;
+  flex-shrink:0;
+}
+.data-qr-icon::before,
+.data-qr-icon::after{
+  content:"";
+  position:absolute;
+  background:#fff;
+}
+.data-qr-icon::before{left:4px;top:4px;width:6px;height:6px;box-shadow:10px 0 #fff,0 10px #fff,10px 10px #fff}
+.data-qr-icon::after{right:4px;bottom:4px;width:8px;height:8px;box-shadow:-10px 0 #fff,0 -10px #fff}
 .workspace{
   overflow:auto;
   display:flex;
@@ -195,9 +216,7 @@ html,body{
     grid-template-columns:repeat(4,minmax(140px,1fr));
     width:min(100%, 900px);
   }
-  .data-strip{
-    grid-template-columns:repeat(4,minmax(0,1fr));
-  }
+  .data-strip{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
 @media(max-width:780px){
   html,body{overflow:auto}
@@ -207,9 +226,7 @@ html,body{
     grid-template-columns:repeat(2,minmax(130px,1fr));
     width:100%;
   }
-  .data-strip{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
+  .data-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
   .tile{font-size:.9rem}
 }
 </style>
@@ -228,19 +245,20 @@ html,body{
       <button id="backBtn">← Volver</button>
       <button id="homeBtn">Inicio</button>
       <button id="fullscreenBtn">Pantalla completa</button>
+      <button id="userBtn" class="btn-user">Administrar usuario</button>
     </div>
   </header>
 
   <section class="meta-panel">
     <div class="data-strip">
-      <div class="data-box data-box-1">CONTENEDOR</div>
-      <div class="data-box data-box-2">CONTENEDOR</div>
-      <div class="data-box data-box-3">CONTENEDOR</div>
-      <div class="data-box data-box-4">CONTENEDOR</div>
-      <div class="data-box data-box-5">CONTENEDOR</div>
-      <div class="data-box data-box-6">CONTENEDOR</div>
-      <div class="data-box data-box-7">CONTENEDOR</div>
-      <div class="data-box data-box-8">CONTENEDOR</div>
+      <div class="data-box green">TUNEL 2: 35<br>28/02/2026 01:00</div>
+      <div class="data-box green">TUNEL 9: 45<br>27/02/2026 02:00</div>
+      <div class="data-box green">TUNEL 10: 40<br>06/03/2026 21:00</div>
+      <div class="data-box green">20 VEHICULOS EN PLANTA</div>
+      <div class="data-box green">6500 ESTIBAS TOTAL</div>
+      <div class="data-box qr" id="qrBox"><div class="data-content"><span class="data-qr-icon"></span><span>SCAN QR</span></div></div>
+      <div class="data-box red"><div class="data-content"><span class="data-icon">⚠</span><span class="data-number">1050</span></div></div>
+      <div class="data-box yellow"><div class="data-content"><span class="data-icon">⚠</span><span class="data-number">189</span></div></div>
     </div>
   </section>
 
@@ -264,8 +282,7 @@ const menuTree = {
         { title: 'PRE ENTRADAS', url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/0/fiscal/0' },
         { title: 'ENTRADAS', url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/1/fiscal/0' },
         { title: 'PRE SALIDAS', url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/0/fiscal/0' },
-        { title: 'SALIDAS', url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/1/fiscal/0' },
-        { title: 'AJUSTE DE STOCK', url: 'https://sistema.cinafrio.com/intranet/index.php/infostock/ajusteManual' }
+        { title: 'SALIDAS', url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/1/fiscal/0' }
       ]
     },
     {
@@ -304,10 +321,10 @@ const menuTree = {
             { title: 'ASEGURADORAS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_aseguradora' },
             { title: 'EMPRESAS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_empresa' },
             { title: 'CONDUCTORES', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_conductor' },
-            { title: 'VEHICULOS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_vehiculo' }
+            { title: 'VEHICULOS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_vehiculo' },
+            { title: 'ACOPLADOS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_acoplado' }
           ]
         },
-        { title: 'ACOPLADOS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_acoplado' },
         {
           title: 'DATOS DE LA PLAYA DE MANIOBRA',
           children: [
@@ -325,7 +342,7 @@ const menuTree = {
         { title: 'ESTADISTICAS DE PERSONAL' },
         { title: 'ALMACENAMIENTO DE POSICIONES' },
         { title: 'ESTIBAS CREADAS ELIMINADAS' },
-        { title: 'AJUSTES DE STOCK' },
+        { title: 'AJUSTES DE STOCK', url: 'https://sistema.cinafrio.com/intranet/index.php/infostock/ajusteManual' },
         { title: 'CLIENTES QUE OPERARON' }
       ]
     },
@@ -333,10 +350,11 @@ const menuTree = {
       title: 'REPORTES',
       children: [
         { title: 'CAMARAS' },
-        { title: 'STOCK' },
+        { title: 'STOCK', url: 'https://sistema.cinafrio.com/intranet/index.php/infostock/stockDetallado' },
         { title: 'MOVIMIENTOS' },
-        { title: 'TIEMPOS CARGA DESCARGA' },
-        { title: 'AUSENTISMO' }
+        { title: 'TIEMPOS CARGA DESCARGA', url: 'https://sistema.cinafrio.com/intranet/index.php/estiba/informes' },
+        { title: 'AUSENTISMO' },
+        { title: 'DEVOLUCIONES', url: 'https://sistema.cinafrio.com/intranet/index.php/infostock/devoluciones' }
       ]
     },
     {
@@ -377,28 +395,73 @@ const menuTree = {
     {
       title: 'MANTENIMIENTO',
       children: [
-        { title: 'MANTENIMIENTO GENERAL' },
-        { title: 'PR 6 CONTRASTE DE TERMOMETROS' },
-        { title: 'PR 9 SEMANAL' },
-        { title: 'PR 22 LIMPIEZA TANQUES' },
-        { title: 'PR 24 DIARIO' },
-        { title: 'PR 30 LIBRO DE GUARDIA' },
-        { title: 'PR 80 PARADA DE CAMARAS' },
-        { title: 'PR 100 DESCONGELADO' }
+        { title: 'MANTENIMIENTO GENERAL', url: 'https://sistema.cinafrio.com/intranet2/app.php/mantenimiento/' },
+        { title: 'PR 6 CONTRASTE DE TERMOMETROS', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmregcontraste/' },
+        { title: 'PR 9 SEMANAL', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmegcsemanal/' },
+        { title: 'PR 22 LIMPIEZA TANQUES', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmreglimpiezatanque/' },
+        { title: 'PR 24 DIARIO', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmegcdiario/' },
+        { title: 'PR 30 LIBRO DE GUARDIA', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmcontrol/' },
+        { title: 'PR 80 PARADA DE CAMARAS', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmcamara/' },
+        { title: 'PR 100 DESCONGELADO', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmdescongelado/' }
       ]
     },
     {
       title: 'SISTEMA',
       children: [
         { title: 'VETERINARIOS', url: 'https://sistema.cinafrio.com/intranet/index.php/veterinario/index' },
-        { title: 'CLIENTES' },
+        {
+          title: 'CLIENTES',
+          children: [
+            { title: 'CLIENTES DEPOSITO NACIONAL', url: 'https://sistema.cinafrio.com/intranet/index.php/clientes/list?fiscal=0&page=1' },
+            { title: 'CLIENTES DEPOSITO FISCAL', url: 'https://sistema.cinafrio.com/intranet/index.php/clientes/list/fiscal/1/page/1' },
+            { title: 'GRUPO DE CLIENTES', url: 'https://sistema.cinafrio.com/intranet/index.php/grupo/list' }
+          ]
+        },
         { title: 'COMPRAS' },
         { title: 'ESTABLECIMIENTOS' },
-        { title: 'LOGISTICA' },
-        { title: 'RRHH' },
-        { title: 'SALA DE MAQUINAS' },
-        { title: 'SISTEMA INFORMATICO' },
-        { title: 'TRANSPORTE' }
+        {
+          title: 'LOGISTICA',
+          children: [
+            { title: 'CAMARAS', url: 'https://sistema.cinafrio.com/intranet/index.php/camaras' },
+            { title: 'CONDUCTORES', url: 'https://sistema.cinafrio.com/intranet/index.php/conductor_autoelevador' },
+            { title: 'RESPONSABLE DE CARGAS', url: 'https://sistema.cinafrio.com/intranet/index.php/responsable_logistica' },
+            { title: 'TIPO DE CAMARAS', url: 'https://sistema.cinafrio.com/intranet/index.php/tiposcamara' },
+            { title: 'TIPO DE ESTIBA', url: 'https://sistema.cinafrio.com/intranet/index.php/tiposestiba' },
+            { title: 'TIPO DE CERTIFICADOS', url: 'https://sistema.cinafrio.com/intranet/index.php/tiposcertificados' },
+            { title: 'TIPO DE INTERVENCIONES', url: 'https://sistema.cinafrio.com/intranet/index.php/intervenciones' },
+            { title: 'TIPO DE PRODUCTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/tiposproducto' }
+          ]
+        },
+        {
+          title: 'RRHH',
+          children: [
+            { title: 'DEPARTAMENTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/departamento' },
+            { title: 'EXAMENES', url: 'https://sistema.cinafrio.com/intranet2/app.php/examen/' },
+            { title: 'LOCALIDADES', url: 'https://sistema.cinafrio.com/intranet/index.php/localidad/index' },
+            { title: 'OBRA SOCIAL', url: 'https://sistema.cinafrio.com/intranet/index.php/obra_social' },
+            { title: 'PAISES', url: 'https://sistema.cinafrio.com/intranet/index.php/pais' },
+            { title: 'VACUNAS', url: 'https://sistema.cinafrio.com/intranet2/app.php/vacuna/' }
+          ]
+        },
+        { title: 'SALA DE MAQUINAS', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmmaquinista/' },
+        {
+          title: 'SISTEMA INFORMATICO',
+          children: [
+            { title: 'RESPONSABLES', url: 'https://sistema.cinafrio.com/intranet2/app.php/controlcambioresponsables/' },
+            { title: 'USUARIOS', url: 'https://sistema.cinafrio.com/intranet/index.php/usuarios/index' },
+            { title: 'PERFILES', url: 'https://sistema.cinafrio.com/intranet/index.php/rol' }
+          ]
+        },
+        {
+          title: 'TRANSPORTE',
+          children: [
+            { title: 'AEROPUERTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_aeropuerto' },
+            { title: 'BUQUES', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_buque' },
+            { title: 'DESTINOS', url: 'https://sistema.cinafrio.com/intranet/index.php/destinos/index/page/1' },
+            { title: 'LINEAS AEREAS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_linea_aerea' },
+            { title: 'PUERTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_puerto' }
+          ]
+        }
       ]
     },
     {
@@ -453,41 +516,32 @@ const screenSubtitle = document.getElementById('screenSubtitle');
 const backBtn = document.getElementById('backBtn');
 const homeBtn = document.getElementById('homeBtn');
 const fullscreenBtn = document.getElementById('fullscreenBtn');
+const userBtn = document.getElementById('userBtn');
+const qrBox = document.getElementById('qrBox');
 
 function getInitials(text){
   if (iconMap[text]) return iconMap[text];
   return text.split(/\s+/).filter(Boolean).slice(0,2).map(word => word[0]).join('').toUpperCase();
 }
-
 function getGridLayout(count){
   return count > 8 ? 'layout-8x2' : 'layout-4x4';
 }
-
 function formatTitle(title){
   const words = title.trim().split(/\s+/);
-  if(words.length === 2){
-    return `${words[0]}<br>${words[1]}`;
-  }
-  if(words.length === 3){
-    return `${words[0]} ${words[1]}<br>${words[2]}`;
-  }
+  if(words.length === 2){ return `${words[0]}<br>${words[1]}`; }
+  if(words.length === 3){ return `${words[0]} ${words[1]}<br>${words[2]}`; }
   return title;
 }
-
 function titleClass(title){
   const words = title.trim().split(/\s+/).length;
   return words === 2 || words === 3 ? 'two-lines' : 'one-line';
 }
-
-function openModule(url){
-  window.open(url, '_blank', 'noopener,noreferrer');
-}
+function openModule(url){ window.open(url, '_blank', 'noopener,noreferrer'); }
 
 function renderNode(node){
   const items = node.children || [];
   screenTitle.textContent = historyStack.length ? node.title : 'BIENVENIDOS AL SISTEMA DE GRUPO CINA';
   screenSubtitle.textContent = 'SISTEMA DE GESTION DE OPERACIONES';
-
   menuGrid.className = `menu-grid ${getGridLayout(items.length || 1)}`;
   menuGrid.innerHTML = '';
 
@@ -500,9 +554,7 @@ function renderNode(node){
       <div class="tile-icon">${getInitials(node.title)}</div>
       <div class="tile-title ${titleClass(node.title)}">${formatTitle(node.title)}</div>
     `;
-    if(node.url){
-      tile.addEventListener('click', () => openModule(node.url));
-    }
+    if(node.url){ tile.addEventListener('click', () => openModule(node.url)); }
     menuGrid.appendChild(tile);
   } else {
     items.forEach((item, i) => {
@@ -515,7 +567,6 @@ function renderNode(node){
         <div class="tile-icon">${getInitials(item.title)}</div>
         <div class="tile-title ${titleClass(item.title)}">${formatTitle(item.title)}</div>
       `;
-
       tile.addEventListener('click', () => {
         if(item.children){
           historyStack.push(node);
@@ -529,11 +580,9 @@ function renderNode(node){
         historyStack.push(node);
         renderNode({ title: item.title, url: item.url, children: [] });
       });
-
       menuGrid.appendChild(tile);
     });
   }
-
   backBtn.disabled = historyStack.length === 0;
 }
 
@@ -542,19 +591,16 @@ backBtn.addEventListener('click', () => {
   const previous = historyStack.pop();
   renderNode(previous);
 });
-
 homeBtn.addEventListener('click', () => {
   historyStack.length = 0;
   renderNode(menuTree);
 });
-
 fullscreenBtn.addEventListener('click', () => {
-  if(!document.fullscreenElement){
-    document.documentElement.requestFullscreen();
-  } else {
-    document.exitFullscreen();
-  }
+  if(!document.fullscreenElement){ document.documentElement.requestFullscreen(); }
+  else { document.exitFullscreen(); }
 });
+userBtn.addEventListener('click', () => openModule('https://sistema.cinafrio.com/intranet2/app.php/persona/306/show'));
+qrBox.addEventListener('click', () => openModule('https://sistema.cinafrio.com/intranet/index.php/estiba/scan'));
 
 renderNode(menuTree);
 </script>
