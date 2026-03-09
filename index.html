@@ -348,7 +348,12 @@ const menuTree = {
         { title: 'TRONERAS', url: 'https://sistema.cinafrio.com/intranet/index.php/tronera' }
       ]}
     ]},
-    { title: 'SISTEMA DE GESTION' },
+    { title: 'SISTEMA DE GESTION', children: [
+      { title: 'INFORMACION DOCUMENTADA', url: 'https://manualcinafrio.com.ar/documentos/' },
+      { title: 'INDICADORES', url: 'https://manualcinafrio.com.ar/indicadores/' },
+      { title: 'REGISTRO PR 44', url: 'https://sistema.cinafrio.com/intranet/index.php/registro' },
+      { title: 'FORMACION', url: 'https://manualcinafrio.com.ar/formacion/' }
+    ]},
     { title: 'INDICADORES', children: [
       { title: 'MOVIMIENTOS' },
       { title: 'ESTADISTICAS DE PERSONAL' },
@@ -491,7 +496,10 @@ function getIconMarkup(title){
     'MANTENIMIENTO': '🔧',
     'SISTEMA': '⚙',
     'PRODUCTOS': '📦',
-    'OTROS SISTEMAS': '🧩'
+    'OTROS SISTEMAS': '🧩',
+    'INFORMACION DOCUMENTADA': '📚',
+    'REGISTRO PR 44': '🗂',
+    'FORMACION': '👨‍🏫'
   };
 
   return symbolMap[title] || getTextInitials(title);
