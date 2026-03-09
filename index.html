@@ -14,7 +14,6 @@
   --shadow-main:0 22px 45px rgba(0,0,0,.28);
   --radius-lg:22px;
   --gap:18px;
-  --tile-size:150px;
   --grid-max:1320px;
 }
 *{box-sizing:border-box}
@@ -57,9 +56,7 @@ html,body{
   width:auto;
   object-fit:contain;
 }
-.brand-copy{
-  min-width:0;
-}
+.brand-copy{min-width:0;}
 .brand h1{
   margin:0;
   font-size:1.6rem;
@@ -93,8 +90,7 @@ html,body{
   align-items:center;
   gap:14px;
 }
-.breadcrumbs,
-.module-counter{
+.breadcrumbs,.module-counter{
   padding:10px 14px;
   border-radius:14px;
   background:rgba(255,255,255,.08);
@@ -120,7 +116,6 @@ html,body{
 }
 .menu-grid.layout-4x4{
   grid-template-columns:repeat(4,minmax(150px,1fr));
-  max-width:calc(4 * 1fr);
   width:min(100%, 900px);
 }
 .menu-grid.layout-8x2{
@@ -170,12 +165,8 @@ html,body{
   overflow-wrap:normal;
   hyphens:none;
 }
-.tile-title.two-lines{
-  white-space:normal;
-}
-.tile-title.one-line{
-  white-space:nowrap;
-}
+.tile-title.two-lines{white-space:normal}
+.tile-title.one-line{white-space:nowrap}
 .footer-bar{
   text-align:center;
   font-size:.8rem;
@@ -218,8 +209,8 @@ html,body{
   </header>
 
   <section class="meta-panel">
-    <div class="breadcrumbs" id="breadcrumb">Inicio</div>
-    <div class="module-counter" id="moduleCounter">16 módulos</div>
+    <div class="breadcrumbs" id="breadcrumb">INICIO</div>
+    <div class="module-counter" id="moduleCounter">16 MÓDULOS</div>
   </section>
 
   <main class="workspace">
@@ -238,39 +229,39 @@ const menuTree = {
     {
       title: 'LOGISTICA NACIONAL',
       children: [
-        { title: 'CARGAS' },
-        { title: 'PRE ENTRADAS' },
-        { title: 'ENTRADAS' },
-        { title: 'PRE SALIDAS' },
-        { title: 'SALIDAS' },
-        { title: 'AJUSTE DE STOCK' }
+        { title: 'CARGAS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_carga/index/fiscal/0' },
+        { title: 'PRE ENTRADAS', url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/0/fiscal/0' },
+        { title: 'ENTRADAS', url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/1/fiscal/0' },
+        { title: 'PRE SALIDAS', url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/0/fiscal/0' },
+        { title: 'SALIDAS', url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/1/fiscal/0' },
+        { title: 'AJUSTE DE STOCK', url: 'https://sistema.cinafrio.com/intranet/index.php/infostock/ajusteManual' }
       ]
     },
     {
       title: 'LOGISTICA FISCAL',
       children: [
-        { title: 'CARGAS' },
-        { title: 'PRE ENTRADAS' },
-        { title: 'ENTRADAS' },
-        { title: 'PRE SALIDAS' },
-        { title: 'SALIDAS' },
-        { title: 'REPORTE DEPOSITO FISCAL AFIP' }
+        { title: 'CARGAS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_carga/index/fiscal/1' },
+        { title: 'PRE ENTRADAS', url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/0/fiscal/1' },
+        { title: 'ENTRADAS', url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/1/fiscal/1' },
+        { title: 'PRE SALIDAS', url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/0/fiscal/1' },
+        { title: 'SALIDAS', url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/1/fiscal/1' },
+        { title: 'REPORTE DEPOSITO FISCAL AFIP', url: 'https://sistema.cinafrio.com/intranet2/app.php/reportestockafip/' }
       ]
     },
     {
       title: 'CALIDAD',
       children: [
-        { title: 'CONTROL DE ENTRADAS' },
-        { title: 'CONTROL DE SALIDAS' },
-        { title: 'CONTROL DE INTERVENCIONES' },
-        { title: 'VENCIMIENTO DE PRODUCTOS' },
-        { title: 'ESTADISTICAS DE INTERVENCIONES' }
+        { title: 'CONTROL DE ENTRADAS', url: 'https://sistema.cinafrio.com/intranet/index.php/carga/list/type/E' },
+        { title: 'CONTROL DE SALIDAS', url: 'https://sistema.cinafrio.com/intranet/index.php/carga/list/type/S' },
+        { title: 'CONTROL DE INTERVENCIONES', url: 'https://sistema.cinafrio.com/intranet/index.php/carga/listIntervenciones' },
+        { title: 'VENCIMIENTO DE PRODUCTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/infostock/vencimientos' },
+        { title: 'ESTADISTICAS DE INTERVENCIONES', url: 'https://sistema.cinafrio.com/intranet/index.php/carga/estadisticas' }
       ]
     },
     {
       title: 'PORTERIA',
       children: [
-        { title: 'INGRESOS EGRESOS' }
+        { title: 'INGRESOS EGRESOS', url: 'https://sistema.cinafrio.com/intranet/index.php/ingreso/index' }
       ]
     },
     {
@@ -279,18 +270,18 @@ const menuTree = {
         {
           title: 'DATOS DE VEHICULOS',
           children: [
-            { title: 'ASEGURADORAS' },
-            { title: 'EMPRESAS' },
-            { title: 'CONDUCTORES' },
-            { title: 'VEHICULOS' }
+            { title: 'ASEGURADORAS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_aseguradora' },
+            { title: 'EMPRESAS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_empresa' },
+            { title: 'CONDUCTORES', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_conductor' },
+            { title: 'VEHICULOS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_vehiculo' }
           ]
         },
-        { title: 'ACOPLADOS' },
+        { title: 'ACOPLADOS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_acoplado' },
         {
           title: 'DATOS DE LA PLAYA DE MANIOBRA',
           children: [
-            { title: 'BOXES' },
-            { title: 'TRONERAS' }
+            { title: 'BOXES', url: 'https://sistema.cinafrio.com/intranet/index.php/box' },
+            { title: 'TRONERAS', url: 'https://sistema.cinafrio.com/intranet/index.php/tronera' }
           ]
         }
       ]
@@ -320,29 +311,36 @@ const menuTree = {
     {
       title: 'SENASA',
       children: [
-        { title: 'CERTIFICADOS' },
-        { title: 'CERTIFICADOS INTERNOS' }
+        { title: 'CERTIFICADOS', url: 'https://sistema.cinafrio.com/intranet/index.php/certificados/list' },
+        { title: 'CERTIFICADOS INTERNOS', url: 'https://sistema.cinafrio.com/intranet/index.php/certificado_interno' }
       ]
     },
     {
       title: 'DASHBOARD',
       children: [
-        { title: 'MAPA DE BOXES' },
+        { title: 'MAPA DE BOXES', url: 'https://sistema.cinafrio.com/intranet/index.php/box/map' },
         { title: 'DASHBOARD LOGISTICA NACIONAL' },
         { title: 'DASHBOARD LOGISTICA FISCAL' },
-        { title: 'DASHBOARD GENERAL' }
+        { title: 'DASHBOARD GENERAL', url: 'https://sistema.cinafrio.com/intranet2/app.php/ausentismo/dashboard' }
       ]
     },
-    { title: 'ADMINISTRACION' },
+    {
+      title: 'ADMINISTRACION',
+      children: [
+        { title: 'FACTURACION', url: 'https://sistema.cinafrio.com/intranet/index.php/facturacion' },
+        { title: 'REMITOS', url: 'https://sistema.cinafrio.com/intranet/index.php/facturacion/remitos' },
+        { title: 'COMPRAS', url: 'https://sistema.cinafrio.com/intranet/index.php/pim/index/estadoPIM/1' }
+      ]
+    },
     {
       title: 'RRHH',
       children: [
-        { title: 'PERSONAL' },
-        { title: 'AUSENTISMO' },
-        { title: 'VACUNACIONES' },
-        { title: 'EXAMENES ART' },
-        { title: 'EXAMENES INGRESOS' },
-        { title: 'LIBRETAS SANITARIAS' }
+        { title: 'PERSONAL', url: 'https://sistema.cinafrio.com/intranet2/app.php/persona/' },
+        { title: 'AUSENTISMO', url: 'https://sistema.cinafrio.com/intranet2/app.php/ausentismo/dashboard' },
+        { title: 'VACUNACIONES', url: 'https://sistema.cinafrio.com/intranet2/app.php/vacunacion/' },
+        { title: 'EXAMENES ART', url: 'https://sistema.cinafrio.com/intranet2/app.php/examenmedicoart/' },
+        { title: 'EXAMENES INGRESOS', url: 'https://sistema.cinafrio.com/intranet2/app.php/exameningreso/' },
+        { title: 'LIBRETAS SANITARIAS', url: 'https://sistema.cinafrio.com/intranet2/app.php/libretasanitaria/' }
       ]
     },
     {
@@ -361,7 +359,7 @@ const menuTree = {
     {
       title: 'SISTEMA',
       children: [
-        { title: 'CALIDAD' },
+        { title: 'VETERINARIOS', url: 'https://sistema.cinafrio.com/intranet/index.php/veterinario/index' },
         { title: 'CLIENTES' },
         { title: 'COMPRAS' },
         { title: 'ESTABLECIMIENTOS' },
@@ -375,10 +373,18 @@ const menuTree = {
     {
       title: 'PRODUCTOS',
       children: [
-        { title: 'CREAR NUEVOS PRODUCTOS' }
+        { title: 'CREAR NUEVOS PRODUCTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/producto' }
       ]
     },
-    { title: 'OTROS SISTEMAS' }
+    {
+      title: 'OTROS SISTEMAS',
+      children: [
+        { title: 'INFORMACION DOCUMENTADA', url: 'https://manualcinafrio.com.ar/documentos/' },
+        { title: 'INDICADORES', url: 'https://manualcinafrio.com.ar/indicadores/' },
+        { title: 'REGISTRO PR 44', url: 'https://sistema.cinafrio.com/intranet/index.php/registro' },
+        { title: 'FORMACION', url: 'https://manualcinafrio.com.ar/formacion/' }
+      ]
+    }
   ]
 };
 
@@ -410,8 +416,6 @@ const iconMap = {
 };
 
 const historyStack = [];
-let currentNode = menuTree;
-
 const menuGrid = document.getElementById('menuGrid');
 const moduleCounter = document.getElementById('moduleCounter');
 const breadcrumb = document.getElementById('breadcrumb');
@@ -431,7 +435,7 @@ function getGridLayout(count){
 }
 
 function buildBreadcrumb(node){
-  if(node === menuTree) return 'INICIO';
+  if(node.title === 'INICIO') return 'INICIO';
   return ['INICIO', ...historyStack.map(item => item.title), node.title].join(' / ');
 }
 
@@ -451,12 +455,15 @@ function titleClass(title){
   return words === 2 || words === 3 ? 'two-lines' : 'one-line';
 }
 
+function openModule(url){
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
 function renderNode(node){
-  currentNode = node;
   const items = node.children || [];
 
   screenTitle.textContent = historyStack.length ? node.title : 'BIENVENIDOS AL SISTEMA DE GRUPO CINA';
-  screenSubtitle.textContent = historyStack.length ? 'ACCESO RÁPIDO A LOS MÓDULOS DEL SISTEMA' : 'ACCESO RÁPIDO A LOS MÓDULOS DEL SISTEMA';
+  screenSubtitle.textContent = 'ACCESO RÁPIDO A LOS MÓDULOS DEL SISTEMA';
   breadcrumb.textContent = buildBreadcrumb(node);
   moduleCounter.textContent = `${items.length || 1} MÓDULOS`;
 
@@ -472,6 +479,9 @@ function renderNode(node){
       <div class="tile-icon">${getInitials(node.title)}</div>
       <div class="tile-title ${titleClass(node.title)}">${formatTitle(node.title)}</div>
     `;
+    if(node.url){
+      tile.addEventListener('click', () => openModule(node.url));
+    }
     menuGrid.appendChild(tile);
   } else {
     items.forEach((item, i) => {
@@ -484,14 +494,21 @@ function renderNode(node){
         <div class="tile-icon">${getInitials(item.title)}</div>
         <div class="tile-title ${titleClass(item.title)}">${formatTitle(item.title)}</div>
       `;
+
       tile.addEventListener('click', () => {
-        historyStack.push(node);
-        if (item.children) {
+        if(item.children){
+          historyStack.push(node);
           renderNode(item);
-        } else {
-          renderNode({ title: item.title, children: [] });
+          return;
         }
+        if(item.url){
+          openModule(item.url);
+          return;
+        }
+        historyStack.push(node);
+        renderNode({ title: item.title, url: item.url, children: [] });
       });
+
       menuGrid.appendChild(tile);
     });
   }
