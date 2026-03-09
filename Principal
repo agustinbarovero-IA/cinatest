@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menú Principal CINA · V2</title>
+  <style>
+    :root {
+      --bg-main: #001F60;
+      --bg-deep: #00174a;
+      --bg-dark: #000f30;
+      --panel: rgba(255, 255, 255, 0.08);
+      --panel-border: rgba(255, 255, 255, 0.12);
+      --text: #ffffff;
+      --text-soft: rgba(255, 255, 255, 0.8);
+      --text-faint: rgba(255, 255, 255, 0.58);
+      --accent-1: #36B0C9;
+      --accent-2: #00BBB4;
+      --accent-3: #00A887;
+      --accent-4: #007A4C;
+      --shadow-main: 0 22px 45px rgba(0, 0, 0, 0.28);
+      --shadow-soft: 0 10px 24px rgba(0, 0, 0, 0.18);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 18px;
+      --gap: clamp(12px, 1.2vw, 18px);
+      --card-size-min: 150px;
+      --max-grid-width: 1320px;
+      --max-cols: 6;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: "Segoe UI", Inter, Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(54,176,201,0.22), transparent 26%),
+        radial-gradient(circle at 85% 18%, rgba(0,187,180,0.15), transparent 20%),
+        radial-gradient(circle at bottom right, rgba(0,168,135,0.18), transparent 24%),
+        linear-gradient(135deg, var(--bg-main), var(--bg-deep) 55%, var(--bg-dark));
+      overflow: hidden;
+    }
+
+    body {
+      min-height: 100vh;
+    }
+
+    .app-shell {
+      position: relative;
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      gap: 14px;
+      padding: clamp(12px, 1.4vw, 20px);
+      overflow: hidden;
+    }
+
+    .ambient-line,
+    .ambient-line::before,
+    .ambient-line::after {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .ambient-line::before {
+      content: "";
+      position: absolute;
+      top: 8%;
+      left: -8%;
+      width: 40%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(54,176,201,0.55), transparent);
+      transform: rotate(-8deg);
+    }
+
+    .ambient-line::after {
+      content: "";
+      position: absolute;
+      right: -6%;
+      bottom: 12%;
+      width: 36%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,168,135,0.45), transparent);
+      transform: rotate(10deg);
+    }
+
+    .topbar {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1.5fr auto;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04));
+      border: 1px solid var(--panel-border);
+      box-shadow: var(--shadow-main);
+      backdrop-filter: blur(14px);
+      overflow: hidden;
+    }
+
+    .topbar::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, rgba(255,255,255,0.08), transparent 35%, transparent 65%, rgba(255,255,255,0.04));
+      pointer-events: none;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+      z-index: 1;
+    }
+
+    .brand-mark {
+      position: relative;
+      width: 72px;
+      height: 72px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, #001F60, #36B0C9 55%, #00A887);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12), 0 10px 24px rgba(0,0,0,0.2);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .brand-mark::after {
+      content: "";
+      width: 42px;
+      height: 42px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(6px);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.10);
+      position: absolute;
+    }
+
+    .brand-mark span {
+      position: relative;
+      z-index: 1;
+      font-weight: 800;
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+    }
+
+    .brand-copy {
+      min-width: 0;
+    }
+
+    .brand-copy h1 {
+      margin: 0;
+      font-size: clamp(1.15rem, 2vw, 1.9rem);
+      line-height: 1.06;
+      font-weight: 750;
+    }
+
+    .brand-copy p {
+      margin: 6px 0 0;
+      color: var(--text-soft);
+      font-size: clamp(0.88rem, 1vw, 1rem);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px;
+      z-index: 1;
+    }
+
+    .btn {
+      border: 0;
+      color: var(--text);
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-weight: 650;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: transform 0.18s ease, filter 0.18s ease, background 0.18s ease, opacity 0.18s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      filter: brightness(1.04);
+    }
+
+    .btn:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #36B0C9, #00A887);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .meta-panel {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .breadcrumbs {
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text-soft);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .status-box {
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text-soft);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow-soft);
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00BBB4, #00A887);
+      box-shadow: 0 0 12px rgba(0,187,180,0.75);
+      flex-shrink: 0;
+    }
+
+    .workspace {
+      min-height: 0;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .workspace::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    .workspace::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.14);
+      border-radius: 999px;
+    }
+
+    .menu-wrap {
+      width: 100%;
+      max-width: var(--max-grid-width);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 4px 2px 8px;
+    }
+
+    .menu-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(var(--card-size-min), 1fr));
+      gap: var(--gap);
+      align-content: start;
+      justify-content: center;
+    }
+
+    .menu-grid.cols-1 { max-width: 180px; }
+    .menu-grid.cols-2 { max-width: 380px; }
+    .menu-grid.cols-3 { max-width: 580px; }
+    .menu-grid.cols-4 { max-width: 780px; }
+    .menu-grid.cols-5 { max-width: 980px; }
+    .menu-grid.cols-6 { max-width: 1180px; }
+
+    .tile {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      border: 0;
+      border-radius: var(--radius-lg);
+      padding: 14px;
+      color: var(--text);
+      text-align: left;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 148px;
+      box-shadow: var(--shadow-main);
+      cursor: pointer;
+      isolation: isolate;
+      transition: transform 0.18s ease, filter 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .tile:hover {
+      transform: translateY(-5px) scale(1.015);
+      filter: brightness(1.03);
+      box-shadow: 0 26px 46px rgba(0, 0, 0, 0.30);
+    }
+
+    .tile::before {
+      content: "";
+      position: absolute;
+      top: -18%;
+      right: -18%;
+      width: 58%;
+      height: 58%;
+      background: radial-gradient(circle, rgba(255,255,255,0.22), transparent 68%);
+      z-index: 0;
+    }
+
+    .tile::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.14));
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .tile-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    .tile-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .tile-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.16);
+      border: 1px solid rgba(255,255,255,0.16);
+      display: grid;
+      place-items: center;
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+      backdrop-filter: blur(5px);
+    }
+
+    .tile-badge {
+      min-width: 34px;
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.14);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.95);
+    }
+
+    .tile-body {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .tile-title {
+      margin: 0;
+      font-size: clamp(0.96rem, 1.05vw, 1.1rem);
+      line-height: 1.15;
+      font-weight: 750;
+      word-break: break-word;
+    }
+
+    .tile-desc {
+      margin: 0;
+      font-size: 0.86rem;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.3;
+    }
+
+    .tile-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      color: rgba(255,255,255,0.9);
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .tile-arrow {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.14);
+      display: grid;
+      place-items: center;
+      font-size: 0.95rem;
+    }
+
+    .tile.leaf {
+      cursor: default;
+    }
+
+    .tile.leaf .tile-badge {
+      background: rgba(255,255,255,0.16);
+    }
+
+    .footer-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      color: var(--text-faint);
+      font-size: 0.84rem;
+      padding: 0 6px;
+    }
+
+    .footer-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .footer-pill strong {
+      color: var(--text-soft);
+      font-weight: 650;
+    }
+
+    @media (max-width: 980px) {
+      .topbar,
+      .meta-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        justify-content: flex-start;
+      }
+
+      .status-box {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 640px) {
+      html, body {
+        overflow: auto;
+      }
+
+      .app-shell {
+        min-height: auto;
+      }
+
+      .brand-mark {
+        width: 62px;
+        height: 62px;
+        border-radius: 20px;
+      }
+
+      .menu-grid {
+        grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+      }
+
+      .tile {
+        min-height: 128px;
+        padding: 12px;
+      }
+
+      .tile-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        font-size: 0.94rem;
+      }
+
+      .footer-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <div class="ambient-line"></div>
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark"><span>CN</span></div>
+        <div class="brand-copy">
+          <h1 id="screenTitle">Menú Principal</h1>
+          <p id="screenSubtitle">Acceso rápido a los módulos operativos</p>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn btn-secondary" id="backBtn">← Volver</button>
+        <button class="btn btn-secondary" id="homeBtn">⌂ Inicio</button>
+        <button class="btn btn-primary" id="fullscreenBtn">⛶ Pantalla completa</button>
+      </div>
+    </header>
+
+    <section class="meta-panel">
+      <div class="breadcrumbs" id="breadcrumb">Inicio</div>
+      <div class="status-box">
+        <span class="status-dot"></span>
+        <span id="moduleCounter">16 módulos visibles</span>
+      </div>
+    </section>
+
+    <main class="workspace">
+      <div class="menu-wrap">
+        <div class="menu-grid cols-6" id="menuGrid"></div>
+      </div>
+    </main>
+
+    <footer class="footer-bar">
+      <div class="footer-pill"><strong>CINA</strong> Frontend de acceso rápido</div>
+      <div class="footer-pill">Máximo <strong>6 botones</strong> por fila · Responsive · Entorno táctil</div>
+    </footer>
+  </div>
+
+  <script>
+    const menuTree = {
+      title: 'Menú Principal',
+      subtitle: 'Acceso rápido a los módulos del sistema',
+      children: [
+        {
+          title: 'Logística nacional',
+          children: [
+            { title: 'Cargas' },
+            { title: 'Pre-Entradas' },
+            { title: 'Entradas' },
+            { title: 'Pre-salidas' },
+            { title: 'Salidas' },
+            { title: 'Ajuste de stock' }
+          ]
+        },
+        {
+          title: 'Logística fiscal',
+          children: [
+            { title: 'Cargas' },
+            { title: 'Pre-Entradas' },
+            { title: 'Entradas' },
+            { title: 'Pre-salidas' },
+            { title: 'Salidas' },
+            { title: 'Reporte Depósito fiscal AFIP' }
+          ]
+        },
+        { title: 'Ajuste de stock' },
+        {
+          title: 'Calidad',
+          children: [
+            { title: 'Control de entradas' },
+            { title: 'Control de salidas' },
+            { title: 'Control de intervenciones' },
+            { title: 'Vencimiento de productos' },
+            { title: 'Estadísticas de intervenciones' }
+          ]
+        },
+        {
+          title: 'Portería',
+          children: [
+            { title: 'Ingresos/Egresos' }
+          ]
+        },
+        {
+          title: 'Transporte',
+          children: [
+            {
+              title: 'Datos de vehículos',
+              children: [
+                { title: 'Aseguradoras' },
+                { title: 'Empresas' },
+                { title: 'Conductores' },
+                { title: 'Vehículos' }
+              ]
+            },
+            { title: 'Acoplados' },
+            {
+              title: 'Datos de la playa de maniobra',
+              children: [
+                { title: 'Boxes' },
+                { title: 'Troneras' }
+              ]
+            }
+          ]
+        },
+        { title: 'Sistema de gestión' },
+        {
+          title: 'Información documentada',
+          children: [
+            { title: 'Indicadores' },
+            { title: 'Registro PR 44' },
+            { title: 'Formación' }
+          ]
+        },
+        {
+          title: 'Indicadores',
+          children: [
+            { title: 'Movimientos' },
+            { title: 'Estadísticas de personal' },
+            { title: 'Almacenamiento de posiciones' },
+            { title: 'Estibas creadas/eliminadas' },
+            { title: 'Ajustes de stock' },
+            { title: 'Clientes que operaron' }
+          ]
+        },
+        {
+          title: 'Reportes',
+          children: [
+            { title: 'Cámaras' },
+            { title: 'Stock' },
+            { title: 'Movimientos' },
+            { title: 'Tiempos Carga/Descarga' },
+            { title: 'Ausentismo' }
+          ]
+        },
+        {
+          title: 'Senasa',
+          children: [
+            { title: 'Certificados' },
+            { title: 'Certificados internos' }
+          ]
+        },
+        {
+          title: 'Dashboard',
+          children: [
+            { title: 'Mapa de boxes' },
+            { title: 'Dashboard Logística nacional' },
+            { title: 'Dashboard Logística fiscal' },
+            { title: 'Dashboard general' }
+          ]
+        },
+        { title: 'Administración' },
+        { title: 'Facturación' },
+        { title: 'Compras' },
+        {
+          title: 'RRHH',
+          children: [
+            { title: 'Personal' },
+            { title: 'Ausentismo' },
+            { title: 'Vacunaciones' },
+            { title: 'Exámenes ART' },
+            { title: 'Exámenes ingresos' },
+            { title: 'Libretas sanitarias' }
+          ]
+        },
+        {
+          title: 'Mantenimiento',
+          children: [
+            { title: 'Mantenimiento General' },
+            { title: 'PR-6 Contraste de termómetros' },
+            { title: 'PR-9 Semanal' },
+            { title: 'PR-22 Limpieza tanques' },
+            { title: 'PR-24 Diario' },
+            { title: 'PR-30 Libro de guardia' },
+            { title: 'PR-80 Parada de cámaras' },
+            { title: 'PR-100 Descongelado' }
+          ]
+        },
+        {
+          title: 'Sistema',
+          children: [
+            { title: 'Calidad' },
+            { title: 'Clientes' },
+            { title: 'Compras' },
+            { title: 'Establecimientos' },
+            { title: 'Logística' },
+            { title: 'RRHH' },
+            { title: 'Sala de máquinas' },
+            { title: 'Sistema informático' },
+            { title: 'Transporte' }
+          ]
+        },
+        {
+          title: 'Productos',
+          children: [
+            { title: 'Crear nuevos productos' }
+          ]
+        }
+      ]
+    };
+
+    const palette = [
+      ['#001F60', '#002A80'],
+      ['#36B0C9', '#2898AC'],
+      ['#00BBB4', '#009F99'],
+      ['#00A887', '#00846B'],
+      ['#007A4C', '#005E3A'],
+      ['#001F60', '#36B0C9'],
+      ['#36B0C9', '#00BBB4'],
+      ['#00BBB4', '#00A887'],
+      ['#00A887', '#007A4C'],
+      ['#007A4C', '#001F60']
+    ];
+
+    const iconMap = {
+      'Logística nacional': 'LN',
+      'Logística fiscal': 'LF',
+      'Ajuste de stock': 'AS',
+      'Calidad': 'CL',
+      'Portería': 'PT',
+      'Transporte': 'TR',
+      'Sistema de gestión': 'SG',
+      'Información documentada': 'ID',
+      'Indicadores': 'IN',
+      'Reportes': 'RP',
+      'Senasa': 'SN',
+      'Dashboard': 'DB',
+      'Administración': 'AD',
+      'Facturación': 'FC',
+      'Compras': 'CP',
+      'RRHH': 'RH',
+      'Mantenimiento': 'MT',
+      'Sistema': 'SI',
+      'Productos': 'PR'
+    };
+
+    const historyStack = [];
+    let currentNode = menuTree;
+
+    const menuGrid = document.getElementById('menuGrid');
+    const screenTitle = document.getElementById('screenTitle');
+    const screenSubtitle = document.getElementById('screenSubtitle');
+    const breadcrumb = document.getElementById('breadcrumb');
+    const moduleCounter = document.getElementById('moduleCounter');
+    const backBtn = document.getElementById('backBtn');
+    const homeBtn = document.getElementById('homeBtn');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+    function getInitials(text) {
+      if (iconMap[text]) return iconMap[text];
+      return text
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(word => word[0])
+        .join('')
+        .toUpperCase();
+    }
+
+    function getColsClass(total) {
+      return `cols-${Math.min(6, Math.max(1, total))}`;
+    }
+
+    function getDescription(item) {
+      if (item.children?.length) {
+        return `${item.children.length} módulo${item.children.length === 1 ? '' : 's'} disponible${item.children.length === 1 ? '' : 's'}`;
+      }
+      return 'Ingreso directo al módulo';
+    }
+
+    function buildBreadcrumb(node) {
+      if (node === menuTree) return 'Inicio';
+      return ['Inicio', ...historyStack.map(item => item.title), node.title].join(' / ');
+    }
+
+    function renderNode(node) {
+      currentNode = node;
+      const items = node.children || [];
+
+      screenTitle.textContent = node.title || 'Menú';
+      screenSubtitle.textContent = node.subtitle || (items.length
+        ? `${items.length} módulo${items.length === 1 ? '' : 's'} visibles en este entorno`
+        : 'Módulo final listo para vincular');
+      breadcrumb.textContent = buildBreadcrumb(node);
+      moduleCounter.textContent = `${items.length || 1} módulo${(items.length || 1) === 1 ? '' : 's'} visible${(items.length || 1) === 1 ? '' : 's'}`;
+
+      menuGrid.className = `menu-grid ${getColsClass(items.length || 1)}`;
+      menuGrid.innerHTML = '';
+
+      if (!items.length) {
+        const [c1, c2] = ['#001F60', '#00A887'];
+        const tile = document.createElement('button');
+        tile.className = 'tile leaf';
+        tile.style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
+        tile.innerHTML = `
+          <div class="tile-inner">
+            <div class="tile-head">
+              <div class="tile-icon">${getInitials(node.title)}</div>
+              <div class="tile-badge">OK</div>
+            </div>
+            <div class="tile-body">
+              <h3 class="tile-title">${node.title}</h3>
+              <p class="tile-desc">Módulo final. Aquí luego podemos vincular una URL, formulario o dashboard real.</p>
+            </div>
+            <div class="tile-footer">
+              <span>Entorno final</span>
+              <span class="tile-arrow">•</span>
+            </div>
+          </div>
+        `;
+        menuGrid.appendChild(tile);
+      } else {
+        items.forEach((item, index) => {
+          const [c1, c2] = palette[index % palette.length];
+          const tile = document.createElement('button');
+          tile.className = 'tile';
+          tile.style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
+          tile.innerHTML = `
+            <div class="tile-inner">
+              <div class="tile-head">
+                <div class="tile-icon">${getInitials(item.title)}</div>
+                <div class="tile-badge">${item.children ? item.children.length : 'GO'}</div>
+              </div>
+              <div class="tile-body">
+                <h3 class="tile-title">${item.title}</h3>
+                <p class="tile-desc">${getDescription(item)}</p>
+              </div>
+              <div class="tile-footer">
+                <span>${item.children ? 'Abrir entorno' : 'Abrir módulo'}</span>
+                <span class="tile-arrow">→</span>
+              </div>
+            </div>
+          `;
+
+          tile.addEventListener('click', () => {
+            if (item.children) {
+              historyStack.push(node);
+              renderNode(item);
+            } else {
+              historyStack.push(node);
+              renderNode({ title: item.title, subtitle: 'Módulo individual', children: [] });
+            }
+          });
+
+          menuGrid.appendChild(tile);
+        });
+      }
+
+      backBtn.disabled = historyStack.length === 0;
+    }
+
+    backBtn.addEventListener('click', () => {
+      if (!historyStack.length) return;
+      const previous = historyStack.pop();
+      renderNode(previous);
+    });
+
+    homeBtn.addEventListener('click', () => {
+      historyStack.length = 0;
+      renderNode(menuTree);
+    });
+
+    fullscreenBtn.addEventListener('click', async () => {
+      try {
+        if (!document.fullscreenElement) {
+          await document.documentElement.requestFullscreen();
+          fullscreenBtn.textContent = '⤢ Salir pantalla completa';
+        } else {
+          await document.exitFullscreen();
+          fullscreenBtn.textContent = '⛶ Pantalla completa';
+        }
+      } catch (error) {
+        console.error('No se pudo cambiar el modo de pantalla completa', error);
+      }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+      fullscreenBtn.textContent = document.fullscreenElement
+        ? '⤢ Salir pantalla completa'
+        : '⛶ Pantalla completa';
+    });
+
+    renderNode(menuTree);
+  </script>
+</body>
+</html>
