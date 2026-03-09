@@ -548,20 +548,28 @@ function renderNode(node){
     if(node.url) tile.addEventListener('click', () => openModule(node.url));
     menuGrid.appendChild(tile);
   } else {
-    const palette = [
-      ['#001F60','#002A80'],
-      ['#36B0C9','#2898AC'],
-      ['#00BBB4','#009F99'],
-      ['#00A887','#00846B'],
-      ['#007A4C','#005E3A']
-    ];
+    const colorMap = {
+      'LOGISTICA NACIONAL': '#36B0C9',
+      'LOGISTICA FISCAL': '#00BBB4',
+      'CALIDAD': '#E36B2C',
+      'PORTERIA': '#00A887',
+      'TRANSPORTE': '#00A887',
+      'ADMINISTRACION': '#001F60',
+      'RRHH': '#001F60',
+      'MANTENIMIENTO': '#001F60',
+      'PRODUCTOS': '#36B0C9',
+      'DASHBOARD': '#FFCC33',
+      'REPORTES': '#FFCC33',
+      'INDICADORES': '#FFCC33',
+      'SISTEMA DE GESTION': '#001F60',
+      'SENASA': '#23BAC4',
+      'SISTEMA': '#001F60',
+      'OTROS SISTEMAS': '#001F60'
+    };
 
     items.forEach((item, i) => {
-      const colors = palette[i % palette.length];
-      const tile = document.createElement('button');
-      tile.className = 'tile';
-      tile.type = 'button';
-      tile.style.background = `linear-gradient(135deg,${colors[0]},${colors[1]})`;
+      const baseColor = colorMap[item.title] || '#001F60';
+      tile.style.background = `linear-gradient(135deg, ${baseColor}, ${baseColor})`;
       tile.innerHTML = `
         <div class="tile-icon">${getIconMarkup(item.title)}</div>
         <div class="tile-title ${titleClass(item.title)}">${formatTitle(item.title)}</div>
@@ -611,3 +619,4 @@ renderNode(menuTree);
 </script>
 </body>
 </html>
+
