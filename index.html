@@ -109,7 +109,7 @@ html,body{
 .data-box.green{background:linear-gradient(135deg,#047857,#059669)}
 .data-box.red{background:linear-gradient(135deg,#b91c1c,#dc2626)}
 .data-box.orange{background:linear-gradient(135deg,#ea580c,#f97316)}
-.data-box.qr{background:linear-gradient(135deg,#001F60,#36B0C9); cursor:pointer; transition:transform .18s ease, filter .18s ease}
+.data-box.qr{background:linear-gradient(135deg,#001F60,#36B0C9);cursor:pointer;transition:transform .18s ease,filter .18s ease}
 .data-box.qr:hover{transform:translateY(-2px);filter:brightness(1.05)}
 .data-content{
   display:flex;
@@ -181,11 +181,11 @@ html,body{
 }
 .menu-grid.layout-4x4{
   grid-template-columns:repeat(4,minmax(150px,1fr));
-  width:min(100%, 900px);
+  width:min(100%,900px);
 }
 .menu-grid.layout-8x2{
   grid-template-columns:repeat(8,minmax(120px,1fr));
-  width:min(100%, 1320px);
+  width:min(100%,1320px);
 }
 .tile{
   aspect-ratio:1/1;
@@ -204,7 +204,7 @@ html,body{
   text-transform:uppercase;
   box-shadow:var(--shadow-main);
   cursor:pointer;
-  transition:transform .18s ease, filter .18s ease;
+  transition:transform .18s ease,filter .18s ease;
   overflow:hidden;
 }
 .tile:hover{transform:translateY(-4px);filter:brightness(1.04)}
@@ -248,7 +248,7 @@ html,body{
 @media(max-width:1200px){
   .menu-grid.layout-8x2{
     grid-template-columns:repeat(4,minmax(140px,1fr));
-    width:min(100%, 900px);
+    width:min(100%,900px);
   }
   .data-strip{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
@@ -406,7 +406,7 @@ const menuTree = {
       { title: 'CERTIFICADOS', url: 'https://sistema.cinafrio.com/intranet/index.php/certificados/list' },
       { title: 'CERTIFICADOS INTERNOS', url: 'https://sistema.cinafrio.com/intranet/index.php/certificado_interno' }
     ]},
-    { title: 'SISTEMA', children: [
+    { title: 'CONFIGURACION', children: [
       { title: 'VETERINARIOS', url: 'https://sistema.cinafrio.com/intranet/index.php/veterinario/index' },
       { title: 'CLIENTES', children: [
         { title: 'CLIENTES DEPOSITO NACIONAL', url: 'https://sistema.cinafrio.com/intranet/index.php/clientes/list?fiscal=0&page=1' },
@@ -456,6 +456,25 @@ const menuTree = {
   ]
 };
 
+const mainColorMap = {
+  'LOGISTICA NACIONAL':'#36B0C9',
+  'LOGISTICA FISCAL':'#00BBB4',
+  'CALIDAD':'#E36B2C',
+  'PORTERIA':'#00A887',
+  'TRANSPORTE':'#00A887',
+  'ADMINISTRACION':'#001F60',
+  'RRHH':'#001F60',
+  'MANTENIMIENTO':'#001F60',
+  'PRODUCTOS':'#36B0C9',
+  'DASHBOARD':'#FFCC33',
+  'REPORTES':'#FFCC33',
+  'INDICADORES':'#FFCC33',
+  'SISTEMA DE GESTION':'#001F60',
+  'SENASA':'#23BAC4',
+  'CONFIGURACION':'#001F60',
+  'OTROS SISTEMAS':'#001F60'
+};
+
 const historyStack = [];
 const menuGrid = document.getElementById('menuGrid');
 const screenTitle = document.getElementById('screenTitle');
@@ -477,29 +496,26 @@ function getIconMarkup(title){
     'SISTEMA DE GESTION': 'iso_logo.png',
     'SENASA': 'senasa_logo.png'
   };
-
-  if(imageMap[title]){
-    return `<img src="${imageMap[title]}" alt="${title}">`;
-  }
+  if(imageMap[title]) return `<img src="${imageMap[title]}" alt="${title}">`;
 
   const symbolMap = {
-    'LOGISTICA NACIONAL': '🚛',
-    'LOGISTICA FISCAL': '📦',
-    'CALIDAD': '🌡',
-    'PORTERIA': '🚪',
-    'TRANSPORTE': '🚚',
-    'INDICADORES': '📊',
-    'REPORTES': '📑',
-    'DASHBOARD': '🖥',
-    'ADMINISTRACION': '🗂',
-    'RRHH': '👥',
-    'MANTENIMIENTO': '🔧',
-    'SISTEMA': '⚙',
-    'PRODUCTOS': '📦',
-    'OTROS SISTEMAS': '🧩',
-    'INFORMACION DOCUMENTADA': '📚',
-    'REGISTRO PR 44': '🗂',
-    'FORMACION': '👨‍🏫'
+    'LOGISTICA NACIONAL':'🚛',
+    'LOGISTICA FISCAL':'📦',
+    'CALIDAD':'🌡',
+    'PORTERIA':'🚪',
+    'TRANSPORTE':'🚚',
+    'INDICADORES':'📊',
+    'REPORTES':'📑',
+    'DASHBOARD':'🖥',
+    'ADMINISTRACION':'🗂',
+    'RRHH':'👥',
+    'MANTENIMIENTO':'🔧',
+    'CONFIGURACION':'⚙',
+    'PRODUCTOS':'📦',
+    'OTROS SISTEMAS':'🧩',
+    'INFORMACION DOCUMENTADA':'📚',
+    'REGISTRO PR 44':'🗂',
+    'FORMACION':'👨‍🏫'
   };
 
   return symbolMap[title] || getTextInitials(title);
@@ -529,9 +545,17 @@ function openModule(url){
   window.open(url, '_blank', 'noopener,noreferrer');
 }
 
+function getTileColor(item, level){
+  if(level === 0){
+    return mainColorMap[item.title] || '#001F60';
+  }
+  return '#001F60';
+}
+
 function renderNode(node){
   const items = node.children || [];
-  screenTitle.textContent = historyStack.length ? node.title : 'BIENVENIDOS AL SISTEMA DE GRUPO CINA';
+  const level = historyStack.length;
+  screenTitle.textContent = level ? node.title : 'BIENVENIDOS AL SISTEMA DE GRUPO CINA';
   screenSubtitle.textContent = 'SISTEMA DE GESTION DE OPERACIONES';
   menuGrid.className = `menu-grid ${getGridLayout(items.length || 1)}`;
   menuGrid.innerHTML = '';
@@ -539,7 +563,7 @@ function renderNode(node){
   if(!items.length){
     const tile = document.createElement('button');
     tile.className = 'tile';
-    tile.style.background = 'linear-gradient(135deg,#001F60,#00A887)';
+    tile.style.background = 'linear-gradient(135deg,#001F60,#001F60)';
     tile.type = 'button';
     tile.innerHTML = `
       <div class="tile-icon">${getIconMarkup(node.title)}</div>
@@ -548,28 +572,12 @@ function renderNode(node){
     if(node.url) tile.addEventListener('click', () => openModule(node.url));
     menuGrid.appendChild(tile);
   } else {
-    const colorMap = {
-      'LOGISTICA NACIONAL': '#36B0C9',
-      'LOGISTICA FISCAL': '#00BBB4',
-      'CALIDAD': '#E36B2C',
-      'PORTERIA': '#00A887',
-      'TRANSPORTE': '#00A887',
-      'ADMINISTRACION': '#001F60',
-      'RRHH': '#001F60',
-      'MANTENIMIENTO': '#001F60',
-      'PRODUCTOS': '#36B0C9',
-      'DASHBOARD': '#FFCC33',
-      'REPORTES': '#FFCC33',
-      'INDICADORES': '#FFCC33',
-      'SISTEMA DE GESTION': '#001F60',
-      'SENASA': '#23BAC4',
-      'SISTEMA': '#001F60',
-      'OTROS SISTEMAS': '#001F60'
-    };
-
-    items.forEach((item, i) => {
-      const baseColor = colorMap[item.title] || '#001F60';
-      tile.style.background = `linear-gradient(135deg, ${baseColor}, ${baseColor})`;
+    items.forEach((item) => {
+      const baseColor = getTileColor(item, level);
+      const tile = document.createElement('button');
+      tile.className = 'tile';
+      tile.type = 'button';
+      tile.style.background = `linear-gradient(135deg,${baseColor},${baseColor})`;
       tile.innerHTML = `
         <div class="tile-icon">${getIconMarkup(item.title)}</div>
         <div class="tile-title ${titleClass(item.title)}">${formatTitle(item.title)}</div>
@@ -590,7 +598,6 @@ function renderNode(node){
       menuGrid.appendChild(tile);
     });
   }
-
   backBtn.disabled = historyStack.length === 0;
 }
 
@@ -619,4 +626,3 @@ renderNode(menuTree);
 </script>
 </body>
 </html>
-
