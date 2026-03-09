@@ -4,270 +4,521 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Sistema Grupo CINA</title>
-
 <style>
 :root{
---bg-main:#001F60;
---bg-deep:#00174a;
---bg-dark:#000f30;
---text:#ffffff;
---text-soft:rgba(255,255,255,0.8);
---shadow-main:0 22px 45px rgba(0,0,0,0.28);
---radius-lg:22px;
---gap:18px;
---card-size-min:150px;
---max-grid-width:1320px;
+  --bg-main:#001F60;
+  --bg-deep:#00174a;
+  --bg-dark:#000f30;
+  --text:#ffffff;
+  --text-soft:rgba(255,255,255,.8);
+  --shadow-main:0 22px 45px rgba(0,0,0,.28);
+  --radius-lg:22px;
+  --gap:18px;
+  --tile-size:150px;
+  --grid-max:1320px;
 }
-
 *{box-sizing:border-box}
-
 html,body{
-margin:0;
-font-family:"Segoe UI",Inter,Tahoma,Verdana,sans-serif;
-color:var(--text);
-background:
-radial-gradient(circle at top left,rgba(54,176,201,0.22),transparent 26%),
-radial-gradient(circle at bottom right,rgba(0,168,135,0.18),transparent 24%),
-linear-gradient(135deg,var(--bg-main),var(--bg-deep) 55%,var(--bg-dark));
-min-height:100vh;
-overflow:hidden;
+  margin:0;
+  min-height:100vh;
+  font-family:"Segoe UI",Inter,Tahoma,Verdana,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at top left,rgba(54,176,201,.22),transparent 26%),
+    radial-gradient(circle at bottom right,rgba(0,168,135,.18),transparent 24%),
+    linear-gradient(135deg,var(--bg-main),var(--bg-deep) 55%,var(--bg-dark));
+  overflow:hidden;
 }
-
 .app-shell{
-display:grid;
-grid-template-rows:auto auto 1fr auto;
-gap:14px;
-padding:18px;
-min-height:100vh;
+  display:grid;
+  grid-template-rows:auto auto 1fr auto;
+  gap:14px;
+  padding:18px;
+  min-height:100vh;
 }
-
 .topbar{
-display:grid;
-grid-template-columns:1fr auto;
-align-items:center;
-gap:16px;
-padding:16px 22px;
-border-radius:26px;
-background:rgba(255,255,255,0.08);
-box-shadow:var(--shadow-main);
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:center;
+  gap:16px;
+  padding:16px 22px;
+  border-radius:26px;
+  background:rgba(255,255,255,.08);
+  box-shadow:var(--shadow-main);
 }
-
 .brand{
-display:flex;
-align-items:center;
-gap:18px;
+  display:flex;
+  align-items:center;
+  gap:18px;
+  min-width:0;
 }
-
 .brand img{
-height:64px;
+  height:64px;
+  width:auto;
+  object-fit:contain;
 }
-
+.brand-copy{
+  min-width:0;
+}
 .brand h1{
-margin:0;
-font-size:1.6rem;
-font-weight:700;
+  margin:0;
+  font-size:1.6rem;
+  font-weight:700;
 }
-
+.brand p{
+  margin:6px 0 0;
+  color:var(--text-soft);
+  font-size:.95rem;
+}
+.toolbar{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
 .toolbar button{
-background:rgba(255,255,255,0.1);
-border:0;
-color:white;
-padding:12px 16px;
-border-radius:12px;
-font-weight:600;
-cursor:pointer;
+  background:rgba(255,255,255,.1);
+  border:0;
+  color:white;
+  padding:12px 16px;
+  border-radius:12px;
+  font-weight:600;
+  cursor:pointer;
 }
-
-.toolbar button:hover{background:rgba(255,255,255,0.18)}
-
+.toolbar button:hover:not(:disabled){background:rgba(255,255,255,.18)}
+.toolbar button:disabled{opacity:.45;cursor:not-allowed}
 .meta-panel{
-display:flex;
-justify-content:space-between;
-align-items:center;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
 }
-
-.breadcrumbs{
-padding:10px 14px;
-border-radius:14px;
-background:rgba(255,255,255,0.08);
-font-size:.9rem;
+.breadcrumbs,
+.module-counter{
+  padding:10px 14px;
+  border-radius:14px;
+  background:rgba(255,255,255,.08);
+  font-size:.9rem;
 }
-
 .workspace{
-overflow:auto;
-display:flex;
-justify-content:center;
+  overflow:auto;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
 }
-
 .menu-wrap{
-max-width:var(--max-grid-width);
-width:100%;
+  width:100%;
+  max-width:var(--grid-max);
+  display:flex;
+  justify-content:center;
 }
-
 .menu-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(var(--card-size-min),1fr));
-gap:var(--gap);
+  display:grid;
+  gap:var(--gap);
+  justify-content:center;
+  align-content:start;
 }
-
+.menu-grid.layout-4x4{
+  grid-template-columns:repeat(4,minmax(150px,1fr));
+  max-width:calc(4 * 1fr);
+  width:min(100%, 900px);
+}
+.menu-grid.layout-8x2{
+  grid-template-columns:repeat(8,minmax(120px,1fr));
+  width:min(100%, 1320px);
+}
 .tile{
-aspect-ratio:1/1;
-border-radius:var(--radius-lg);
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-text-align:center;
-gap:16px;
-padding:18px;
-color:white;
-font-weight:700;
-font-size:1rem;
-text-transform:uppercase;
-white-space:nowrap;
-box-shadow:var(--shadow-main);
-cursor:pointer;
+  aspect-ratio:1/1;
+  border:none;
+  border-radius:var(--radius-lg);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  gap:16px;
+  padding:18px 12px;
+  color:white;
+  font-weight:700;
+  font-size:1rem;
+  text-transform:uppercase;
+  box-shadow:var(--shadow-main);
+  cursor:pointer;
+  transition:transform .18s ease, filter .18s ease;
 }
-
-.tile:hover{transform:translateY(-4px)}
-
+.tile:hover{transform:translateY(-4px);filter:brightness(1.04)}
 .tile-icon{
-width:70px;
-height:70px;
-border-radius:20px;
-background:rgba(255,255,255,0.18);
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:1.1rem;
+  width:70px;
+  height:70px;
+  border-radius:20px;
+  background:rgba(255,255,255,.18);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.1rem;
+  flex-shrink:0;
 }
-
+.tile-title{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  line-height:1.15;
+  min-height:2.5em;
+  max-width:92%;
+  word-break:keep-all;
+  overflow-wrap:normal;
+  hyphens:none;
+}
+.tile-title.two-lines{
+  white-space:normal;
+}
+.tile-title.one-line{
+  white-space:nowrap;
+}
 .footer-bar{
-text-align:center;
-font-size:.8rem;
-opacity:.7;
+  text-align:center;
+  font-size:.8rem;
+  opacity:.7;
 }
-
-@media(max-width:640px){
-.menu-grid{grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}
-.tile{font-size:.9rem}
+@media(max-width:1200px){
+  .menu-grid.layout-8x2{
+    grid-template-columns:repeat(4,minmax(140px,1fr));
+    width:min(100%, 900px);
+  }
 }
-
+@media(max-width:780px){
+  html,body{overflow:auto}
+  .topbar{grid-template-columns:1fr}
+  .meta-panel{flex-direction:column;align-items:stretch}
+  .menu-grid.layout-4x4,
+  .menu-grid.layout-8x2{
+    grid-template-columns:repeat(2,minmax(130px,1fr));
+    width:100%;
+  }
+  .tile{font-size:.9rem}
+}
 </style>
 </head>
-
 <body>
-
 <div class="app-shell">
+  <header class="topbar">
+    <div class="brand">
+      <img src="cina_logo_principal.png" alt="CINA">
+      <div class="brand-copy">
+        <h1 id="screenTitle">BIENVENIDOS AL SISTEMA DE GRUPO CINA</h1>
+        <p id="screenSubtitle">ACCESO RÁPIDO A LOS MÓDULOS DEL SISTEMA</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button id="backBtn">← Volver</button>
+      <button id="homeBtn">Inicio</button>
+      <button id="fullscreenBtn">Pantalla completa</button>
+    </div>
+  </header>
 
-<header class="topbar">
+  <section class="meta-panel">
+    <div class="breadcrumbs" id="breadcrumb">Inicio</div>
+    <div class="module-counter" id="moduleCounter">16 módulos</div>
+  </section>
 
-<div class="brand">
-<img src="cina_logo_principal.png" alt="CINA">
-<h1 id="screenTitle">BIENVENIDOS AL SISTEMA DE GRUPO CINA</h1>
-</div>
+  <main class="workspace">
+    <div class="menu-wrap">
+      <div class="menu-grid" id="menuGrid"></div>
+    </div>
+  </main>
 
-<div class="toolbar">
-<button id="backBtn">← Volver</button>
-<button id="homeBtn">Inicio</button>
-<button id="fullscreenBtn">Pantalla completa</button>
-</div>
-
-</header>
-
-<section class="meta-panel">
-<div class="breadcrumbs" id="breadcrumb">Inicio</div>
-<div id="moduleCounter">16 módulos</div>
-</section>
-
-<main class="workspace">
-<div class="menu-wrap">
-<div class="menu-grid" id="menuGrid"></div>
-</div>
-</main>
-
-<footer class="footer-bar">
-Sistema interno Grupo CINA
-</footer>
-
+  <footer class="footer-bar">Sistema interno Grupo CINA</footer>
 </div>
 
 <script>
+const menuTree = {
+  title: 'INICIO',
+  children: [
+    {
+      title: 'LOGISTICA NACIONAL',
+      children: [
+        { title: 'CARGAS' },
+        { title: 'PRE ENTRADAS' },
+        { title: 'ENTRADAS' },
+        { title: 'PRE SALIDAS' },
+        { title: 'SALIDAS' },
+        { title: 'AJUSTE DE STOCK' }
+      ]
+    },
+    {
+      title: 'LOGISTICA FISCAL',
+      children: [
+        { title: 'CARGAS' },
+        { title: 'PRE ENTRADAS' },
+        { title: 'ENTRADAS' },
+        { title: 'PRE SALIDAS' },
+        { title: 'SALIDAS' },
+        { title: 'REPORTE DEPOSITO FISCAL AFIP' }
+      ]
+    },
+    {
+      title: 'CALIDAD',
+      children: [
+        { title: 'CONTROL DE ENTRADAS' },
+        { title: 'CONTROL DE SALIDAS' },
+        { title: 'CONTROL DE INTERVENCIONES' },
+        { title: 'VENCIMIENTO DE PRODUCTOS' },
+        { title: 'ESTADISTICAS DE INTERVENCIONES' }
+      ]
+    },
+    {
+      title: 'PORTERIA',
+      children: [
+        { title: 'INGRESOS EGRESOS' }
+      ]
+    },
+    {
+      title: 'TRANSPORTE',
+      children: [
+        {
+          title: 'DATOS DE VEHICULOS',
+          children: [
+            { title: 'ASEGURADORAS' },
+            { title: 'EMPRESAS' },
+            { title: 'CONDUCTORES' },
+            { title: 'VEHICULOS' }
+          ]
+        },
+        { title: 'ACOPLADOS' },
+        {
+          title: 'DATOS DE LA PLAYA DE MANIOBRA',
+          children: [
+            { title: 'BOXES' },
+            { title: 'TRONERAS' }
+          ]
+        }
+      ]
+    },
+    { title: 'SISTEMA DE GESTION' },
+    {
+      title: 'INDICADORES',
+      children: [
+        { title: 'MOVIMIENTOS' },
+        { title: 'ESTADISTICAS DE PERSONAL' },
+        { title: 'ALMACENAMIENTO DE POSICIONES' },
+        { title: 'ESTIBAS CREADAS ELIMINADAS' },
+        { title: 'AJUSTES DE STOCK' },
+        { title: 'CLIENTES QUE OPERARON' }
+      ]
+    },
+    {
+      title: 'REPORTES',
+      children: [
+        { title: 'CAMARAS' },
+        { title: 'STOCK' },
+        { title: 'MOVIMIENTOS' },
+        { title: 'TIEMPOS CARGA DESCARGA' },
+        { title: 'AUSENTISMO' }
+      ]
+    },
+    {
+      title: 'SENASA',
+      children: [
+        { title: 'CERTIFICADOS' },
+        { title: 'CERTIFICADOS INTERNOS' }
+      ]
+    },
+    {
+      title: 'DASHBOARD',
+      children: [
+        { title: 'MAPA DE BOXES' },
+        { title: 'DASHBOARD LOGISTICA NACIONAL' },
+        { title: 'DASHBOARD LOGISTICA FISCAL' },
+        { title: 'DASHBOARD GENERAL' }
+      ]
+    },
+    { title: 'ADMINISTRACION' },
+    {
+      title: 'RRHH',
+      children: [
+        { title: 'PERSONAL' },
+        { title: 'AUSENTISMO' },
+        { title: 'VACUNACIONES' },
+        { title: 'EXAMENES ART' },
+        { title: 'EXAMENES INGRESOS' },
+        { title: 'LIBRETAS SANITARIAS' }
+      ]
+    },
+    {
+      title: 'MANTENIMIENTO',
+      children: [
+        { title: 'MANTENIMIENTO GENERAL' },
+        { title: 'PR 6 CONTRASTE DE TERMOMETROS' },
+        { title: 'PR 9 SEMANAL' },
+        { title: 'PR 22 LIMPIEZA TANQUES' },
+        { title: 'PR 24 DIARIO' },
+        { title: 'PR 30 LIBRO DE GUARDIA' },
+        { title: 'PR 80 PARADA DE CAMARAS' },
+        { title: 'PR 100 DESCONGELADO' }
+      ]
+    },
+    {
+      title: 'SISTEMA',
+      children: [
+        { title: 'CALIDAD' },
+        { title: 'CLIENTES' },
+        { title: 'COMPRAS' },
+        { title: 'ESTABLECIMIENTOS' },
+        { title: 'LOGISTICA' },
+        { title: 'RRHH' },
+        { title: 'SALA DE MAQUINAS' },
+        { title: 'SISTEMA INFORMATICO' },
+        { title: 'TRANSPORTE' }
+      ]
+    },
+    {
+      title: 'PRODUCTOS',
+      children: [
+        { title: 'CREAR NUEVOS PRODUCTOS' }
+      ]
+    },
+    { title: 'OTROS SISTEMAS' }
+  ]
+};
 
-const menuTree={
- title:"Inicio",
- children:[
- {title:"Logistica nacional"},
- {title:"Logistica fiscal"},
- {title:"Calidad"},
- {title:"Porteria"},
- {title:"Transporte"},
- {title:"Sistema de gestion"},
- {title:"Indicadores"},
- {title:"Reportes"},
- {title:"Senasa"},
- {title:"Dashboard"},
- {title:"Administracion"},
- {title:"RRHH"},
- {title:"Mantenimiento"},
- {title:"Sistema"},
- {title:"Productos"},
- {title:"Otros sistemas"}
- ]
+const palette = [
+  ['#001F60','#002A80'],
+  ['#36B0C9','#2898AC'],
+  ['#00BBB4','#009F99'],
+  ['#00A887','#00846B'],
+  ['#007A4C','#005E3A']
+];
+
+const iconMap = {
+  'LOGISTICA NACIONAL':'LN',
+  'LOGISTICA FISCAL':'LF',
+  'CALIDAD':'CL',
+  'PORTERIA':'PT',
+  'TRANSPORTE':'TR',
+  'SISTEMA DE GESTION':'SG',
+  'INDICADORES':'IN',
+  'REPORTES':'RP',
+  'SENASA':'SN',
+  'DASHBOARD':'DB',
+  'ADMINISTRACION':'AD',
+  'RRHH':'RH',
+  'MANTENIMIENTO':'MT',
+  'SISTEMA':'SI',
+  'PRODUCTOS':'PR',
+  'OTROS SISTEMAS':'OS'
+};
+
+const historyStack = [];
+let currentNode = menuTree;
+
+const menuGrid = document.getElementById('menuGrid');
+const moduleCounter = document.getElementById('moduleCounter');
+const breadcrumb = document.getElementById('breadcrumb');
+const screenTitle = document.getElementById('screenTitle');
+const screenSubtitle = document.getElementById('screenSubtitle');
+const backBtn = document.getElementById('backBtn');
+const homeBtn = document.getElementById('homeBtn');
+const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+function getInitials(text){
+  if (iconMap[text]) return iconMap[text];
+  return text.split(/\s+/).filter(Boolean).slice(0,2).map(word => word[0]).join('').toUpperCase();
 }
 
-const palette=[
-['#001F60','#002A80'],
-['#36B0C9','#2898AC'],
-['#00BBB4','#009F99'],
-['#00A887','#00846B'],
-['#007A4C','#005E3A']
-]
-
-const menuGrid=document.getElementById('menuGrid')
-const moduleCounter=document.getElementById('moduleCounter')
-
-function render(){
-
-menuGrid.innerHTML=""
-
-menuTree.children.forEach((item,i)=>{
-
-const colors=palette[i%palette.length]
-
-const tile=document.createElement('div')
-
-tile.className='tile'
-
-tile.style.background=`linear-gradient(135deg,${colors[0]},${colors[1]})`
-
-tile.innerHTML=`
-<div class="tile-icon">${item.title.substring(0,2).toUpperCase()}</div>
-<div>${item.title.toUpperCase()}</div>
-`
-
-menuGrid.appendChild(tile)
-
-})
-
-moduleCounter.innerText=menuTree.children.length+" módulos"
-
+function getGridLayout(count){
+  return count > 8 ? 'layout-8x2' : 'layout-4x4';
 }
 
-render()
-
-const fullscreenBtn=document.getElementById('fullscreenBtn')
-
-fullscreenBtn.onclick=()=>{
-if(!document.fullscreenElement){
-document.documentElement.requestFullscreen()
-}else{
-document.exitFullscreen()
-}
+function buildBreadcrumb(node){
+  if(node === menuTree) return 'INICIO';
+  return ['INICIO', ...historyStack.map(item => item.title), node.title].join(' / ');
 }
 
+function formatTitle(title){
+  const words = title.trim().split(/\s+/);
+  if(words.length === 2){
+    return `${words[0]}<br>${words[1]}`;
+  }
+  if(words.length === 3){
+    return `${words[0]} ${words[1]}<br>${words[2]}`;
+  }
+  return title;
+}
+
+function titleClass(title){
+  const words = title.trim().split(/\s+/).length;
+  return words === 2 || words === 3 ? 'two-lines' : 'one-line';
+}
+
+function renderNode(node){
+  currentNode = node;
+  const items = node.children || [];
+
+  screenTitle.textContent = historyStack.length ? node.title : 'BIENVENIDOS AL SISTEMA DE GRUPO CINA';
+  screenSubtitle.textContent = historyStack.length ? 'ACCESO RÁPIDO A LOS MÓDULOS DEL SISTEMA' : 'ACCESO RÁPIDO A LOS MÓDULOS DEL SISTEMA';
+  breadcrumb.textContent = buildBreadcrumb(node);
+  moduleCounter.textContent = `${items.length || 1} MÓDULOS`;
+
+  menuGrid.className = `menu-grid ${getGridLayout(items.length || 1)}`;
+  menuGrid.innerHTML = '';
+
+  if(!items.length){
+    const tile = document.createElement('button');
+    tile.className = 'tile';
+    tile.style.background = 'linear-gradient(135deg,#001F60,#00A887)';
+    tile.type = 'button';
+    tile.innerHTML = `
+      <div class="tile-icon">${getInitials(node.title)}</div>
+      <div class="tile-title ${titleClass(node.title)}">${formatTitle(node.title)}</div>
+    `;
+    menuGrid.appendChild(tile);
+  } else {
+    items.forEach((item, i) => {
+      const colors = palette[i % palette.length];
+      const tile = document.createElement('button');
+      tile.className = 'tile';
+      tile.type = 'button';
+      tile.style.background = `linear-gradient(135deg,${colors[0]},${colors[1]})`;
+      tile.innerHTML = `
+        <div class="tile-icon">${getInitials(item.title)}</div>
+        <div class="tile-title ${titleClass(item.title)}">${formatTitle(item.title)}</div>
+      `;
+      tile.addEventListener('click', () => {
+        historyStack.push(node);
+        if (item.children) {
+          renderNode(item);
+        } else {
+          renderNode({ title: item.title, children: [] });
+        }
+      });
+      menuGrid.appendChild(tile);
+    });
+  }
+
+  backBtn.disabled = historyStack.length === 0;
+}
+
+backBtn.addEventListener('click', () => {
+  if(!historyStack.length) return;
+  const previous = historyStack.pop();
+  renderNode(previous);
+});
+
+homeBtn.addEventListener('click', () => {
+  historyStack.length = 0;
+  renderNode(menuTree);
+});
+
+fullscreenBtn.addEventListener('click', () => {
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+});
+
+renderNode(menuTree);
 </script>
-
 </body>
 </html>
-
