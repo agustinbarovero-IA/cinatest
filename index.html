@@ -205,6 +205,7 @@ html,body{
   box-shadow:var(--shadow-main);
   cursor:pointer;
   transition:transform .18s ease, filter .18s ease;
+  overflow:hidden;
 }
 .tile:hover{transform:translateY(-4px);filter:brightness(1.04)}
 .tile-icon{
@@ -230,11 +231,11 @@ html,body{
   align-items:center;
   justify-content:center;
   text-align:center;
-  line-height:1.15;
-  min-height:2.5em;
-  max-width:92%;
-  word-break:keep-all;
-  overflow-wrap:normal;
+  line-height:1.12;
+  min-height:2.8em;
+  max-width:94%;
+  word-break:normal;
+  overflow-wrap:anywhere;
   hyphens:none;
 }
 .tile-title.two-lines{white-space:normal}
@@ -291,8 +292,8 @@ html,body{
       <div class="data-box green"><div class="data-stack"><span class="data-number">20</span><span class="data-label">VEHICULOS</span></div></div>
       <div class="data-box green"><div class="data-stack"><span class="data-number">6500</span><span class="data-label">ESTIBAS EN PLANTA</span></div></div>
       <div class="data-box qr" id="qrBox"><div class="data-content"><span class="data-qr-icon"></span><span>SCAN QR</span></div></div>
-      <div class="data-box orange"><div class="data-content"><span class="data-icon-round">!</span><div class="data-stack"><span class="data-number">1050</span><span class="data-label">SIN UBICACION</span></div></div></div>
-      <div class="data-box red"><div class="data-content"><span class="data-icon-round">!</span><div class="data-stack"><span class="data-number">189</span><span class="data-label">VENCIDAS</span></div></div></div>
+      <div class="data-box orange" id="sinUbicacionBox" style="cursor:pointer"><div class="data-content"><span class="data-icon-round">!</span><div class="data-stack"><span class="data-number">1050</span><span class="data-label">SIN UBICACION</span></div></div></div>
+      <div class="data-box red" id="vencidasBox" style="cursor:pointer"><div class="data-content"><span class="data-icon-round">!</span><div class="data-stack"><span class="data-number">189</span><span class="data-label">VENCIDAS</span></div></div></div>
     </div>
   </section>
 
@@ -459,6 +460,8 @@ const homeBtn = document.getElementById('homeBtn');
 const fullscreenBtn = document.getElementById('fullscreenBtn');
 const userBtn = document.getElementById('userBtn');
 const qrBox = document.getElementById('qrBox');
+const sinUbicacionBox = document.getElementById('sinUbicacionBox');
+const vencidasBox = document.getElementById('vencidasBox');
 
 function getTextInitials(text){
   return text.split(/\s+/).filter(Boolean).slice(0,2).map(word => word[0]).join('').toUpperCase();
@@ -494,18 +497,29 @@ function getIconMarkup(title){
   return symbolMap[title] || getTextInitials(title);
 }
 
-function getGridLayout(count){ return count > 8 ? 'layout-8x2' : 'layout-4x4'; }
+function getGridLayout(count){
+  return count > 8 ? 'layout-8x2' : 'layout-4x4';
+}
+
 function formatTitle(title){
   const words = title.trim().split(/\s+/);
-  if(words.length === 2) return `${words[0]}<br>${words[1]}`;
-  if(words.length === 3) return `${words[0]} ${words[1]}<br>${words[2]}`;
-  return title;
+  if(words.length <= 1) return title;
+  if(words.length === 2) return words[0] + '<br>' + words[1];
+  if(words.length === 3) return words[0] + ' ' + words[1] + '<br>' + words[2];
+  if(words.length === 4) return words[0] + ' ' + words[1] + '<br>' + words[2] + ' ' + words[3];
+  if(words.length === 5) return words[0] + ' ' + words[1] + '<br>' + words[2] + ' ' + words[3] + ' ' + words[4];
+  const mid = Math.ceil(words.length / 2);
+  return words.slice(0, mid).join(' ') + '<br>' + words.slice(mid).join(' ');
 }
+
 function titleClass(title){
   const words = title.trim().split(/\s+/).length;
-  return words === 2 || words === 3 ? 'two-lines' : 'one-line';
+  return words >= 2 ? 'two-lines' : 'one-line';
 }
-function openModule(url){ window.open(url, '_blank', 'noopener,noreferrer'); }
+
+function openModule(url){
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
 
 function renderNode(node){
   const items = node.children || [];
@@ -560,6 +574,7 @@ function renderNode(node){
       menuGrid.appendChild(tile);
     });
   }
+
   backBtn.disabled = historyStack.length === 0;
 }
 
@@ -568,16 +583,21 @@ backBtn.addEventListener('click', () => {
   const previous = historyStack.pop();
   renderNode(previous);
 });
+
 homeBtn.addEventListener('click', () => {
   historyStack.length = 0;
   renderNode(menuTree);
 });
+
 fullscreenBtn.addEventListener('click', () => {
   if(!document.fullscreenElement) document.documentElement.requestFullscreen();
   else document.exitFullscreen();
 });
+
 userBtn.addEventListener('click', () => openModule('https://sistema.cinafrio.com/intranet2/app.php/persona/306/show'));
 qrBox.addEventListener('click', () => openModule('https://sistema.cinafrio.com/intranet/index.php/estiba/scan'));
+sinUbicacionBox.addEventListener('click', () => openModule('https://sistema.cinafrio.com/intranet/index.php/estiba/sinPosicion'));
+vencidasBox.addEventListener('click', () => openModule('https://sistema.cinafrio.com/intranet/index.php/infostock/vencimientos'));
 
 renderNode(menuTree);
 </script>
