@@ -104,12 +104,11 @@ html,body{
   font-weight:700;
   color:#fff;
   box-shadow:var(--shadow-main);
-  line-height:1.15;
+  line-height:1.1;
 }
 .data-box.green{background:linear-gradient(135deg,#047857,#059669)}
 .data-box.red{background:linear-gradient(135deg,#b91c1c,#dc2626)}
 .data-box.orange{background:linear-gradient(135deg,#ea580c,#f97316)}
-.data-box.yellow{background:linear-gradient(135deg,#ca8a04,#eab308); color:#111827}
 .data-box.qr{background:linear-gradient(135deg,#001F60,#36B0C9); cursor:pointer; transition:transform .18s ease, filter .18s ease}
 .data-box.qr:hover{transform:translateY(-2px);filter:brightness(1.05)}
 .data-content{
@@ -128,7 +127,6 @@ html,body{
   gap:4px;
 }
 .data-number{font-size:1.9rem;font-weight:800}
-.data-icon{font-size:1.2rem;font-weight:800}
 .data-icon-round{
   width:24px;
   height:24px;
@@ -217,8 +215,15 @@ html,body{
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:1.1rem;
+  font-size:2rem;
   flex-shrink:0;
+  overflow:hidden;
+}
+.tile-icon img{
+  display:block;
+  max-width:52px;
+  max-height:52px;
+  object-fit:contain;
 }
 .tile-title{
   display:flex;
@@ -304,238 +309,145 @@ html,body{
 const menuTree = {
   title: 'INICIO',
   children: [
-    {
-      title: 'LOGISTICA NACIONAL',
-      children: [
-        { title: 'CARGAS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_carga/index/fiscal/0' },
-        { title: 'PRE ENTRADAS', url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/0/fiscal/0' },
-        { title: 'ENTRADAS', url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/1/fiscal/0' },
-        { title: 'PRE SALIDAS', url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/0/fiscal/0' },
-        { title: 'SALIDAS', url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/1/fiscal/0' }
-      ]
-    },
-    {
-      title: 'LOGISTICA FISCAL',
-      children: [
-        { title: 'CARGAS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_carga/index/fiscal/1' },
-        { title: 'PRE ENTRADAS', url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/0/fiscal/1' },
-        { title: 'ENTRADAS', url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/1/fiscal/1' },
-        { title: 'PRE SALIDAS', url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/0/fiscal/1' },
-        { title: 'SALIDAS', url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/1/fiscal/1' },
-        { title: 'REPORTE DEPOSITO FISCAL AFIP', url: 'https://sistema.cinafrio.com/intranet2/app.php/reportestockafip/' }
-      ]
-    },
-    {
-      title: 'CALIDAD',
-      children: [
-        { title: 'CONTROL DE ENTRADAS', url: 'https://sistema.cinafrio.com/intranet/index.php/carga/list/type/E' },
-        { title: 'CONTROL DE SALIDAS', url: 'https://sistema.cinafrio.com/intranet/index.php/carga/list/type/S' },
-        { title: 'CONTROL DE INTERVENCIONES', url: 'https://sistema.cinafrio.com/intranet/index.php/carga/listIntervenciones' },
-        { title: 'VENCIMIENTO DE PRODUCTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/infostock/vencimientos' },
-        { title: 'ESTADISTICAS DE INTERVENCIONES', url: 'https://sistema.cinafrio.com/intranet/index.php/carga/estadisticas' }
-      ]
-    },
-    {
-      title: 'PORTERIA',
-      children: [
-        { title: 'INGRESOS EGRESOS', url: 'https://sistema.cinafrio.com/intranet/index.php/ingreso/index' }
-      ]
-    },
-    {
-      title: 'TRANSPORTE',
-      children: [
-        {
-          title: 'DATOS DE VEHICULOS',
-          children: [
-            { title: 'ASEGURADORAS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_aseguradora' },
-            { title: 'EMPRESAS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_empresa' },
-            { title: 'CONDUCTORES', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_conductor' },
-            { title: 'VEHICULOS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_vehiculo' },
-            { title: 'ACOPLADOS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_acoplado' }
-          ]
-        },
-        {
-          title: 'DATOS DE LA PLAYA DE MANIOBRA',
-          children: [
-            { title: 'BOXES', url: 'https://sistema.cinafrio.com/intranet/index.php/box' },
-            { title: 'TRONERAS', url: 'https://sistema.cinafrio.com/intranet/index.php/tronera' }
-          ]
-        }
-      ]
-    },
+    { title: 'LOGISTICA NACIONAL', children: [
+      { title: 'CARGAS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_carga/index/fiscal/0' },
+      { title: 'PRE ENTRADAS', url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/0/fiscal/0' },
+      { title: 'ENTRADAS', url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/1/fiscal/0' },
+      { title: 'PRE SALIDAS', url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/0/fiscal/0' },
+      { title: 'SALIDAS', url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/1/fiscal/0' }
+    ]},
+    { title: 'LOGISTICA FISCAL', children: [
+      { title: 'CARGAS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_carga/index/fiscal/1' },
+      { title: 'PRE ENTRADAS', url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/0/fiscal/1' },
+      { title: 'ENTRADAS', url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/1/fiscal/1' },
+      { title: 'PRE SALIDAS', url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/0/fiscal/1' },
+      { title: 'SALIDAS', url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/1/fiscal/1' },
+      { title: 'REPORTE DEPOSITO FISCAL AFIP', url: 'https://sistema.cinafrio.com/intranet2/app.php/reportestockafip/' }
+    ]},
+    { title: 'CALIDAD', children: [
+      { title: 'CONTROL DE ENTRADAS', url: 'https://sistema.cinafrio.com/intranet/index.php/carga/list/type/E' },
+      { title: 'CONTROL DE SALIDAS', url: 'https://sistema.cinafrio.com/intranet/index.php/carga/list/type/S' },
+      { title: 'CONTROL DE INTERVENCIONES', url: 'https://sistema.cinafrio.com/intranet/index.php/carga/listIntervenciones' },
+      { title: 'VENCIMIENTO DE PRODUCTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/infostock/vencimientos' },
+      { title: 'ESTADISTICAS DE INTERVENCIONES', url: 'https://sistema.cinafrio.com/intranet/index.php/carga/estadisticas' }
+    ]},
+    { title: 'PORTERIA', children: [
+      { title: 'INGRESOS EGRESOS', url: 'https://sistema.cinafrio.com/intranet/index.php/ingreso/index' }
+    ]},
+    { title: 'TRANSPORTE', children: [
+      { title: 'DATOS DE VEHICULOS', children: [
+        { title: 'ASEGURADORAS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_aseguradora' },
+        { title: 'EMPRESAS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_empresa' },
+        { title: 'CONDUCTORES', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_conductor' },
+        { title: 'VEHICULOS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_vehiculo' },
+        { title: 'ACOPLADOS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_acoplado' }
+      ]},
+      { title: 'DATOS DE LA PLAYA DE MANIOBRA', children: [
+        { title: 'BOXES', url: 'https://sistema.cinafrio.com/intranet/index.php/box' },
+        { title: 'TRONERAS', url: 'https://sistema.cinafrio.com/intranet/index.php/tronera' }
+      ]}
+    ]},
     { title: 'SISTEMA DE GESTION' },
-    {
-      title: 'INDICADORES',
-      children: [
-        { title: 'MOVIMIENTOS' },
-        { title: 'ESTADISTICAS DE PERSONAL' },
-        { title: 'ALMACENAMIENTO DE POSICIONES' },
-        { title: 'ESTIBAS CREADAS ELIMINADAS' },
-        { title: 'AJUSTES DE STOCK', url: 'https://sistema.cinafrio.com/intranet/index.php/infostock/ajusteManual' },
-        { title: 'CLIENTES QUE OPERARON' }
-      ]
-    },
-    {
-      title: 'REPORTES',
-      children: [
-        { title: 'CAMARAS' },
-        { title: 'STOCK', url: 'https://sistema.cinafrio.com/intranet/index.php/infostock/stockDetallado' },
-        { title: 'MOVIMIENTOS' },
-        { title: 'TIEMPOS CARGA DESCARGA', url: 'https://sistema.cinafrio.com/intranet/index.php/estiba/informes' },
-        { title: 'AUSENTISMO' },
-        { title: 'DEVOLUCIONES', url: 'https://sistema.cinafrio.com/intranet/index.php/infostock/devoluciones' }
-      ]
-    },
-    {
-      title: 'SENASA',
-      children: [
-        { title: 'CERTIFICADOS', url: 'https://sistema.cinafrio.com/intranet/index.php/certificados/list' },
-        { title: 'CERTIFICADOS INTERNOS', url: 'https://sistema.cinafrio.com/intranet/index.php/certificado_interno' }
-      ]
-    },
-    {
-      title: 'DASHBOARD',
-      children: [
-        { title: 'MAPA DE BOXES', url: 'https://sistema.cinafrio.com/intranet/index.php/box/map' },
-        { title: 'DASHBOARD LOGISTICA NACIONAL' },
-        { title: 'DASHBOARD LOGISTICA FISCAL' },
-        { title: 'DASHBOARD GENERAL', url: 'https://sistema.cinafrio.com/intranet2/app.php/ausentismo/dashboard' }
-      ]
-    },
-    {
-      title: 'ADMINISTRACION',
-      children: [
-        { title: 'FACTURACION', url: 'https://sistema.cinafrio.com/intranet/index.php/facturacion' },
-        { title: 'REMITOS', url: 'https://sistema.cinafrio.com/intranet/index.php/facturacion/remitos' },
-        { title: 'COMPRAS', url: 'https://sistema.cinafrio.com/intranet/index.php/pim/index/estadoPIM/1' }
-      ]
-    },
-    {
-      title: 'RRHH',
-      children: [
-        { title: 'PERSONAL', url: 'https://sistema.cinafrio.com/intranet2/app.php/persona/' },
-        { title: 'AUSENTISMO', url: 'https://sistema.cinafrio.com/intranet2/app.php/ausentismo/dashboard' },
-        { title: 'VACUNACIONES', url: 'https://sistema.cinafrio.com/intranet2/app.php/vacunacion/' },
-        { title: 'EXAMENES ART', url: 'https://sistema.cinafrio.com/intranet2/app.php/examenmedicoart/' },
-        { title: 'EXAMENES INGRESOS', url: 'https://sistema.cinafrio.com/intranet2/app.php/exameningreso/' },
-        { title: 'LIBRETAS SANITARIAS', url: 'https://sistema.cinafrio.com/intranet2/app.php/libretasanitaria/' }
-      ]
-    },
-    {
-      title: 'MANTENIMIENTO',
-      children: [
-        { title: 'MANTENIMIENTO GENERAL', url: 'https://sistema.cinafrio.com/intranet2/app.php/mantenimiento/' },
-        { title: 'PR 6 CONTRASTE DE TERMOMETROS', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmregcontraste/' },
-        { title: 'PR 9 SEMANAL', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmegcsemanal/' },
-        { title: 'PR 22 LIMPIEZA TANQUES', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmreglimpiezatanque/' },
-        { title: 'PR 24 DIARIO', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmegcdiario/' },
-        { title: 'PR 30 LIBRO DE GUARDIA', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmcontrol/' },
-        { title: 'PR 80 PARADA DE CAMARAS', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmcamara/' },
-        { title: 'PR 100 DESCONGELADO', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmdescongelado/' }
-      ]
-    },
-    {
-      title: 'SISTEMA',
-      children: [
-        { title: 'VETERINARIOS', url: 'https://sistema.cinafrio.com/intranet/index.php/veterinario/index' },
-        {
-          title: 'CLIENTES',
-          children: [
-            { title: 'CLIENTES DEPOSITO NACIONAL', url: 'https://sistema.cinafrio.com/intranet/index.php/clientes/list?fiscal=0&page=1' },
-            { title: 'CLIENTES DEPOSITO FISCAL', url: 'https://sistema.cinafrio.com/intranet/index.php/clientes/list/fiscal/1/page/1' },
-            { title: 'GRUPO DE CLIENTES', url: 'https://sistema.cinafrio.com/intranet/index.php/grupo/list' }
-          ]
-        },
-        { title: 'COMPRAS' },
-        { title: 'ESTABLECIMIENTOS' },
-        {
-          title: 'LOGISTICA',
-          children: [
-            { title: 'CAMARAS', url: 'https://sistema.cinafrio.com/intranet/index.php/camaras' },
-            { title: 'CONDUCTORES', url: 'https://sistema.cinafrio.com/intranet/index.php/conductor_autoelevador' },
-            { title: 'RESPONSABLE DE CARGAS', url: 'https://sistema.cinafrio.com/intranet/index.php/responsable_logistica' },
-            { title: 'TIPO DE CAMARAS', url: 'https://sistema.cinafrio.com/intranet/index.php/tiposcamara' },
-            { title: 'TIPO DE ESTIBA', url: 'https://sistema.cinafrio.com/intranet/index.php/tiposestiba' },
-            { title: 'TIPO DE CERTIFICADOS', url: 'https://sistema.cinafrio.com/intranet/index.php/tiposcertificados' },
-            { title: 'TIPO DE INTERVENCIONES', url: 'https://sistema.cinafrio.com/intranet/index.php/intervenciones' },
-            { title: 'TIPO DE PRODUCTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/tiposproducto' }
-          ]
-        },
-        {
-          title: 'RRHH',
-          children: [
-            { title: 'DEPARTAMENTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/departamento' },
-            { title: 'EXAMENES', url: 'https://sistema.cinafrio.com/intranet2/app.php/examen/' },
-            { title: 'LOCALIDADES', url: 'https://sistema.cinafrio.com/intranet/index.php/localidad/index' },
-            { title: 'OBRA SOCIAL', url: 'https://sistema.cinafrio.com/intranet/index.php/obra_social' },
-            { title: 'PAISES', url: 'https://sistema.cinafrio.com/intranet/index.php/pais' },
-            { title: 'VACUNAS', url: 'https://sistema.cinafrio.com/intranet2/app.php/vacuna/' }
-          ]
-        },
-        { title: 'SALA DE MAQUINAS', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmmaquinista/' },
-        {
-          title: 'SISTEMA INFORMATICO',
-          children: [
-            { title: 'RESPONSABLES', url: 'https://sistema.cinafrio.com/intranet2/app.php/controlcambioresponsables/' },
-            { title: 'USUARIOS', url: 'https://sistema.cinafrio.com/intranet/index.php/usuarios/index' },
-            { title: 'PERFILES', url: 'https://sistema.cinafrio.com/intranet/index.php/rol' }
-          ]
-        },
-        {
-          title: 'TRANSPORTE',
-          children: [
-            { title: 'AEROPUERTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_aeropuerto' },
-            { title: 'BUQUES', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_buque' },
-            { title: 'DESTINOS', url: 'https://sistema.cinafrio.com/intranet/index.php/destinos/index/page/1' },
-            { title: 'LINEAS AEREAS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_linea_aerea' },
-            { title: 'PUERTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_puerto' }
-          ]
-        }
-      ]
-    },
-    {
-      title: 'PRODUCTOS',
-      children: [
-        { title: 'CREAR NUEVOS PRODUCTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/producto' }
-      ]
-    },
-    {
-      title: 'OTROS SISTEMAS',
-      children: [
-        { title: 'INFORMACION DOCUMENTADA', url: 'https://manualcinafrio.com.ar/documentos/' },
-        { title: 'INDICADORES', url: 'https://manualcinafrio.com.ar/indicadores/' },
-        { title: 'REGISTRO PR 44', url: 'https://sistema.cinafrio.com/intranet/index.php/registro' },
-        { title: 'FORMACION', url: 'https://manualcinafrio.com.ar/formacion/' }
-      ]
-    }
+    { title: 'INDICADORES', children: [
+      { title: 'MOVIMIENTOS' },
+      { title: 'ESTADISTICAS DE PERSONAL' },
+      { title: 'ALMACENAMIENTO DE POSICIONES' },
+      { title: 'ESTIBAS CREADAS ELIMINADAS' },
+      { title: 'AJUSTES DE STOCK', url: 'https://sistema.cinafrio.com/intranet/index.php/infostock/ajusteManual' },
+      { title: 'CLIENTES QUE OPERARON' }
+    ]},
+    { title: 'REPORTES', children: [
+      { title: 'CAMARAS' },
+      { title: 'STOCK', url: 'https://sistema.cinafrio.com/intranet/index.php/infostock/stockDetallado' },
+      { title: 'MOVIMIENTOS' },
+      { title: 'TIEMPOS CARGA DESCARGA', url: 'https://sistema.cinafrio.com/intranet/index.php/estiba/informes' },
+      { title: 'AUSENTISMO' },
+      { title: 'DEVOLUCIONES', url: 'https://sistema.cinafrio.com/intranet/index.php/infostock/devoluciones' }
+    ]},
+    { title: 'SENASA', children: [
+      { title: 'CERTIFICADOS', url: 'https://sistema.cinafrio.com/intranet/index.php/certificados/list' },
+      { title: 'CERTIFICADOS INTERNOS', url: 'https://sistema.cinafrio.com/intranet/index.php/certificado_interno' }
+    ]},
+    { title: 'DASHBOARD', children: [
+      { title: 'MAPA DE BOXES', url: 'https://sistema.cinafrio.com/intranet/index.php/box/map' },
+      { title: 'DASHBOARD LOGISTICA NACIONAL' },
+      { title: 'DASHBOARD LOGISTICA FISCAL' },
+      { title: 'DASHBOARD GENERAL', url: 'https://sistema.cinafrio.com/intranet2/app.php/ausentismo/dashboard' }
+    ]},
+    { title: 'ADMINISTRACION', children: [
+      { title: 'FACTURACION', url: 'https://sistema.cinafrio.com/intranet/index.php/facturacion' },
+      { title: 'REMITOS', url: 'https://sistema.cinafrio.com/intranet/index.php/facturacion/remitos' },
+      { title: 'COMPRAS', url: 'https://sistema.cinafrio.com/intranet/index.php/pim/index/estadoPIM/1' }
+    ]},
+    { title: 'RRHH', children: [
+      { title: 'PERSONAL', url: 'https://sistema.cinafrio.com/intranet2/app.php/persona/' },
+      { title: 'AUSENTISMO', url: 'https://sistema.cinafrio.com/intranet2/app.php/ausentismo/dashboard' },
+      { title: 'VACUNACIONES', url: 'https://sistema.cinafrio.com/intranet2/app.php/vacunacion/' },
+      { title: 'EXAMENES ART', url: 'https://sistema.cinafrio.com/intranet2/app.php/examenmedicoart/' },
+      { title: 'EXAMENES INGRESOS', url: 'https://sistema.cinafrio.com/intranet2/app.php/exameningreso/' },
+      { title: 'LIBRETAS SANITARIAS', url: 'https://sistema.cinafrio.com/intranet2/app.php/libretasanitaria/' }
+    ]},
+    { title: 'MANTENIMIENTO', children: [
+      { title: 'MANTENIMIENTO GENERAL', url: 'https://sistema.cinafrio.com/intranet2/app.php/mantenimiento/' },
+      { title: 'PR 6 CONTRASTE DE TERMOMETROS', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmregcontraste/' },
+      { title: 'PR 9 SEMANAL', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmegcsemanal/' },
+      { title: 'PR 22 LIMPIEZA TANQUES', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmreglimpiezatanque/' },
+      { title: 'PR 24 DIARIO', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmegcdiario/' },
+      { title: 'PR 30 LIBRO DE GUARDIA', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmcontrol/' },
+      { title: 'PR 80 PARADA DE CAMARAS', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmcamara/' },
+      { title: 'PR 100 DESCONGELADO', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmdescongelado/' }
+    ]},
+    { title: 'SISTEMA', children: [
+      { title: 'VETERINARIOS', url: 'https://sistema.cinafrio.com/intranet/index.php/veterinario/index' },
+      { title: 'CLIENTES', children: [
+        { title: 'CLIENTES DEPOSITO NACIONAL', url: 'https://sistema.cinafrio.com/intranet/index.php/clientes/list?fiscal=0&page=1' },
+        { title: 'CLIENTES DEPOSITO FISCAL', url: 'https://sistema.cinafrio.com/intranet/index.php/clientes/list/fiscal/1/page/1' },
+        { title: 'GRUPO DE CLIENTES', url: 'https://sistema.cinafrio.com/intranet/index.php/grupo/list' }
+      ]},
+      { title: 'COMPRAS' },
+      { title: 'ESTABLECIMIENTOS' },
+      { title: 'LOGISTICA', children: [
+        { title: 'CAMARAS', url: 'https://sistema.cinafrio.com/intranet/index.php/camaras' },
+        { title: 'CONDUCTORES', url: 'https://sistema.cinafrio.com/intranet/index.php/conductor_autoelevador' },
+        { title: 'RESPONSABLE DE CARGAS', url: 'https://sistema.cinafrio.com/intranet/index.php/responsable_logistica' },
+        { title: 'TIPO DE CAMARAS', url: 'https://sistema.cinafrio.com/intranet/index.php/tiposcamara' },
+        { title: 'TIPO DE ESTIBA', url: 'https://sistema.cinafrio.com/intranet/index.php/tiposestiba' },
+        { title: 'TIPO DE CERTIFICADOS', url: 'https://sistema.cinafrio.com/intranet/index.php/tiposcertificados' },
+        { title: 'TIPO DE INTERVENCIONES', url: 'https://sistema.cinafrio.com/intranet/index.php/intervenciones' },
+        { title: 'TIPO DE PRODUCTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/tiposproducto' }
+      ]},
+      { title: 'RRHH', children: [
+        { title: 'DEPARTAMENTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/departamento' },
+        { title: 'EXAMENES', url: 'https://sistema.cinafrio.com/intranet2/app.php/examen/' },
+        { title: 'LOCALIDADES', url: 'https://sistema.cinafrio.com/intranet/index.php/localidad/index' },
+        { title: 'OBRA SOCIAL', url: 'https://sistema.cinafrio.com/intranet/index.php/obra_social' },
+        { title: 'PAISES', url: 'https://sistema.cinafrio.com/intranet/index.php/pais' },
+        { title: 'VACUNAS', url: 'https://sistema.cinafrio.com/intranet2/app.php/vacuna/' }
+      ]},
+      { title: 'SALA DE MAQUINAS', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmmaquinista/' },
+      { title: 'SISTEMA INFORMATICO', children: [
+        { title: 'RESPONSABLES', url: 'https://sistema.cinafrio.com/intranet2/app.php/controlcambioresponsables/' },
+        { title: 'USUARIOS', url: 'https://sistema.cinafrio.com/intranet/index.php/usuarios/index' },
+        { title: 'PERFILES', url: 'https://sistema.cinafrio.com/intranet/index.php/rol' }
+      ]},
+      { title: 'TRANSPORTE', children: [
+        { title: 'AEROPUERTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_aeropuerto' },
+        { title: 'BUQUES', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_buque' },
+        { title: 'DESTINOS', url: 'https://sistema.cinafrio.com/intranet/index.php/destinos/index/page/1' },
+        { title: 'LINEAS AEREAS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_linea_aerea' },
+        { title: 'PUERTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_puerto' }
+      ]}
+    ]},
+    { title: 'PRODUCTOS', children: [
+      { title: 'CREAR NUEVOS PRODUCTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/producto' }
+    ]},
+    { title: 'OTROS SISTEMAS', children: [
+      { title: 'INFORMACION DOCUMENTADA', url: 'https://manualcinafrio.com.ar/documentos/' },
+      { title: 'INDICADORES', url: 'https://manualcinafrio.com.ar/indicadores/' },
+      { title: 'REGISTRO PR 44', url: 'https://sistema.cinafrio.com/intranet/index.php/registro' },
+      { title: 'FORMACION', url: 'https://manualcinafrio.com.ar/formacion/' }
+    ]}
   ]
-};
-
-const palette = [
-  ['#001F60','#002A80'],
-  ['#36B0C9','#2898AC'],
-  ['#00BBB4','#009F99'],
-  ['#00A887','#00846B'],
-  ['#007A4C','#005E3A']
-];
-
-const iconMap = {
-  'LOGISTICA NACIONAL':'LN',
-  'LOGISTICA FISCAL':'LF',
-  'CALIDAD':'CL',
-  'PORTERIA':'PT',
-  'TRANSPORTE':'TR',
-  'SISTEMA DE GESTION':'SG',
-  'INDICADORES':'IN',
-  'REPORTES':'RP',
-  'SENASA':'SN',
-  'DASHBOARD':'DS',
-  'ADMINISTRACION':'CP',
-  'RRHH':'RH',
-  'MANTENIMIENTO':'MT',
-  'SISTEMA':'CF',
-  'PRODUCTOS':'PR',
-  'OTROS SISTEMAS':'OS'
 };
 
 const historyStack = [];
@@ -548,17 +460,45 @@ const fullscreenBtn = document.getElementById('fullscreenBtn');
 const userBtn = document.getElementById('userBtn');
 const qrBox = document.getElementById('qrBox');
 
-function getInitials(text){
-  if (iconMap[text]) return iconMap[text];
+function getTextInitials(text){
   return text.split(/\s+/).filter(Boolean).slice(0,2).map(word => word[0]).join('').toUpperCase();
 }
-function getGridLayout(count){
-  return count > 8 ? 'layout-8x2' : 'layout-4x4';
+
+function getIconMarkup(title){
+  const imageMap = {
+    'SISTEMA DE GESTION': 'iso_logo.png',
+    'SENASA': 'senasa_logo.png'
+  };
+
+  if(imageMap[title]){
+    return `<img src="${imageMap[title]}" alt="${title}">`;
+  }
+
+  const symbolMap = {
+    'LOGISTICA NACIONAL': '🚛',
+    'LOGISTICA FISCAL': '📦',
+    'CALIDAD': '🌡',
+    'PORTERIA': '🚪',
+    'TRANSPORTE': '🚚',
+    'INDICADORES': '📊',
+    'REPORTES': '📑',
+    'DASHBOARD': '🖥',
+    'ADMINISTRACION': '🗂',
+    'RRHH': '👥',
+    'MANTENIMIENTO': '🔧',
+    'SISTEMA': '⚙',
+    'PRODUCTOS': '📦',
+    'OTROS SISTEMAS': '🧩'
+  };
+
+  return symbolMap[title] || getTextInitials(title);
 }
+
+function getGridLayout(count){ return count > 8 ? 'layout-8x2' : 'layout-4x4'; }
 function formatTitle(title){
   const words = title.trim().split(/\s+/);
-  if(words.length === 2){ return `${words[0]}<br>${words[1]}`; }
-  if(words.length === 3){ return `${words[0]} ${words[1]}<br>${words[2]}`; }
+  if(words.length === 2) return `${words[0]}<br>${words[1]}`;
+  if(words.length === 3) return `${words[0]} ${words[1]}<br>${words[2]}`;
   return title;
 }
 function titleClass(title){
@@ -580,12 +520,20 @@ function renderNode(node){
     tile.style.background = 'linear-gradient(135deg,#001F60,#00A887)';
     tile.type = 'button';
     tile.innerHTML = `
-      <div class="tile-icon">${getInitials(node.title)}</div>
+      <div class="tile-icon">${getIconMarkup(node.title)}</div>
       <div class="tile-title ${titleClass(node.title)}">${formatTitle(node.title)}</div>
     `;
-    if(node.url){ tile.addEventListener('click', () => openModule(node.url)); }
+    if(node.url) tile.addEventListener('click', () => openModule(node.url));
     menuGrid.appendChild(tile);
   } else {
+    const palette = [
+      ['#001F60','#002A80'],
+      ['#36B0C9','#2898AC'],
+      ['#00BBB4','#009F99'],
+      ['#00A887','#00846B'],
+      ['#007A4C','#005E3A']
+    ];
+
     items.forEach((item, i) => {
       const colors = palette[i % palette.length];
       const tile = document.createElement('button');
@@ -593,7 +541,7 @@ function renderNode(node){
       tile.type = 'button';
       tile.style.background = `linear-gradient(135deg,${colors[0]},${colors[1]})`;
       tile.innerHTML = `
-        <div class="tile-icon">${getInitials(item.title)}</div>
+        <div class="tile-icon">${getIconMarkup(item.title)}</div>
         <div class="tile-title ${titleClass(item.title)}">${formatTitle(item.title)}</div>
       `;
       tile.addEventListener('click', () => {
@@ -625,8 +573,8 @@ homeBtn.addEventListener('click', () => {
   renderNode(menuTree);
 });
 fullscreenBtn.addEventListener('click', () => {
-  if(!document.fullscreenElement){ document.documentElement.requestFullscreen(); }
-  else { document.exitFullscreen(); }
+  if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
 });
 userBtn.addEventListener('click', () => openModule('https://sistema.cinafrio.com/intranet2/app.php/persona/306/show'));
 qrBox.addEventListener('click', () => openModule('https://sistema.cinafrio.com/intranet/index.php/estiba/scan'));
@@ -635,3 +583,4 @@ renderNode(menuTree);
 </script>
 </body>
 </html>
+
