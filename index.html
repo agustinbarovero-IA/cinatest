@@ -348,38 +348,6 @@ const menuTree = {
         { title: 'TRONERAS', url: 'https://sistema.cinafrio.com/intranet/index.php/tronera' }
       ]}
     ]},
-    { title: 'SISTEMA DE GESTION', children: [
-      { title: 'INFORMACION DOCUMENTADA', url: 'https://manualcinafrio.com.ar/documentos/' },
-      { title: 'INDICADORES', url: 'https://manualcinafrio.com.ar/indicadores/' },
-      { title: 'REGISTRO PR 44', url: 'https://sistema.cinafrio.com/intranet/index.php/registro' },
-      { title: 'FORMACION', url: 'https://manualcinafrio.com.ar/formacion/' }
-    ]},
-    { title: 'INDICADORES', children: [
-      { title: 'MOVIMIENTOS' },
-      { title: 'ESTADISTICAS DE PERSONAL' },
-      { title: 'ALMACENAMIENTO DE POSICIONES' },
-      { title: 'ESTIBAS CREADAS ELIMINADAS' },
-      { title: 'AJUSTES DE STOCK', url: 'https://sistema.cinafrio.com/intranet/index.php/infostock/ajusteManual' },
-      { title: 'CLIENTES QUE OPERARON' }
-    ]},
-    { title: 'REPORTES', children: [
-      { title: 'CAMARAS' },
-      { title: 'STOCK', url: 'https://sistema.cinafrio.com/intranet/index.php/infostock/stockDetallado' },
-      { title: 'MOVIMIENTOS' },
-      { title: 'TIEMPOS CARGA DESCARGA', url: 'https://sistema.cinafrio.com/intranet/index.php/estiba/informes' },
-      { title: 'AUSENTISMO' },
-      { title: 'DEVOLUCIONES', url: 'https://sistema.cinafrio.com/intranet/index.php/infostock/devoluciones' }
-    ]},
-    { title: 'SENASA', children: [
-      { title: 'CERTIFICADOS', url: 'https://sistema.cinafrio.com/intranet/index.php/certificados/list' },
-      { title: 'CERTIFICADOS INTERNOS', url: 'https://sistema.cinafrio.com/intranet/index.php/certificado_interno' }
-    ]},
-    { title: 'DASHBOARD', children: [
-      { title: 'MAPA DE BOXES', url: 'https://sistema.cinafrio.com/intranet/index.php/box/map' },
-      { title: 'DASHBOARD LOGISTICA NACIONAL' },
-      { title: 'DASHBOARD LOGISTICA FISCAL' },
-      { title: 'DASHBOARD GENERAL', url: 'https://sistema.cinafrio.com/intranet2/app.php/ausentismo/dashboard' }
-    ]},
     { title: 'ADMINISTRACION', children: [
       { title: 'FACTURACION', url: 'https://sistema.cinafrio.com/intranet/index.php/facturacion' },
       { title: 'REMITOS', url: 'https://sistema.cinafrio.com/intranet/index.php/facturacion/remitos' },
@@ -402,6 +370,41 @@ const menuTree = {
       { title: 'PR 30 LIBRO DE GUARDIA', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmcontrol/' },
       { title: 'PR 80 PARADA DE CAMARAS', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmcamara/' },
       { title: 'PR 100 DESCONGELADO', url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmdescongelado/' }
+    ]},
+    { title: 'PRODUCTOS', children: [
+      { title: 'CREAR NUEVOS PRODUCTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/producto' }
+    ]},
+    { title: 'DASHBOARD', children: [
+      { title: 'MAPA DE BOXES', url: 'https://sistema.cinafrio.com/intranet/index.php/box/map' },
+      { title: 'DASHBOARD LOGISTICA NACIONAL' },
+      { title: 'DASHBOARD LOGISTICA FISCAL' },
+      { title: 'DASHBOARD GENERAL', url: 'https://sistema.cinafrio.com/intranet2/app.php/ausentismo/dashboard' }
+    ]},
+    { title: 'REPORTES', children: [
+      { title: 'CAMARAS' },
+      { title: 'STOCK', url: 'https://sistema.cinafrio.com/intranet/index.php/infostock/stockDetallado' },
+      { title: 'MOVIMIENTOS' },
+      { title: 'TIEMPOS CARGA DESCARGA', url: 'https://sistema.cinafrio.com/intranet/index.php/estiba/informes' },
+      { title: 'AUSENTISMO' },
+      { title: 'DEVOLUCIONES', url: 'https://sistema.cinafrio.com/intranet/index.php/infostock/devoluciones' }
+    ]},
+    { title: 'INDICADORES', children: [
+      { title: 'MOVIMIENTOS' },
+      { title: 'ESTADISTICAS DE PERSONAL' },
+      { title: 'ALMACENAMIENTO DE POSICIONES' },
+      { title: 'ESTIBAS CREADAS ELIMINADAS' },
+      { title: 'AJUSTES DE STOCK', url: 'https://sistema.cinafrio.com/intranet/index.php/infostock/ajusteManual' },
+      { title: 'CLIENTES QUE OPERARON' }
+    ]},
+    { title: 'SISTEMA DE GESTION', children: [
+      { title: 'INFORMACION DOCUMENTADA', url: 'https://manualcinafrio.com.ar/documentos/' },
+      { title: 'INDICADORES', url: 'https://manualcinafrio.com.ar/indicadores/' },
+      { title: 'REGISTRO PR 44', url: 'https://sistema.cinafrio.com/intranet/index.php/registro' },
+      { title: 'FORMACION', url: 'https://manualcinafrio.com.ar/formacion/' }
+    ]},
+    { title: 'SENASA', children: [
+      { title: 'CERTIFICADOS', url: 'https://sistema.cinafrio.com/intranet/index.php/certificados/list' },
+      { title: 'CERTIFICADOS INTERNOS', url: 'https://sistema.cinafrio.com/intranet/index.php/certificado_interno' }
     ]},
     { title: 'SISTEMA', children: [
       { title: 'VETERINARIOS', url: 'https://sistema.cinafrio.com/intranet/index.php/veterinario/index' },
@@ -443,9 +446,6 @@ const menuTree = {
         { title: 'LINEAS AEREAS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_linea_aerea' },
         { title: 'PUERTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_puerto' }
       ]}
-    ]},
-    { title: 'PRODUCTOS', children: [
-      { title: 'CREAR NUEVOS PRODUCTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/producto' }
     ]},
     { title: 'OTROS SISTEMAS', children: [
       { title: 'INFORMACION DOCUMENTADA', url: 'https://manualcinafrio.com.ar/documentos/' },
