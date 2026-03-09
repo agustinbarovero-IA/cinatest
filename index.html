@@ -1,737 +1,273 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Menú Principal CINA · V2</title>
-  <style>
-    :root {
-      --bg-main: #001F60;
-      --bg-deep: #00174a;
-      --bg-dark: #000f30;
-      --panel-border: rgba(255, 255, 255, 0.12);
-      --text: #ffffff;
-      --text-soft: rgba(255, 255, 255, 0.8);
-      --text-faint: rgba(255, 255, 255, 0.58);
-      --shadow-main: 0 22px 45px rgba(0, 0, 0, 0.28);
-      --shadow-soft: 0 10px 24px rgba(0, 0, 0, 0.18);
-      --radius-xl: 28px;
-      --radius-lg: 22px;
-      --gap: clamp(12px, 1.2vw, 18px);
-      --card-size-min: 150px;
-      --max-grid-width: 1320px;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sistema Grupo CINA</title>
 
-    * { box-sizing: border-box; }
+<style>
+:root{
+--bg-main:#001F60;
+--bg-deep:#00174a;
+--bg-dark:#000f30;
+--text:#ffffff;
+--text-soft:rgba(255,255,255,0.8);
+--shadow-main:0 22px 45px rgba(0,0,0,0.28);
+--radius-lg:22px;
+--gap:18px;
+--card-size-min:150px;
+--max-grid-width:1320px;
+}
 
-    html, body {
-      margin: 0;
-      min-height: 100%;
-      font-family: "Segoe UI", Inter, Tahoma, Geneva, Verdana, sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(54,176,201,0.22), transparent 26%),
-        radial-gradient(circle at 85% 18%, rgba(0,187,180,0.15), transparent 20%),
-        radial-gradient(circle at bottom right, rgba(0,168,135,0.18), transparent 24%),
-        linear-gradient(135deg, var(--bg-main), var(--bg-deep) 55%, var(--bg-dark));
-      overflow: hidden;
-    }
+*{box-sizing:border-box}
 
-    body { min-height: 100vh; }
+html,body{
+margin:0;
+font-family:"Segoe UI",Inter,Tahoma,Verdana,sans-serif;
+color:var(--text);
+background:
+radial-gradient(circle at top left,rgba(54,176,201,0.22),transparent 26%),
+radial-gradient(circle at bottom right,rgba(0,168,135,0.18),transparent 24%),
+linear-gradient(135deg,var(--bg-main),var(--bg-deep) 55%,var(--bg-dark));
+min-height:100vh;
+overflow:hidden;
+}
 
-    .app-shell {
-      position: relative;
-      min-height: 100vh;
-      display: grid;
-      grid-template-rows: auto auto 1fr auto;
-      gap: 14px;
-      padding: clamp(12px, 1.4vw, 20px);
-      overflow: hidden;
-    }
+.app-shell{
+display:grid;
+grid-template-rows:auto auto 1fr auto;
+gap:14px;
+padding:18px;
+min-height:100vh;
+}
 
-    .ambient-line,
-    .ambient-line::before,
-    .ambient-line::after {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
+.topbar{
+display:grid;
+grid-template-columns:1fr auto;
+align-items:center;
+gap:16px;
+padding:16px 22px;
+border-radius:26px;
+background:rgba(255,255,255,0.08);
+box-shadow:var(--shadow-main);
+}
 
-    .ambient-line::before {
-      content: "";
-      position: absolute;
-      top: 8%;
-      left: -8%;
-      width: 40%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(54,176,201,0.55), transparent);
-      transform: rotate(-8deg);
-    }
+.brand{
+display:flex;
+align-items:center;
+gap:18px;
+}
 
-    .ambient-line::after {
-      content: "";
-      position: absolute;
-      right: -6%;
-      bottom: 12%;
-      width: 36%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(0,168,135,0.45), transparent);
-      transform: rotate(10deg);
-    }
+.brand img{
+height:64px;
+}
 
-    .topbar {
-      position: relative;
-      display: grid;
-      grid-template-columns: 1.5fr auto;
-      align-items: center;
-      gap: 16px;
-      padding: 16px 20px;
-      border-radius: var(--radius-xl);
-      background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04));
-      border: 1px solid var(--panel-border);
-      box-shadow: var(--shadow-main);
-      backdrop-filter: blur(14px);
-      overflow: hidden;
-    }
+.brand h1{
+margin:0;
+font-size:1.6rem;
+font-weight:700;
+}
 
-    .topbar::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(120deg, rgba(255,255,255,0.08), transparent 35%, transparent 65%, rgba(255,255,255,0.04));
-      pointer-events: none;
-    }
+.toolbar button{
+background:rgba(255,255,255,0.1);
+border:0;
+color:white;
+padding:12px 16px;
+border-radius:12px;
+font-weight:600;
+cursor:pointer;
+}
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      min-width: 0;
-      z-index: 1;
-    }
+.toolbar button:hover{background:rgba(255,255,255,0.18)}
 
-    .brand-mark {
-      position: relative;
-      width: 72px;
-      height: 72px;
-      border-radius: 24px;
-      background: linear-gradient(135deg, #001F60, #36B0C9 55%, #00A887);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12), 0 10px 24px rgba(0,0,0,0.2);
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
-    }
+.meta-panel{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
 
-    .brand-mark::after {
-      content: "";
-      width: 42px;
-      height: 42px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.12);
-      backdrop-filter: blur(6px);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.10);
-      position: absolute;
-    }
+.breadcrumbs{
+padding:10px 14px;
+border-radius:14px;
+background:rgba(255,255,255,0.08);
+font-size:.9rem;
+}
 
-    .brand-mark span {
-      position: relative;
-      z-index: 1;
-      font-weight: 800;
-      font-size: 1.2rem;
-      letter-spacing: 1px;
-    }
+.workspace{
+overflow:auto;
+display:flex;
+justify-content:center;
+}
 
-    .brand-copy h1 {
-      margin: 0;
-      font-size: clamp(1.15rem, 2vw, 1.9rem);
-      line-height: 1.06;
-      font-weight: 750;
-    }
+.menu-wrap{
+max-width:var(--max-grid-width);
+width:100%;
+}
 
-    .brand-copy p {
-      margin: 6px 0 0;
-      color: var(--text-soft);
-      font-size: clamp(0.88rem, 1vw, 1rem);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+.menu-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(var(--card-size-min),1fr));
+gap:var(--gap);
+}
 
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 10px;
-      z-index: 1;
-    }
+.tile{
+aspect-ratio:1/1;
+border-radius:var(--radius-lg);
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+gap:16px;
+padding:18px;
+color:white;
+font-weight:700;
+font-size:1rem;
+text-transform:uppercase;
+white-space:nowrap;
+box-shadow:var(--shadow-main);
+cursor:pointer;
+}
 
-    .btn {
-      border: 0;
-      color: var(--text);
-      padding: 12px 16px;
-      border-radius: 14px;
-      font-weight: 650;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: transform 0.18s ease, filter 0.18s ease, background 0.18s ease, opacity 0.18s ease;
-      backdrop-filter: blur(8px);
-    }
+.tile:hover{transform:translateY(-4px)}
 
-    .btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      filter: brightness(1.04);
-    }
+.tile-icon{
+width:70px;
+height:70px;
+border-radius:20px;
+background:rgba(255,255,255,0.18);
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:1.1rem;
+}
 
-    .btn:disabled { opacity: 0.42; cursor: not-allowed; }
+.footer-bar{
+text-align:center;
+font-size:.8rem;
+opacity:.7;
+}
 
-    .btn-secondary {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
+@media(max-width:640px){
+.menu-grid{grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}
+.tile{font-size:.9rem}
+}
 
-    .btn-primary {
-      background: linear-gradient(135deg, #36B0C9, #00A887);
-      box-shadow: var(--shadow-soft);
-    }
-
-    .meta-panel {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 14px;
-      align-items: center;
-    }
-
-    .breadcrumbs,
-    .status-box {
-      min-height: 54px;
-      display: flex;
-      align-items: center;
-      padding: 12px 16px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: var(--text-soft);
-      backdrop-filter: blur(10px);
-      box-shadow: var(--shadow-soft);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      gap: 10px;
-    }
-
-    .status-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #00BBB4, #00A887);
-      box-shadow: 0 0 12px rgba(0,187,180,0.75);
-      flex-shrink: 0;
-    }
-
-    .workspace {
-      min-height: 0;
-      display: flex;
-      justify-content: center;
-      align-items: stretch;
-      overflow: auto;
-      padding-right: 4px;
-    }
-
-    .workspace::-webkit-scrollbar { width: 10px; height: 10px; }
-    .workspace::-webkit-scrollbar-thumb {
-      background: rgba(255,255,255,0.14);
-      border-radius: 999px;
-    }
-
-    .menu-wrap {
-      width: 100%;
-      max-width: var(--max-grid-width);
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 4px 2px 8px;
-    }
-
-    .menu-grid {
-      width: 100%;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(var(--card-size-min), 1fr));
-      gap: var(--gap);
-      align-content: start;
-      justify-content: center;
-    }
-
-    .menu-grid.cols-1 { max-width: 180px; }
-    .menu-grid.cols-2 { max-width: 380px; }
-    .menu-grid.cols-3 { max-width: 580px; }
-    .menu-grid.cols-4 { max-width: 780px; }
-    .menu-grid.cols-5 { max-width: 980px; }
-    .menu-grid.cols-6 { max-width: 1180px; }
-
-    .tile {
-      position: relative;
-      aspect-ratio: 1 / 1;
-      border: 0;
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      color: var(--text);
-      text-align: center;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 18px;
-      min-height: 148px;
-      box-shadow: var(--shadow-main);
-      cursor: pointer;
-      isolation: isolate;
-      transition: transform 0.18s ease, filter 0.18s ease, box-shadow 0.18s ease;
-    }
-
-    .tile:hover {
-      transform: translateY(-5px) scale(1.015);
-      filter: brightness(1.03);
-      box-shadow: 0 26px 46px rgba(0, 0, 0, 0.30);
-    }
-
-    .tile::before {
-      content: "";
-      position: absolute;
-      top: -18%;
-      right: -18%;
-      width: 58%;
-      height: 58%;
-      background: radial-gradient(circle, rgba(255,255,255,0.22), transparent 68%);
-      z-index: 0;
-    }
-
-    .tile::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.14));
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    .tile-inner {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      width: 100%;
-      height: 100%;
-    }
-
-    .tile-icon {
-      width: 72px;
-      height: 72px;
-      border-radius: 22px;
-      background: rgba(255,255,255,0.16);
-      border: 1px solid rgba(255,255,255,0.16);
-      display: grid;
-      place-items: center;
-      font-size: 1.1rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
-      backdrop-filter: blur(5px);
-      flex-shrink: 0;
-    }
-
-    .tile-title {
-      margin: 0;
-      font-size: clamp(0.98rem, 1.05vw, 1.12rem);
-      line-height: 1.2;
-      font-weight: 750;
-      word-break: break-word;
-      max-width: 90%;
-    }
-
-    .footer-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      color: var(--text-faint);
-      font-size: 0.84rem;
-      padding: 0 6px;
-    }
-
-    .footer-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.07);
-    }
-
-    .footer-pill strong { color: var(--text-soft); font-weight: 650; }
-
-    @media (max-width: 980px) {
-      .topbar, .meta-panel { grid-template-columns: 1fr; }
-      .toolbar { justify-content: flex-start; }
-    }
-
-    @media (max-width: 640px) {
-      html, body { overflow: auto; }
-      .app-shell { min-height: auto; }
-      .brand-mark { width: 62px; height: 62px; border-radius: 20px; }
-      .menu-grid { grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); }
-      .tile { min-height: 128px; padding: 12px; gap: 14px; }
-      .tile-icon { width: 58px; height: 58px; border-radius: 18px; font-size: 0.95rem; }
-      .footer-bar { flex-direction: column; align-items: flex-start; }
-    }
-  </style>
+</style>
 </head>
+
 <body>
-  <div class="app-shell">
-    <div class="ambient-line"></div>
 
-    <header class="topbar">
-      <div class="brand">
-        <div class="brand-mark"><span>CN</span></div>
-        <div class="brand-copy">
-          <h1 id="screenTitle">Menú Principal</h1>
-          <p id="screenSubtitle">Acceso rápido a los módulos operativos</p>
-        </div>
-      </div>
+<div class="app-shell">
 
-      <div class="toolbar">
-        <button class="btn btn-secondary" id="backBtn">← Volver</button>
-        <button class="btn btn-secondary" id="homeBtn">⌂ Inicio</button>
-        <button class="btn btn-primary" id="fullscreenBtn">⛶ Pantalla completa</button>
-      </div>
-    </header>
+<header class="topbar">
 
-    <section class="meta-panel">
-      <div class="breadcrumbs" id="breadcrumb">Inicio</div>
-      <div class="status-box">
-        <span class="status-dot"></span>
-        <span id="moduleCounter">15 módulos visibles</span>
-      </div>
-    </section>
+<div class="brand">
+<img src="cina_logo_principal.png" alt="CINA">
+<h1 id="screenTitle">BIENVENIDOS AL SISTEMA DE GRUPO CINA</h1>
+</div>
 
-    <main class="workspace">
-      <div class="menu-wrap">
-        <div class="menu-grid cols-6" id="menuGrid"></div>
-      </div>
-    </main>
+<div class="toolbar">
+<button id="backBtn">← Volver</button>
+<button id="homeBtn">Inicio</button>
+<button id="fullscreenBtn">Pantalla completa</button>
+</div>
 
-    <footer class="footer-bar">
-      <div class="footer-pill"><strong>CINA</strong> Frontend de acceso rápido</div>
-      <div class="footer-pill">Máximo <strong>6 botones</strong> por fila · Responsive · Entorno táctil</div>
-    </footer>
-  </div>
+</header>
 
-  <script>
-    const menuTree = {
-      title: 'Menú Principal',
-      subtitle: 'Acceso rápido a los módulos del sistema',
-      children: [
-        {
-          title: 'Logística nacional',
-          children: [
-            { title: 'Cargas' },
-            { title: 'Pre-Entradas' },
-            { title: 'Entradas' },
-            { title: 'Pre-salidas' },
-            { title: 'Salidas' },
-            { title: 'Ajuste de stock' }
-          ]
-        },
-        {
-          title: 'Logística fiscal',
-          children: [
-            { title: 'Cargas' },
-            { title: 'Pre-Entradas' },
-            { title: 'Entradas' },
-            { title: 'Pre-salidas' },
-            { title: 'Salidas' },
-            { title: 'Reporte Depósito fiscal AFIP' }
-          ]
-        },
-        {
-          title: 'Calidad',
-          children: [
-            { title: 'Control de entradas' },
-            { title: 'Control de salidas' },
-            { title: 'Control de intervenciones' },
-            { title: 'Vencimiento de productos' },
-            { title: 'Estadísticas de intervenciones' }
-          ]
-        },
-        {
-          title: 'Portería',
-          children: [
-            { title: 'Ingresos/Egresos' }
-          ]
-        },
-        {
-          title: 'Transporte',
-          children: [
-            {
-              title: 'Datos de vehículos',
-              children: [
-                { title: 'Aseguradoras' },
-                { title: 'Empresas' },
-                { title: 'Conductores' },
-                { title: 'Vehículos' }
-              ]
-            },
-            { title: 'Acoplados' },
-            {
-              title: 'Datos de la playa de maniobra',
-              children: [
-                { title: 'Boxes' },
-                { title: 'Troneras' }
-              ]
-            }
-          ]
-        },
-        { title: 'Sistema de gestión' },
-        {
-          title: 'Indicadores',
-          children: [
-            { title: 'Movimientos' },
-            { title: 'Estadísticas de personal' },
-            { title: 'Almacenamiento de posiciones' },
-            { title: 'Estibas creadas/eliminadas' },
-            { title: 'Ajustes de stock' },
-            { title: 'Clientes que operaron' }
-          ]
-        },
-        {
-          title: 'Reportes',
-          children: [
-            { title: 'Cámaras' },
-            { title: 'Stock' },
-            { title: 'Movimientos' },
-            { title: 'Tiempos Carga/Descarga' },
-            { title: 'Ausentismo' }
-          ]
-        },
-        {
-          title: 'Senasa',
-          children: [
-            { title: 'Certificados' },
-            { title: 'Certificados internos' }
-          ]
-        },
-        {
-          title: 'Dashboard',
-          children: [
-            { title: 'Mapa de boxes' },
-            { title: 'Dashboard Logística nacional' },
-            { title: 'Dashboard Logística fiscal' },
-            { title: 'Dashboard general' }
-          ]
-        },
-        { title: 'Administracion' },
-        {
-          title: 'RRHH',
-          children: [
-            { title: 'Personal' },
-            { title: 'Ausentismo' },
-            { title: 'Vacunaciones' },
-            { title: 'Exámenes ART' },
-            { title: 'Exámenes ingresos' },
-            { title: 'Libretas sanitarias' }
-          ]
-        },
-        {
-          title: 'Mantenimiento',
-          children: [
-            { title: 'Mantenimiento General' },
-            { title: 'PR-6 Contraste de termómetros' },
-            { title: 'PR-9 Semanal' },
-            { title: 'PR-22 Limpieza tanques' },
-            { title: 'PR-24 Diario' },
-            { title: 'PR-30 Libro de guardia' },
-            { title: 'PR-80 Parada de cámaras' },
-            { title: 'PR-100 Descongelado' }
-          ]
-        },
-        {
-          title: 'Sistema',
-          children: [
-            { title: 'Calidad' },
-            { title: 'Clientes' },
-            { title: 'Compras' },
-            { title: 'Establecimientos' },
-            { title: 'Logística' },
-            { title: 'RRHH' },
-            { title: 'Sala de máquinas' },
-            { title: 'Sistema informático' },
-            { title: 'Transporte' }
-          ]
-        },
-        {
-          title: 'Productos',
-          children: [
-            { title: 'Crear nuevos productos' }
-          ]
-        }
-      ]
-    };
+<section class="meta-panel">
+<div class="breadcrumbs" id="breadcrumb">Inicio</div>
+<div id="moduleCounter">16 módulos</div>
+</section>
 
-    const palette = [
-      ['#001F60', '#002A80'],
-      ['#36B0C9', '#2898AC'],
-      ['#00BBB4', '#009F99'],
-      ['#00A887', '#00846B'],
-      ['#007A4C', '#005E3A'],
-      ['#001F60', '#36B0C9'],
-      ['#36B0C9', '#00BBB4'],
-      ['#00BBB4', '#00A887'],
-      ['#00A887', '#007A4C'],
-      ['#007A4C', '#001F60']
-    ];
+<main class="workspace">
+<div class="menu-wrap">
+<div class="menu-grid" id="menuGrid"></div>
+</div>
+</main>
 
-    const iconMap = {
-      'Logística nacional': 'LN',
-      'Logística fiscal': 'LF',
-      'Calidad': 'CL',
-      'Portería': 'PT',
-      'Transporte': 'TR',
-      'Sistema de gestión': 'SG',
-      'Indicadores': 'IN',
-      'Reportes': 'RP',
-      'Senasa': 'SN',
-      'Dashboard': 'DB',
-      'Administracion': 'AD',
-      'RRHH': 'RH',
-      'Mantenimiento': 'MT',
-      'Sistema': 'SI',
-      'Productos': 'PR'
-    };
+<footer class="footer-bar">
+Sistema interno Grupo CINA
+</footer>
 
-    const historyStack = [];
-    let currentNode = menuTree;
+</div>
 
-    const menuGrid = document.getElementById('menuGrid');
-    const screenTitle = document.getElementById('screenTitle');
-    const screenSubtitle = document.getElementById('screenSubtitle');
-    const breadcrumb = document.getElementById('breadcrumb');
-    const moduleCounter = document.getElementById('moduleCounter');
-    const backBtn = document.getElementById('backBtn');
-    const homeBtn = document.getElementById('homeBtn');
-    const fullscreenBtn = document.getElementById('fullscreenBtn');
+<script>
 
-    function getInitials(text) {
-      if (iconMap[text]) return iconMap[text];
-      return text
-        .split(/\s+/)
-        .filter(Boolean)
-        .slice(0, 2)
-        .map(word => word[0])
-        .join('')
-        .toUpperCase();
-    }
+const menuTree={
+ title:"Inicio",
+ children:[
+ {title:"Logistica nacional"},
+ {title:"Logistica fiscal"},
+ {title:"Calidad"},
+ {title:"Porteria"},
+ {title:"Transporte"},
+ {title:"Sistema de gestion"},
+ {title:"Indicadores"},
+ {title:"Reportes"},
+ {title:"Senasa"},
+ {title:"Dashboard"},
+ {title:"Administracion"},
+ {title:"RRHH"},
+ {title:"Mantenimiento"},
+ {title:"Sistema"},
+ {title:"Productos"},
+ {title:"Otros sistemas"}
+ ]
+}
 
-    function getColsClass(total) {
-      return `cols-${Math.min(6, Math.max(1, total))}`;
-    }
+const palette=[
+['#001F60','#002A80'],
+['#36B0C9','#2898AC'],
+['#00BBB4','#009F99'],
+['#00A887','#00846B'],
+['#007A4C','#005E3A']
+]
 
-    function buildBreadcrumb(node) {
-      if (node === menuTree) return 'Inicio';
-      return ['Inicio', ...historyStack.map(item => item.title), node.title].join(' / ');
-    }
+const menuGrid=document.getElementById('menuGrid')
+const moduleCounter=document.getElementById('moduleCounter')
 
-    function renderNode(node) {
-      currentNode = node;
-      const items = node.children || [];
+function render(){
 
-      screenTitle.textContent = node.title || 'Menú';
-      screenSubtitle.textContent = node.subtitle || (items.length
-        ? `${items.length} módulo${items.length === 1 ? '' : 's'} visibles en este entorno`
-        : 'Módulo final listo para vincular');
-      breadcrumb.textContent = buildBreadcrumb(node);
-      moduleCounter.textContent = `${items.length || 1} módulo${(items.length || 1) === 1 ? '' : 's'} visible${(items.length || 1) === 1 ? '' : 's'}`;
+menuGrid.innerHTML=""
 
-      menuGrid.className = `menu-grid ${getColsClass(items.length || 1)}`;
-      menuGrid.innerHTML = '';
+menuTree.children.forEach((item,i)=>{
 
-      if (!items.length) {
-        const [c1, c2] = ['#001F60', '#00A887'];
-        const tile = document.createElement('button');
-        tile.className = 'tile';
-        tile.style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
-        tile.innerHTML = `
-          <div class="tile-inner">
-            <div class="tile-icon">${getInitials(node.title)}</div>
-            <h3 class="tile-title">${node.title}</h3>
-          </div>
-        `;
-        menuGrid.appendChild(tile);
-      } else {
-        items.forEach((item, index) => {
-          const [c1, c2] = palette[index % palette.length];
-          const tile = document.createElement('button');
-          tile.className = 'tile';
-          tile.style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
-          tile.innerHTML = `
-            <div class="tile-inner">
-              <div class="tile-icon">${getInitials(item.title)}</div>
-              <h3 class="tile-title">${item.title}</h3>
-            </div>
-          `;
+const colors=palette[i%palette.length]
 
-          tile.addEventListener('click', () => {
-            if (item.children) {
-              historyStack.push(node);
-              renderNode(item);
-            } else {
-              historyStack.push(node);
-              renderNode({ title: item.title, subtitle: 'Módulo individual', children: [] });
-            }
-          });
+const tile=document.createElement('div')
 
-          menuGrid.appendChild(tile);
-        });
-      }
+tile.className='tile'
 
-      backBtn.disabled = historyStack.length === 0;
-    }
+tile.style.background=`linear-gradient(135deg,${colors[0]},${colors[1]})`
 
-    backBtn.addEventListener('click', () => {
-      if (!historyStack.length) return;
-      const previous = historyStack.pop();
-      renderNode(previous);
-    });
+tile.innerHTML=`
+<div class="tile-icon">${item.title.substring(0,2).toUpperCase()}</div>
+<div>${item.title.toUpperCase()}</div>
+`
 
-    homeBtn.addEventListener('click', () => {
-      historyStack.length = 0;
-      renderNode(menuTree);
-    });
+menuGrid.appendChild(tile)
 
-    fullscreenBtn.addEventListener('click', async () => {
-      try {
-        if (!document.fullscreenElement) {
-          await document.documentElement.requestFullscreen();
-          fullscreenBtn.textContent = '⤢ Salir pantalla completa';
-        } else {
-          await document.exitFullscreen();
-          fullscreenBtn.textContent = '⛶ Pantalla completa';
-        }
-      } catch (error) {
-        console.error('No se pudo cambiar el modo de pantalla completa', error);
-      }
-    });
+})
 
-    document.addEventListener('fullscreenchange', () => {
-      fullscreenBtn.textContent = document.fullscreenElement
-        ? '⤢ Salir pantalla completa'
-        : '⛶ Pantalla completa';
-    });
+moduleCounter.innerText=menuTree.children.length+" módulos"
 
-    renderNode(menuTree);
-  </script>
+}
+
+render()
+
+const fullscreenBtn=document.getElementById('fullscreenBtn')
+
+fullscreenBtn.onclick=()=>{
+if(!document.fullscreenElement){
+document.documentElement.requestFullscreen()
+}else{
+document.exitFullscreen()
+}
+}
+
+</script>
+
 </body>
 </html>
+
