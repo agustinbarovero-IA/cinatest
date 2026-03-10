@@ -625,6 +625,155 @@ body{min-height:100vh;}
   opacity:.7;
 }
 
+/* MODO COMPACTO AUTOMATICO */
+body.compact-mode .app-shell{
+  gap:6px;
+  padding:8px;
+}
+
+body.compact-mode .topbar{
+  padding:8px 14px;
+  gap:10px;
+}
+
+body.compact-mode .brand img{
+  height:42px;
+}
+
+body.compact-mode .brand h1{
+  font-size:1.02rem;
+}
+
+body.compact-mode .brand p{
+  margin-top:2px;
+  font-size:.72rem;
+}
+
+body.compact-mode .toolbar button{
+  padding:8px 12px;
+  font-size:.82rem;
+}
+
+body.compact-mode .data-strip{
+  gap:6px;
+}
+
+body.compact-mode .data-box{
+  min-height:44px;
+  padding:6px 8px;
+  font-size:.66rem;
+}
+
+body.compact-mode .data-number{
+  font-size:1.15rem;
+}
+
+body.compact-mode .data-label{
+  font-size:.48rem;
+}
+
+body.compact-mode .dashboard-grid{
+  gap:8px;
+}
+
+body.compact-mode .dashboard-card{
+  min-height:84px;
+  height:84px;
+  padding:7px 8px;
+  grid-template-columns:54px 1fr 62px;
+  gap:7px;
+}
+
+body.compact-mode .dashboard-temp{
+  min-height:40px;
+  padding:4px 3px;
+}
+
+body.compact-mode .dashboard-alert{
+  min-height:24px;
+}
+
+body.compact-mode .dashboard-temp-label{
+  font-size:.4rem;
+}
+
+body.compact-mode .dashboard-temp-value{
+  font-size:.8rem;
+}
+
+body.compact-mode .dashboard-alert-value{
+  font-size:.8rem;
+}
+
+body.compact-mode .dashboard-title{
+  font-size:.64rem;
+  margin-bottom:3px;
+}
+
+body.compact-mode .dashboard-number{
+  font-size:1.28rem;
+}
+
+body.compact-mode .dashboard-sub{
+  font-size:.48rem;
+  margin-top:2px;
+}
+
+body.compact-mode .status-box{
+  width:14px;
+  height:14px;
+  font-size:.48rem;
+}
+
+body.compact-mode .client-badge{
+  width:22px;
+  height:22px;
+  font-size:.54rem;
+}
+
+body.compact-mode .equipment-grid{
+  gap:8px;
+  grid-template-columns:repeat(4,minmax(220px,1fr));
+}
+
+body.compact-mode .equipment-card{
+  min-height:126px;
+  height:126px;
+  padding:9px 10px;
+  border-radius:14px;
+  gap:5px;
+}
+
+body.compact-mode .equipment-icon{
+  width:32px;
+  height:32px;
+  font-size:.95rem;
+}
+
+body.compact-mode .equipment-type{
+  font-size:.68rem;
+}
+
+body.compact-mode .equipment-name{
+  font-size:.6rem;
+}
+
+body.compact-mode .equipment-row{
+  grid-template-columns:68px 1fr;
+  gap:5px;
+  font-size:.6rem;
+}
+
+body.compact-mode .state-badge,
+body.compact-mode .plant-badge{
+  padding:3px 7px;
+  font-size:.58rem;
+}
+
+body.compact-mode .footer-bar{
+  font-size:.66rem;
+}
+
 @media(max-width:1200px){
   .menu-grid.layout-8x2{
     grid-template-columns:repeat(4,minmax(140px,1fr));
@@ -637,12 +786,18 @@ body{min-height:100vh;}
   .equipment-grid{
     grid-template-columns:repeat(3,minmax(240px,1fr));
   }
+  body.compact-mode .equipment-grid{
+    grid-template-columns:repeat(3,minmax(220px,1fr));
+  }
 }
 
 @media(max-width:900px){
   .dashboard-grid,
   .equipment-grid{
     grid-template-columns:repeat(2,minmax(240px,1fr));
+  }
+  body.compact-mode .equipment-grid{
+    grid-template-columns:repeat(2,minmax(220px,1fr));
   }
 }
 
@@ -661,7 +816,8 @@ body{min-height:100vh;}
     font-size:.9rem;
   }
   .dashboard-grid,
-  .equipment-grid{
+  .equipment-grid,
+  body.compact-mode .equipment-grid{
     grid-template-columns:1fr;
   }
   .dashboard-card{
@@ -1105,12 +1261,6 @@ function renderDashboardLogisticaNacional(){
   backBtn.disabled = historyStack.length === 0;
 }
 
-function getStateClass(estado){
-  if(estado === 'En marcha') return 'state-running';
-  if(estado === 'Cargando') return 'state-charging';
-  return 'state-failure';
-}
-
 function getEquipmentCardClass(estado){
   if(estado === 'En marcha') return 'state-running-card';
   if(estado === 'Cargando') return 'state-charging-card';
@@ -1239,6 +1389,17 @@ function renderNode(node){
   backBtn.disabled = historyStack.length === 0;
 }
 
+function updateAdaptiveLayout(){
+  const isFullscreen = !!document.fullscreenElement;
+  const isSmallWindow = window.innerHeight < 920 || window.innerWidth < 1500;
+
+  if(!isFullscreen || isSmallWindow){
+    document.body.classList.add('compact-mode');
+  } else {
+    document.body.classList.remove('compact-mode');
+  }
+}
+
 backBtn.addEventListener('click', () => {
   if(!historyStack.length) return;
   const previous = historyStack.pop();
@@ -1250,9 +1411,18 @@ homeBtn.addEventListener('click', () => {
   renderNode(menuTree);
 });
 
-fullscreenBtn.addEventListener('click', () => {
-  if(!document.fullscreenElement) document.documentElement.requestFullscreen();
-  else document.exitFullscreen();
+fullscreenBtn.addEventListener('click', async () => {
+  try{
+    if(!document.fullscreenElement){
+      await document.documentElement.requestFullscreen();
+    }else{
+      await document.exitFullscreen();
+    }
+  }catch(e){
+    console.error('No se pudo cambiar el modo de pantalla completa', e);
+  }finally{
+    updateAdaptiveLayout();
+  }
 });
 
 userBtn.addEventListener('click', () => openModule('https://sistema.cinafrio.com/intranet2/app.php/persona/306/show'));
@@ -1260,6 +1430,10 @@ qrBox.addEventListener('click', () => openModule('https://sistema.cinafrio.com/i
 sinUbicacionBox.addEventListener('click', () => openModule('https://sistema.cinafrio.com/intranet/index.php/estiba/sinPosicion'));
 vencidasBox.addEventListener('click', () => openModule('https://sistema.cinafrio.com/intranet/index.php/infostock/vencimientos'));
 
+document.addEventListener('fullscreenchange', updateAdaptiveLayout);
+window.addEventListener('resize', updateAdaptiveLayout);
+
+updateAdaptiveLayout();
 renderNode(menuTree);
 </script>
 </body>
