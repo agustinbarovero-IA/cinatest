@@ -494,6 +494,129 @@ body{min-height:100vh;}
   opacity:.18;
 }
 
+/* DASHBOARD EQUIPAMIENTO */
+.equipment-grid{
+  width:100%;
+  max-width:1500px;
+  display:grid;
+  grid-template-columns:repeat(4,minmax(280px,1fr));
+  gap:12px;
+  align-content:start;
+}
+
+.equipment-card{
+  min-height:170px;
+  border-radius:18px;
+  padding:14px;
+  background:linear-gradient(135deg,#163A7A,#0C2554);
+  box-shadow:var(--shadow-main);
+  border:1px solid rgba(255,255,255,.18);
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  color:#fff;
+  transition:transform .18s ease, filter .18s ease, box-shadow .18s ease;
+}
+
+.equipment-card:hover{
+  transform:translateY(-3px);
+  filter:brightness(1.04);
+  box-shadow:0 18px 34px rgba(0,0,0,.30);
+}
+
+.equipment-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.equipment-icon{
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  background:rgba(255,255,255,.14);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.25rem;
+  flex-shrink:0;
+}
+
+.equipment-title-wrap{
+  min-width:0;
+}
+
+.equipment-type{
+  font-size:.82rem;
+  font-weight:800;
+  text-transform:uppercase;
+  line-height:1.05;
+}
+
+.equipment-name{
+  font-size:.72rem;
+  color:var(--text-soft);
+  margin-top:3px;
+  line-height:1.05;
+}
+
+.equipment-row{
+  display:grid;
+  grid-template-columns:88px 1fr;
+  gap:8px;
+  align-items:start;
+  font-size:.72rem;
+}
+
+.equipment-label{
+  color:rgba(255,255,255,.72);
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.2px;
+}
+
+.equipment-value{
+  font-weight:700;
+  line-height:1.15;
+}
+
+.state-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:88px;
+  padding:6px 10px;
+  border-radius:10px;
+  font-size:.7rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.2px;
+}
+
+.state-running{
+  background:linear-gradient(135deg,#16a34a,#15803d);
+}
+
+.state-charging{
+  background:linear-gradient(135deg,#f59e0b,#ea580c);
+}
+
+.state-failure{
+  background:linear-gradient(135deg,#dc2626,#b91c1c);
+}
+
+.plant-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px 10px;
+  border-radius:10px;
+  background:rgba(255,255,255,.12);
+  font-size:.7rem;
+  font-weight:800;
+  text-transform:uppercase;
+}
+
 .footer-bar{
   text-align:center;
   font-size:.74rem;
@@ -508,13 +631,15 @@ body{min-height:100vh;}
   .data-strip{
     grid-template-columns:repeat(4,minmax(0,1fr));
   }
-  .dashboard-grid{
+  .dashboard-grid,
+  .equipment-grid{
     grid-template-columns:repeat(3,minmax(260px,1fr));
   }
 }
 
 @media(max-width:900px){
-  .dashboard-grid{
+  .dashboard-grid,
+  .equipment-grid{
     grid-template-columns:repeat(2,minmax(260px,1fr));
   }
 }
@@ -533,7 +658,8 @@ body{min-height:100vh;}
   .tile{
     font-size:.9rem;
   }
-  .dashboard-grid{
+  .dashboard-grid,
+  .equipment-grid{
     grid-template-columns:1fr;
   }
   .dashboard-card{
@@ -660,6 +786,7 @@ const menuTree = {
       { title: 'MAPA DE BOXES', url: 'https://sistema.cinafrio.com/intranet/index.php/box/map' },
       { title: 'DASHBOARD LOGISTICA NACIONAL' },
       { title: 'DASHBOARD LOGISTICA FISCAL' },
+      { title: 'DASHBOARD EQUIPAMIENTO' },
       { title: 'DASHBOARD GENERAL', url: 'https://sistema.cinafrio.com/intranet2/app.php/ausentismo/dashboard' }
     ]},
     { title: 'REPORTES', children: [
@@ -758,22 +885,43 @@ const mainColorMap = {
 };
 
 const dashboardLogisticaNacionalData = [
-  { tipo:'CAMARA', nombre:'1',  estibas:150, temperatura:-18, clientes:['MB','ME'], extra:15, puerta:true, ventilador:true },
-  { tipo:'CAMARA', nombre:'3',  estibas:200, temperatura:-18, clientes:['MB','ME'], extra:10, puerta:false, ventilador:true },
-  { tipo:'CAMARA', nombre:'4',  estibas:75,  temperatura:-18, clientes:['MB','ME'], extra:20, puerta:true, ventilador:true },
-  { tipo:'CAMARA', nombre:'56', estibas:200, temperatura:-18, clientes:['MB','ME'], extra:25, puerta:true, ventilador:false },
-  { tipo:'CAMARA', nombre:'7',  estibas:120, temperatura:2,   clientes:['MI'],      extra:23, puerta:true, ventilador:true },
+  { tipo:'CAMARA', nombre:'1',  estibas:150, temperatura:-18, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
+  { tipo:'CAMARA', nombre:'3',  estibas:200, temperatura:-18, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
+  { tipo:'CAMARA', nombre:'4',  estibas:75,  temperatura:-18, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
+  { tipo:'CAMARA', nombre:'56', estibas:200, temperatura:-18, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
+  { tipo:'CAMARA', nombre:'7',  estibas:120, temperatura:2,   clientes:['MI'],      extra:25, puerta:true, ventilador:true },
   { tipo:'CAMARA', nombre:'8',  estibas:850, temperatura:-21, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
-  { tipo:'CAMARA', nombre:'11', estibas:760, temperatura:-21, clientes:['MB','ME'], extra:20, puerta:false, ventilador:true },
+  { tipo:'CAMARA', nombre:'11', estibas:760, temperatura:-21, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
   { tipo:'CAMARA', nombre:'12', estibas:300, temperatura:-18, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
-  { tipo:'CAMARA', nombre:'14', estibas:243, temperatura:-18, clientes:['MB','ME'], extra:125, puerta:true, ventilador:false },
-  { tipo:'CAMARA', nombre:'15', estibas:200, temperatura:-18, clientes:['MB','ME'], extra:20, puerta:true, ventilador:true },
-  { tipo:'CAMARA', nombre:'16', estibas:350, temperatura:-18, clientes:['MB','ME'], extra:25, puerta:false, ventilador:true },
-  { tipo:'CAMARA', nombre:'17', estibas:75,  temperatura:-18, clientes:['MB','ME'], extra:30, puerta:true, ventilador:true },
-  { tipo:'CAMARA', nombre:'DS', estibas:67,  temperatura:-18, clientes:['MB','ME'], extra:35, puerta:true, ventilador:true },
-  { tipo:'TUNEL',  nombre:'2',  estibas:35,  temperatura:-27, clientes:['MD'],      extra:0, puerta:true, ventilador:true },
-  { tipo:'TUNEL',  nombre:'9',  estibas:45,  temperatura:-27, clientes:['MD'],      extra:0, puerta:true, ventilador:true },
-  { tipo:'TUNEL',  nombre:'10', estibas:40,  temperatura:-27, clientes:['MD'],      extra:0, puerta:true, ventilador:true }
+  { tipo:'CAMARA', nombre:'14', estibas:243, temperatura:-18, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
+  { tipo:'CAMARA', nombre:'15', estibas:200, temperatura:-18, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
+  { tipo:'CAMARA', nombre:'16', estibas:350, temperatura:-18, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
+  { tipo:'CAMARA', nombre:'17', estibas:75,  temperatura:-18, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
+  { tipo:'CAMARA', nombre:'DS', estibas:67,  temperatura:-18, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
+  { tipo:'TUNEL',  nombre:'2',  estibas:35,  temperatura:-27, clientes:['MD'],      extra:25, puerta:true, ventilador:true },
+  { tipo:'TUNEL',  nombre:'9',  estibas:45,  temperatura:-27, clientes:['MD'],      extra:25, puerta:true, ventilador:true },
+  { tipo:'TUNEL',  nombre:'10', estibas:40,  temperatura:-27, clientes:['MD'],      extra:25, puerta:true, ventilador:true }
+];
+
+const dashboardEquipamientoData = [
+  { tipo:'Autoelevador', icono:'🛗', denominacion:'AE-01', estado:'En marcha', planta:'Nacional', horas:'00:45hs', usuario:'jlopez' },
+  { tipo:'Autoelevador', icono:'🛗', denominacion:'AE-02', estado:'Cargando', planta:'Nacional', horas:'01:20hs', usuario:'mrojas' },
+  { tipo:'Autoelevador', icono:'🛗', denominacion:'AE-03', estado:'En marcha', planta:'Deposito Fiscal', horas:'00:15hs', usuario:'agarcia' },
+  { tipo:'Autoelevador', icono:'🛗', denominacion:'AE-04', estado:'Falla', planta:'Mantenimiento', horas:'03:40hs', usuario:'lperez' },
+  { tipo:'Autoelevador', icono:'🛗', denominacion:'AE-05', estado:'En marcha', planta:'Nacional', horas:'00:05hs', usuario:'jgomez' },
+  { tipo:'Autoelevador', icono:'🛗', denominacion:'AE-06', estado:'Cargando', planta:'Otros', horas:'02:10hs', usuario:'mbazan' },
+  { tipo:'Autoelevador', icono:'🛗', denominacion:'AE-07', estado:'En marcha', planta:'Deposito Fiscal', horas:'00:55hs', usuario:'fvera' },
+  { tipo:'Autoelevador', icono:'🛗', denominacion:'AE-08', estado:'Falla', planta:'Mantenimiento', horas:'04:25hs', usuario:'acastro' },
+
+  { tipo:'Zorra electrica', icono:'🟦', denominacion:'ZE-01', estado:'En marcha', planta:'Nacional', horas:'00:32hs', usuario:'jmartin' },
+  { tipo:'Zorra electrica', icono:'🟦', denominacion:'ZE-02', estado:'Cargando', planta:'Nacional', horas:'01:05hs', usuario:'rsosa' },
+  { tipo:'Zorra electrica', icono:'🟦', denominacion:'ZE-03', estado:'En marcha', planta:'Deposito Fiscal', horas:'00:11hs', usuario:'pdominguez' },
+  { tipo:'Zorra electrica', icono:'🟦', denominacion:'ZE-04', estado:'Falla', planta:'Mantenimiento', horas:'05:50hs', usuario:'cmedina' },
+  { tipo:'Zorra electrica', icono:'🟦', denominacion:'ZE-05', estado:'En marcha', planta:'Otros', horas:'00:48hs', usuario:'sgimenez' },
+
+  { tipo:'Autoelevador diesel', icono:'⛽', denominacion:'AD-01', estado:'En marcha', planta:'Deposito Fiscal', horas:'02:30hs', usuario:'rbenitez' },
+  { tipo:'Limpiador', icono:'🤖', denominacion:'RL-01', estado:'Cargando', planta:'Mantenimiento', horas:'00:25hs', usuario:'lortiz' },
+  { tipo:'Camion', icono:'🚚', denominacion:'CM-01', estado:'En marcha', planta:'Nacional', horas:'06:10hs', usuario:'druiz' }
 ];
 
 const historyStack = [];
@@ -958,6 +1106,66 @@ function renderDashboardLogisticaNacional(){
   backBtn.disabled = historyStack.length === 0;
 }
 
+function getStateClass(estado){
+  if(estado === 'En marcha') return 'state-running';
+  if(estado === 'Cargando') return 'state-charging';
+  return 'state-failure';
+}
+
+function renderDashboardEquipamiento(){
+  screenTitle.textContent = 'DASHBOARD EQUIPAMIENTO';
+  screenSubtitle.textContent = 'ESTADO DE EQUIPOS Y VEHICULOS';
+  menuGrid.className = '';
+  menuGrid.innerHTML = '';
+
+  const equipmentGrid = document.createElement('div');
+  equipmentGrid.className = 'equipment-grid';
+
+  dashboardEquipamientoData.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'equipment-card';
+
+    card.innerHTML = `
+      <div class="equipment-header">
+        <div class="equipment-icon">${item.icono}</div>
+        <div class="equipment-title-wrap">
+          <div class="equipment-type">${item.tipo}</div>
+          <div class="equipment-name">${item.denominacion}</div>
+        </div>
+      </div>
+
+      <div class="equipment-row">
+        <div class="equipment-label">Estado</div>
+        <div class="equipment-value">
+          <span class="state-badge ${getStateClass(item.estado)}">${item.estado}</span>
+        </div>
+      </div>
+
+      <div class="equipment-row">
+        <div class="equipment-label">Planta</div>
+        <div class="equipment-value">
+          <span class="plant-badge">${item.planta}</span>
+        </div>
+      </div>
+
+      <div class="equipment-row">
+        <div class="equipment-label">Hs. estado</div>
+        <div class="equipment-value">${item.horas}</div>
+      </div>
+
+      <div class="equipment-row">
+        <div class="equipment-label">Usuario</div>
+        <div class="equipment-value">"${item.usuario}"</div>
+      </div>
+    `;
+
+    equipmentGrid.appendChild(card);
+  });
+
+  menuGrid.appendChild(equipmentGrid);
+  backBtn.disabled = historyStack.length === 0;
+}
+
 function renderNode(node){
   const items = node.children || [];
   const level = historyStack.length;
@@ -995,6 +1203,12 @@ function renderNode(node){
         if(item.title === 'DASHBOARD LOGISTICA NACIONAL'){
           historyStack.push(node);
           renderDashboardLogisticaNacional();
+          return;
+        }
+
+        if(item.title === 'DASHBOARD EQUIPAMIENTO'){
+          historyStack.push(node);
+          renderDashboardEquipamiento();
           return;
         }
 
