@@ -460,11 +460,11 @@ body{min-height:100vh;}
   border:1px solid rgba(255,255,255,.18);
 }
 
-.status-box.door{
+.status-box.true-state{
   background:linear-gradient(135deg,#dc2626,#b91c1c);
 }
 
-.status-box.fan{
+.status-box.false-state{
   background:linear-gradient(135deg,#16a34a,#15803d);
 }
 
@@ -903,10 +903,13 @@ function formatTemperature(temp){
 }
 
 function buildStatusRow(item){
+  const puertaClass = item.puerta ? 'true-state' : 'false-state';
+  const ventiladorClass = item.ventilador ? 'true-state' : 'false-state';
+
   return `
     <div class="dashboard-status-row">
-      <div class="status-box door" title="Puerta">${item.puerta ? '🚪' : ''}</div>
-      <div class="status-box fan" title="Ventilador">${item.ventilador ? '🌀' : ''}</div>
+      <div class="status-box ${puertaClass}" title="Puerta">🚪</div>
+      <div class="status-box ${ventiladorClass}" title="Ventilador">🌀</div>
     </div>
   `;
 }
