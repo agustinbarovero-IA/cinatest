@@ -11,10 +11,10 @@
   --bg-dark:#000f30;
   --text:#ffffff;
   --text-soft:rgba(255,255,255,.82);
-  --shadow-main:0 18px 38px rgba(0,0,0,.28);
-  --radius-lg:22px;
-  --gap:18px;
-  --grid-max:1320px;
+  --shadow-main:0 14px 28px rgba(0,0,0,.24);
+  --radius-lg:20px;
+  --gap:14px;
+  --grid-max:1500px;
 }
 *{box-sizing:border-box}
 
@@ -30,15 +30,13 @@ html,body{
   overflow:hidden;
 }
 
-body{
-  min-height:100vh;
-}
+body{min-height:100vh;}
 
 .app-shell{
   display:grid;
   grid-template-rows:auto auto 1fr auto;
-  gap:14px;
-  padding:18px;
+  gap:12px;
+  padding:14px;
   min-height:100vh;
 }
 
@@ -46,9 +44,9 @@ body{
   display:grid;
   grid-template-columns:1fr auto;
   align-items:center;
-  gap:16px;
-  padding:16px 22px;
-  border-radius:26px;
+  gap:14px;
+  padding:12px 18px;
+  border-radius:22px;
   background:rgba(255,255,255,.08);
   box-shadow:var(--shadow-main);
 }
@@ -56,12 +54,12 @@ body{
 .brand{
   display:flex;
   align-items:center;
-  gap:18px;
+  gap:16px;
   min-width:0;
 }
 
 .brand img{
-  height:64px;
+  height:54px;
   width:auto;
   object-fit:contain;
 }
@@ -70,19 +68,19 @@ body{
 
 .brand h1{
   margin:0;
-  font-size:1.6rem;
+  font-size:1.3rem;
   font-weight:700;
 }
 
 .brand p{
-  margin:6px 0 0;
+  margin:4px 0 0;
   color:var(--text-soft);
-  font-size:.95rem;
+  font-size:.85rem;
 }
 
 .toolbar{
   display:flex;
-  gap:10px;
+  gap:8px;
   flex-wrap:wrap;
   justify-content:flex-end;
 }
@@ -91,11 +89,12 @@ body{
   background:rgba(255,255,255,.1);
   border:0;
   color:white;
-  padding:12px 16px;
+  padding:10px 14px;
   border-radius:12px;
   font-weight:600;
   cursor:pointer;
   transition:background .18s ease, transform .18s ease;
+  font-size:.9rem;
 }
 
 .toolbar button:hover:not(:disabled){
@@ -112,25 +111,23 @@ body{
   background:linear-gradient(135deg,#36B0C9,#00A887);
 }
 
-.meta-panel{
-  display:block;
-}
+.meta-panel{display:block}
 
 .data-strip{
   display:grid;
   grid-template-columns:repeat(8,minmax(0,1fr));
-  gap:10px;
+  gap:8px;
 }
 
 .data-box{
-  min-height:68px;
+  min-height:58px;
   border-radius:14px;
   display:flex;
   align-items:center;
   justify-content:center;
   text-align:center;
-  padding:10px 12px;
-  font-size:.82rem;
+  padding:8px 10px;
+  font-size:.76rem;
   font-weight:700;
   color:#fff;
   box-shadow:var(--shadow-main);
@@ -168,25 +165,25 @@ body{
 }
 
 .data-number{
-  font-size:1.9rem;
+  font-size:1.55rem;
   font-weight:800;
 }
 
 .data-icon-round{
-  width:24px;
-  height:24px;
+  width:22px;
+  height:22px;
   border-radius:50%;
   border:2px solid currentColor;
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  font-size:.95rem;
+  font-size:.9rem;
   font-weight:900;
   flex-shrink:0;
 }
 
 .data-label{
-  font-size:.62rem;
+  font-size:.58rem;
   font-weight:700;
   letter-spacing:.2px;
   text-transform:uppercase;
@@ -194,8 +191,8 @@ body{
 }
 
 .data-qr-icon{
-  width:28px;
-  height:28px;
+  width:24px;
+  height:24px;
   border:2px solid #fff;
   position:relative;
   flex-shrink:0;
@@ -211,17 +208,17 @@ body{
 .data-qr-icon::before{
   left:4px;
   top:4px;
-  width:6px;
-  height:6px;
-  box-shadow:10px 0 #fff,0 10px #fff,10px 10px #fff;
+  width:5px;
+  height:5px;
+  box-shadow:9px 0 #fff,0 9px #fff,9px 9px #fff;
 }
 
 .data-qr-icon::after{
   right:4px;
   bottom:4px;
-  width:8px;
-  height:8px;
-  box-shadow:-10px 0 #fff,0 -10px #fff;
+  width:7px;
+  height:7px;
+  box-shadow:-9px 0 #fff,0 -9px #fff;
 }
 
 .workspace{
@@ -260,7 +257,7 @@ body{
 }
 
 .tile{
-  min-height:150px;
+  min-height:140px;
   aspect-ratio:1/1;
   border:none;
   border-radius:var(--radius-lg);
@@ -269,11 +266,11 @@ body{
   justify-content:center;
   align-items:center;
   text-align:center;
-  gap:16px;
-  padding:18px 12px;
+  gap:14px;
+  padding:16px 10px;
   color:white;
   font-weight:700;
-  font-size:1rem;
+  font-size:.95rem;
   text-transform:uppercase;
   box-shadow:var(--shadow-main);
   cursor:pointer;
@@ -285,26 +282,26 @@ body{
 .tile:hover{
   transform:translateY(-4px);
   filter:brightness(1.06);
-  box-shadow:0 22px 42px rgba(0,0,0,.34);
+  box-shadow:0 20px 40px rgba(0,0,0,.32);
 }
 
 .tile-icon{
-  width:70px;
-  height:70px;
-  border-radius:20px;
+  width:62px;
+  height:62px;
+  border-radius:18px;
   background:rgba(255,255,255,.18);
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:2rem;
+  font-size:1.8rem;
   flex-shrink:0;
   overflow:hidden;
 }
 
 .tile-icon img{
   display:block;
-  max-width:52px;
-  max-height:52px;
+  max-width:48px;
+  max-height:48px;
   object-fit:contain;
 }
 
@@ -313,8 +310,8 @@ body{
   align-items:center;
   justify-content:center;
   text-align:center;
-  line-height:1.12;
-  min-height:2.8em;
+  line-height:1.1;
+  min-height:2.6em;
   max-width:94%;
   word-break:normal;
   overflow-wrap:anywhere;
@@ -324,25 +321,26 @@ body{
 .tile-title.two-lines{white-space:normal}
 .tile-title.one-line{white-space:nowrap}
 
+/* DASHBOARD LOGISTICA NACIONAL */
 .dashboard-grid{
   width:100%;
-  max-width:1320px;
+  max-width:1500px;
   display:grid;
-  grid-template-columns:repeat(3,minmax(280px,1fr));
-  gap:18px;
+  grid-template-columns:repeat(4,minmax(280px,1fr));
+  gap:12px;
   align-content:start;
 }
 
 .dashboard-card{
-  min-height:170px;
-  border-radius:22px;
-  padding:16px 18px;
+  min-height:108px;
+  border-radius:18px;
+  padding:10px 12px;
   background:linear-gradient(135deg,#163A7A,#0C2554);
   box-shadow:var(--shadow-main);
   border:1px solid rgba(255,255,255,.18);
   display:grid;
-  grid-template-columns:78px 1fr 88px;
-  gap:14px;
+  grid-template-columns:64px 1fr 70px;
+  gap:10px;
   align-items:center;
   color:#fff;
   cursor:pointer;
@@ -350,36 +348,59 @@ body{
 }
 
 .dashboard-card:hover{
-  transform:translateY(-4px);
+  transform:translateY(-3px);
   filter:brightness(1.05);
-  box-shadow:0 22px 42px rgba(0,0,0,.34);
+  box-shadow:0 18px 34px rgba(0,0,0,.30);
 }
 
-.dashboard-temp{
+.dashboard-left{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.dashboard-temp,
+.dashboard-alert{
+  border-radius:14px;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
   text-align:center;
-  border-radius:18px;
-  background:rgba(255,255,255,.10);
-  min-height:118px;
-  padding:10px 6px;
+  padding:6px 4px;
+  color:#fff;
 }
 
-.dashboard-temp-label{
-  font-size:.62rem;
+.dashboard-temp{
+  min-height:52px;
+}
+
+.dashboard-alert{
+  min-height:36px;
+  background:linear-gradient(135deg,#f59e0b,#ea580c);
+}
+
+.dashboard-temp-label,
+.dashboard-alert-label{
+  font-size:.5rem;
   font-weight:700;
-  letter-spacing:.8px;
+  letter-spacing:.5px;
   text-transform:uppercase;
-  opacity:.9;
+  opacity:.95;
 }
 
 .dashboard-temp-value{
-  margin-top:8px;
-  font-size:1.2rem;
+  margin-top:4px;
+  font-size:.92rem;
   font-weight:800;
-  line-height:1.05;
+  line-height:1;
+}
+
+.dashboard-alert-value{
+  margin-top:2px;
+  font-size:.95rem;
+  font-weight:900;
+  line-height:1;
 }
 
 .dashboard-main{
@@ -392,24 +413,25 @@ body{
 }
 
 .dashboard-title{
-  font-size:1.05rem;
+  font-size:.8rem;
   font-weight:800;
   text-transform:uppercase;
-  line-height:1.1;
-  margin-bottom:10px;
+  line-height:1.05;
+  margin-bottom:6px;
+  letter-spacing:.3px;
 }
 
 .dashboard-number{
-  font-size:2.2rem;
+  font-size:1.75rem;
   font-weight:900;
   line-height:1;
 }
 
 .dashboard-sub{
-  margin-top:8px;
-  font-size:.68rem;
+  margin-top:4px;
+  font-size:.58rem;
   font-weight:700;
-  letter-spacing:.7px;
+  letter-spacing:.6px;
   text-transform:uppercase;
   opacity:.85;
 }
@@ -417,21 +439,21 @@ body{
 .dashboard-clients{
   display:grid;
   grid-template-columns:repeat(2,1fr);
-  gap:8px;
+  gap:6px;
   align-content:center;
   justify-items:center;
 }
 
 .client-badge{
-  width:30px;
-  height:30px;
-  border-radius:10px;
+  width:26px;
+  height:26px;
+  border-radius:8px;
   background:rgba(255,255,255,.16);
   border:1px solid rgba(255,255,255,.18);
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:.72rem;
+  font-size:.66rem;
   font-weight:800;
   text-transform:uppercase;
 }
@@ -442,8 +464,14 @@ body{
 
 .footer-bar{
   text-align:center;
-  font-size:.8rem;
+  font-size:.74rem;
   opacity:.7;
+}
+
+@media(max-width:1400px){
+  .dashboard-grid{
+    grid-template-columns:repeat(3,minmax(280px,1fr));
+  }
 }
 
 @media(max-width:1200px){
@@ -477,10 +505,10 @@ body{
     grid-template-columns:1fr;
   }
   .dashboard-card{
-    grid-template-columns:70px 1fr 80px;
+    grid-template-columns:60px 1fr 68px;
   }
   .dashboard-number{
-    font-size:1.9rem;
+    font-size:1.55rem;
   }
   #fullscreenBtn{
     display:none;
@@ -698,19 +726,23 @@ const mainColorMap = {
 };
 
 const dashboardLogisticaNacionalData = [
-  { camara:'1',   valor:'1',   temperatura:'-18°C', clientes:['MB','ME'] },
-  { camara:'3',   valor:'3',   temperatura:'-18°C', clientes:['MB','ME'] },
-  { camara:'4',   valor:'4',   temperatura:'-18°C', clientes:['MB','ME'] },
-  { camara:'56',  valor:'56',  temperatura:'-18°C', clientes:['MB','ME'] },
-  { camara:'7',   valor:'7',   temperatura:'2°C',   clientes:['MI'] },
-  { camara:'8',   valor:'8',   temperatura:'-21°C', clientes:['MB','ME'] },
-  { camara:'11',  valor:'11',  temperatura:'-21°C', clientes:['MB','ME'] },
-  { camara:'12',  valor:'12',  temperatura:'-18°C', clientes:['MB','ME'] },
-  { camara:'14',  valor:'14',  temperatura:'-18°C', clientes:['MB','ME'] },
-  { camara:'15',  valor:'15',  temperatura:'-18°C', clientes:['MB','ME'] },
-  { camara:'16',  valor:'16',  temperatura:'-18°C', clientes:['MB','ME'] },
-  { camara:'17',  valor:'17',  temperatura:'-18°C', clientes:['MB','ME'] },
-  { camara:'DPS', valor:'DPS', temperatura:'-18°C', clientes:['MB','ME'] }
+  { tipo:'CAMARA', nombre:'1',  estibas:'1',   temperatura:-18, clientes:['MB','ME'], extra:25 },
+  { tipo:'CAMARA', nombre:'3',  estibas:'3',   temperatura:-18, clientes:['MB','ME'], extra:25 },
+  { tipo:'CAMARA', nombre:'4',  estibas:'4',   temperatura:-18, clientes:['MB','ME'], extra:25 },
+  { tipo:'CAMARA', nombre:'56', estibas:'56',  temperatura:-18, clientes:['MB','ME'], extra:25 },
+  { tipo:'CAMARA', nombre:'7',  estibas:'7',   temperatura:2,   clientes:['MI'],      extra:25 },
+  { tipo:'CAMARA', nombre:'8',  estibas:'8',   temperatura:-21, clientes:['MB','ME'], extra:25 },
+  { tipo:'CAMARA', nombre:'11', estibas:'11',  temperatura:-21, clientes:['MB','ME'], extra:25 },
+  { tipo:'CAMARA', nombre:'12', estibas:'12',  temperatura:-18, clientes:['MB','ME'], extra:25 },
+  { tipo:'CAMARA', nombre:'14', estibas:'14',  temperatura:-18, clientes:['MB','ME'], extra:25 },
+  { tipo:'CAMARA', nombre:'15', estibas:'15',  temperatura:-18, clientes:['MB','ME'], extra:25 },
+  { tipo:'CAMARA', nombre:'16', estibas:'16',  temperatura:-18, clientes:['MB','ME'], extra:25 },
+  { tipo:'CAMARA', nombre:'17', estibas:'17',  temperatura:-18, clientes:['MB','ME'], extra:25 },
+  { tipo:'CAMARA', nombre:'DPS',estibas:'DPS', temperatura:-18, clientes:['MB','ME'], extra:25 },
+
+  { tipo:'TUNEL', nombre:'2',  estibas:'35', temperatura:-27, clientes:['MD'], extra:25 },
+  { tipo:'TUNEL', nombre:'9',  estibas:'45', temperatura:-27, clientes:['MD'], extra:25 },
+  { tipo:'TUNEL', nombre:'10', estibas:'40', temperatura:-27, clientes:['MD'], extra:25 }
 ];
 
 const historyStack = [];
@@ -829,9 +861,29 @@ function buildClientSlots(clientes){
   return slots.join('');
 }
 
+function getTemperatureStyle(temp){
+  if(temp >= 0){
+    return 'linear-gradient(135deg,#16a34a,#22c55e)';
+  }
+  if(temp > -10){
+    return 'linear-gradient(135deg,#0891b2,#06b6d4)';
+  }
+  if(temp > -20){
+    return 'linear-gradient(135deg,#2563eb,#3b82f6)';
+  }
+  if(temp > -25){
+    return 'linear-gradient(135deg,#4338ca,#6366f1)';
+  }
+  return 'linear-gradient(135deg,#581c87,#7e22ce)';
+}
+
+function formatTemperature(temp){
+  return `${temp}°C`;
+}
+
 function renderDashboardLogisticaNacional(){
   screenTitle.textContent = 'DASHBOARD LOGISTICA NACIONAL';
-  screenSubtitle.textContent = 'OCUPACION Y CLIENTES POR CAMARA';
+  screenSubtitle.textContent = 'OCUPACION, TEMPERATURA Y CLIENTES';
   menuGrid.className = '';
   menuGrid.innerHTML = '';
 
@@ -844,15 +896,21 @@ function renderDashboardLogisticaNacional(){
     card.type = 'button';
 
     card.innerHTML = `
-      <div class="dashboard-temp">
-        <div class="dashboard-temp-label">Temp.</div>
-        <div class="dashboard-temp-value">${item.temperatura}</div>
+      <div class="dashboard-left">
+        <div class="dashboard-temp" style="background:${getTemperatureStyle(item.temperatura)}">
+          <div class="dashboard-temp-label">Temp.</div>
+          <div class="dashboard-temp-value">${formatTemperature(item.temperatura)}</div>
+        </div>
+        <div class="dashboard-alert">
+          <div class="dashboard-alert-label">Dato</div>
+          <div class="dashboard-alert-value">${item.extra}</div>
+        </div>
       </div>
 
       <div class="dashboard-main">
-        <div class="dashboard-title">CAMARA ${item.camara}</div>
-        <div class="dashboard-number">${item.valor}</div>
-        <div class="dashboard-sub">POSICIONES / STOCK</div>
+        <div class="dashboard-title">${item.tipo} ${item.nombre}</div>
+        <div class="dashboard-number">${item.estibas}</div>
+        <div class="dashboard-sub">ESTIBAS</div>
       </div>
 
       <div class="dashboard-clients">
