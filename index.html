@@ -697,10 +697,10 @@ body{min-height:100vh;}
 /* DETALLE ESTIBA */
 .estiba-detail-wrap{
   width:100%;
-  max-width:1100px;
+  max-width:980px;
   margin:0 auto;
   display:grid;
-  gap:14px;
+  gap:10px;
 }
 
 .estiba-header-card,
@@ -709,28 +709,28 @@ body{min-height:100vh;}
 .estiba-detail-card{
   background:linear-gradient(135deg,#163A7A,#0C2554);
   border:1px solid rgba(255,255,255,.18);
-  border-radius:20px;
+  border-radius:18px;
   box-shadow:var(--shadow-main);
-  padding:18px;
+  padding:14px;
 }
 
 .estiba-header-card{
   display:grid;
   grid-template-columns:1fr auto;
-  gap:16px;
+  gap:12px;
   align-items:center;
 }
 
 .estiba-title{
   margin:0;
-  font-size:1.5rem;
+  font-size:1.35rem;
   font-weight:800;
   line-height:1.05;
 }
 
 .estiba-subtitle{
-  margin:6px 0 0;
-  font-size:.88rem;
+  margin:5px 0 0;
+  font-size:.82rem;
   color:var(--text-soft);
   font-weight:600;
 }
@@ -738,18 +738,19 @@ body{min-height:100vh;}
 .estiba-module-actions{
   display:flex;
   flex-wrap:wrap;
-  gap:10px;
+  gap:8px;
   justify-content:flex-end;
 }
 
 .estiba-module-btn{
   border:none;
-  border-radius:12px;
-  padding:10px 14px;
+  border-radius:10px;
+  padding:9px 12px;
   color:#fff;
   font-weight:800;
   cursor:pointer;
   transition:transform .18s ease, filter .18s ease;
+  font-size:.82rem;
 }
 
 .estiba-module-btn:hover{
@@ -764,18 +765,18 @@ body{min-height:100vh;}
 .estiba-info-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:14px;
+  gap:10px;
 }
 
 .estiba-info-box{
   background:rgba(255,255,255,.08);
   border:1px solid rgba(255,255,255,.12);
-  border-radius:16px;
-  padding:14px;
+  border-radius:14px;
+  padding:12px;
 }
 
 .estiba-info-label{
-  font-size:.72rem;
+  font-size:.68rem;
   text-transform:uppercase;
   letter-spacing:.4px;
   color:rgba(255,255,255,.75);
@@ -783,14 +784,14 @@ body{min-height:100vh;}
 }
 
 .estiba-info-value{
-  margin-top:6px;
-  font-size:1.05rem;
+  margin-top:5px;
+  font-size:.96rem;
   font-weight:800;
 }
 
 .estiba-ocupacion{
   display:grid;
-  gap:10px;
+  gap:8px;
 }
 
 .estiba-ocupacion-top{
@@ -802,7 +803,7 @@ body{min-height:100vh;}
 
 .estiba-progress{
   width:100%;
-  height:18px;
+  height:16px;
   border-radius:999px;
   background:rgba(255,255,255,.12);
   overflow:hidden;
@@ -822,20 +823,20 @@ body{min-height:100vh;}
 
 .estiba-actions-grid{
   width:100%;
-  max-width:760px;
+  max-width:700px;
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:14px;
+  gap:10px;
 }
 
 .estiba-action-btn{
   border:none;
-  border-radius:16px;
-  min-height:78px;
-  padding:14px;
+  border-radius:14px;
+  min-height:68px;
+  padding:12px;
   color:#fff;
   font-weight:800;
-  font-size:.95rem;
+  font-size:.88rem;
   cursor:pointer;
   transition:transform .18s ease, filter .18s ease, box-shadow .18s ease;
   box-shadow:var(--shadow-main);
@@ -851,8 +852,8 @@ body{min-height:100vh;}
 .estiba-action-btn.temperaturas{background:linear-gradient(135deg,#00A887,#047857)}
 
 .estiba-detail-title{
-  margin:0 0 14px 0;
-  font-size:1.05rem;
+  margin:0 0 12px 0;
+  font-size:1rem;
   font-weight:800;
   text-transform:uppercase;
 }
@@ -864,23 +865,26 @@ body{min-height:100vh;}
 
 .estiba-detail-row{
   display:grid;
-  grid-template-columns:1.4fr .8fr;
+  grid-template-columns:1.6fr .7fr;
   gap:12px;
   align-items:center;
   background:rgba(255,255,255,.07);
   border:1px solid rgba(255,255,255,.10);
   border-radius:14px;
-  padding:12px 14px;
+  padding:14px 16px;
 }
 
 .estiba-detail-product{
-  font-weight:700;
+  font-weight:800;
+  font-size:1rem;
+  line-height:1.2;
 }
 
 .estiba-detail-date{
   justify-self:end;
   font-weight:800;
   color:#fef08a;
+  font-size:.9rem;
 }
 
 .footer-bar{
@@ -1054,6 +1058,56 @@ body.compact-mode .box-card-title{
 
 body.compact-mode .box-card-meta{
   font-size:.68rem;
+}
+
+body.compact-mode .estiba-detail-wrap{
+  max-width:900px;
+  gap:8px;
+}
+
+body.compact-mode .estiba-header-card,
+body.compact-mode .estiba-info-card,
+body.compact-mode .estiba-actions-card,
+body.compact-mode .estiba-detail-card{
+  padding:12px;
+}
+
+body.compact-mode .estiba-title{
+  font-size:1.18rem;
+}
+
+body.compact-mode .estiba-subtitle{
+  font-size:.76rem;
+}
+
+body.compact-mode .estiba-module-btn{
+  padding:8px 10px;
+  font-size:.76rem;
+}
+
+body.compact-mode .estiba-info-box{
+  padding:10px;
+}
+
+body.compact-mode .estiba-info-label{
+  font-size:.62rem;
+}
+
+body.compact-mode .estiba-info-value{
+  font-size:.88rem;
+}
+
+body.compact-mode .estiba-action-btn{
+  min-height:60px;
+  font-size:.82rem;
+}
+
+body.compact-mode .estiba-detail-product{
+  font-size:.96rem;
+}
+
+body.compact-mode .estiba-detail-date{
+  font-size:.84rem;
 }
 
 body.compact-mode .footer-bar{
@@ -1369,7 +1423,7 @@ const dashboardLogisticaNacionalData = [
   { tipo:'CAMARA', nombre:'15', estibas:200, temperatura:-18, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
   { tipo:'CAMARA', nombre:'16', estibas:350, temperatura:-18, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
   { tipo:'CAMARA', nombre:'17', estibas:75,  temperatura:-18, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
-  { tipo:'CAMARA', nombre:'DS', estibas:67,  temperatura:24, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
+  { tipo:'CAMARA', nombre:'DS', estibas:67,  temperatura:18, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
   { tipo:'TUNEL',  nombre:'2',  estibas:35,  temperatura:-27, clientes:['MD'],      extra:25, puerta:true, ventilador:true },
   { tipo:'TUNEL',  nombre:'9',  estibas:45,  temperatura:-27, clientes:['MD'],      extra:25, puerta:true, ventilador:true },
   { tipo:'TUNEL',  nombre:'10', estibas:40,  temperatura:-27, clientes:['MD'],      extra:25, puerta:true, ventilador:true }
@@ -1625,7 +1679,7 @@ function renderDashboardEquipamiento(){
 
       <div class="equipment-row">
         <div class="equipment-label">Usuario</div>
-        <div class="equipment-value">"${item.usuario}"</div>
+        <div class="equipment-value">${item.usuario}</div>
       </div>
     `;
 
@@ -1888,10 +1942,12 @@ fullscreenBtn.addEventListener('click', async () => {
 });
 
 userBtn.addEventListener('click', () => openModule('https://sistema.cinafrio.com/intranet2/app.php/persona/306/show'));
+
 qrBox.addEventListener('click', () => {
   historyStack.push(menuTree);
   renderContenedor6Detail();
 });
+
 sinUbicacionBox.addEventListener('click', () => openModule('https://sistema.cinafrio.com/intranet/index.php/estiba/sinPosicion'));
 vencidasBox.addEventListener('click', () => openModule('https://sistema.cinafrio.com/intranet/index.php/infostock/vencimientos'));
 
