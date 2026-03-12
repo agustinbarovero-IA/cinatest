@@ -887,6 +887,150 @@ body{min-height:100vh;}
   font-size:.9rem;
 }
 
+/* FORMULARIO INTERVENCION */
+.intervencion-wrap{
+  width:100%;
+  max-width:920px;
+  margin:0 auto;
+  display:grid;
+  gap:12px;
+}
+
+.intervencion-card{
+  background:linear-gradient(135deg,#163A7A,#0C2554);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:18px;
+  box-shadow:var(--shadow-main);
+  padding:16px;
+}
+
+.intervencion-title{
+  margin:0;
+  font-size:1.3rem;
+  font-weight:800;
+}
+
+.intervencion-subtitle{
+  margin:6px 0 0;
+  font-size:.84rem;
+  color:var(--text-soft);
+}
+
+.intervencion-section-title{
+  margin:0 0 10px 0;
+  font-size:.9rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.3px;
+}
+
+.intervencion-options{
+  display:grid;
+  gap:10px;
+}
+
+.intervencion-option-row{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:12px;
+  align-items:center;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:14px;
+  padding:12px 14px;
+}
+
+.intervencion-option-row input[type="radio"]{
+  transform:scale(1.15);
+  accent-color:#36B0C9;
+  cursor:pointer;
+}
+
+.intervencion-option-label{
+  font-weight:700;
+  font-size:.95rem;
+}
+
+.intervencion-partial-qty{
+  width:110px;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  font-size:.9rem;
+  font-weight:700;
+  outline:none;
+}
+
+.intervencion-partial-qty::placeholder{
+  color:rgba(255,255,255,.5);
+}
+
+.intervencion-field{
+  display:grid;
+  gap:8px;
+}
+
+.intervencion-label{
+  font-size:.78rem;
+  font-weight:800;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.8);
+  letter-spacing:.3px;
+}
+
+.intervencion-select,
+.intervencion-textarea{
+  width:100%;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.16);
+  background:rgba(255,255,255,.1);
+  color:#fff;
+  padding:12px 14px;
+  font-size:.95rem;
+  outline:none;
+}
+
+.intervencion-select{
+  cursor:pointer;
+}
+
+.intervencion-select option{
+  color:#111;
+}
+
+.intervencion-textarea{
+  min-height:130px;
+  resize:vertical;
+  font-family:inherit;
+}
+
+.intervencion-actions{
+  display:flex;
+  justify-content:flex-end;
+}
+
+.intervencion-submit{
+  border:none;
+  border-radius:14px;
+  min-width:180px;
+  min-height:52px;
+  padding:12px 18px;
+  color:#fff;
+  font-weight:800;
+  font-size:.95rem;
+  cursor:pointer;
+  transition:transform .18s ease, filter .18s ease;
+  background:linear-gradient(135deg,#E36B2C,#c2410c);
+  box-shadow:var(--shadow-main);
+}
+
+.intervencion-submit:hover{
+  transform:translateY(-2px);
+  filter:brightness(1.05);
+}
+
 .footer-bar{
   text-align:center;
   font-size:.74rem;
@@ -1110,6 +1254,37 @@ body.compact-mode .estiba-detail-date{
   font-size:.84rem;
 }
 
+body.compact-mode .intervencion-wrap{
+  max-width:860px;
+  gap:10px;
+}
+
+body.compact-mode .intervencion-card{
+  padding:12px;
+}
+
+body.compact-mode .intervencion-title{
+  font-size:1.12rem;
+}
+
+body.compact-mode .intervencion-subtitle{
+  font-size:.76rem;
+}
+
+body.compact-mode .intervencion-option-row{
+  padding:10px 12px;
+}
+
+body.compact-mode .intervencion-option-label{
+  font-size:.88rem;
+}
+
+body.compact-mode .intervencion-partial-qty,
+body.compact-mode .intervencion-select,
+body.compact-mode .intervencion-textarea{
+  font-size:.88rem;
+}
+
 body.compact-mode .footer-bar{
   font-size:.66rem;
 }
@@ -1164,6 +1339,23 @@ body.compact-mode .footer-bar{
   }
   body.compact-mode .equipment-grid{
     grid-template-columns:repeat(2,minmax(220px,1fr));
+  }
+
+  .intervencion-option-row{
+    grid-template-columns:auto 1fr;
+  }
+
+  .intervencion-partial-qty{
+    grid-column:2;
+    width:100%;
+  }
+
+  .intervencion-actions{
+    justify-content:stretch;
+  }
+
+  .intervencion-submit{
+    width:100%;
   }
 }
 
@@ -1423,7 +1615,7 @@ const dashboardLogisticaNacionalData = [
   { tipo:'CAMARA', nombre:'15', estibas:200, temperatura:-18, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
   { tipo:'CAMARA', nombre:'16', estibas:350, temperatura:-18, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
   { tipo:'CAMARA', nombre:'17', estibas:75,  temperatura:-18, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
-  { tipo:'CAMARA', nombre:'DS', estibas:67,  temperatura:18, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
+  { tipo:'CAMARA', nombre:'DS', estibas:67,  temperatura:-18, clientes:['MB','ME'], extra:25, puerta:true, ventilador:true },
   { tipo:'TUNEL',  nombre:'2',  estibas:35,  temperatura:-27, clientes:['MD'],      extra:25, puerta:true, ventilador:true },
   { tipo:'TUNEL',  nombre:'9',  estibas:45,  temperatura:-27, clientes:['MD'],      extra:25, puerta:true, ventilador:true },
   { tipo:'TUNEL',  nombre:'10', estibas:40,  temperatura:-27, clientes:['MD'],      extra:25, puerta:true, ventilador:true }
@@ -1784,7 +1976,7 @@ function renderContenedor6Detail(){
 
       <section class="estiba-actions-card">
         <div class="estiba-actions-grid">
-          <button class="estiba-action-btn intervenir">Intervenir</button>
+          <button class="estiba-action-btn intervenir" id="btnAbrirIntervencion">Intervenir</button>
           <button class="estiba-action-btn fotos">Cargar fotos</button>
           <button class="estiba-action-btn temperaturas">Cargar temperaturas</button>
         </div>
@@ -1810,6 +2002,11 @@ function renderContenedor6Detail(){
     </div>
   `;
 
+  document.getElementById('btnAbrirIntervencion')?.addEventListener('click', () => {
+    historyStack.push({ title:'ESTIBA 65984-3', custom:'detalle_estiba_6' });
+    renderIntervencionForm();
+  });
+
   document.getElementById('btnModuloLogistica')?.addEventListener('click', () => {
     alert('Abrir módulo Logística');
   });
@@ -1826,9 +2023,134 @@ function renderContenedor6Detail(){
   backBtn.disabled = historyStack.length === 0;
 }
 
+function renderIntervencionForm(){
+  screenTitle.textContent = 'INTERVENCION DE ESTIBA';
+  screenSubtitle.textContent = 'SELECCIONE TIPO, MOTIVO Y OBSERVACIONES';
+  menuGrid.className = '';
+  menuGrid.innerHTML = `
+    <div class="intervencion-wrap">
+      <section class="intervencion-card">
+        <h2 class="intervencion-title">Intervenir estiba 65984-3</h2>
+        <p class="intervencion-subtitle">Complete la información para registrar la intervención.</p>
+      </section>
+
+      <section class="intervencion-card">
+        <h3 class="intervencion-section-title">Tipo de intervención</h3>
+
+        <div class="intervencion-options">
+          <label class="intervencion-option-row">
+            <input type="radio" name="tipoIntervencion" value="estiba_completa" checked>
+            <span class="intervencion-option-label">Intervenir estiba completa</span>
+          </label>
+
+          <label class="intervencion-option-row">
+            <input type="radio" name="tipoIntervencion" value="estiba_parcial">
+            <span class="intervencion-option-label">Intervenir estiba parcial</span>
+            <input
+              type="number"
+              id="cantidadParcial"
+              class="intervencion-partial-qty"
+              min="1"
+              placeholder="Cantidad"
+              disabled
+            >
+          </label>
+
+          <label class="intervencion-option-row">
+            <input type="radio" name="tipoIntervencion" value="entrada_entera">
+            <span class="intervencion-option-label">Intervenir entrada entera</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="intervencion-card">
+        <div class="intervencion-field">
+          <label class="intervencion-label" for="motivoIntervencion">Motivo</label>
+          <select id="motivoIntervencion" class="intervencion-select">
+            <option value="">Seleccione una opción</option>
+            <option>A pedido del cliente</option>
+            <option>Calidad</option>
+            <option>Documentación</option>
+            <option>Envases rotos y/o con faltante</option>
+            <option>Mercadería vencida o pronta a vencer</option>
+            <option>Senasa</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="intervencion-card">
+        <div class="intervencion-field">
+          <label class="intervencion-label" for="observacionesIntervencion">Observaciones</label>
+          <textarea
+            id="observacionesIntervencion"
+            class="intervencion-textarea"
+            placeholder="Escriba aquí las observaciones..."
+          ></textarea>
+        </div>
+      </section>
+
+      <section class="intervencion-card">
+        <div class="intervencion-actions">
+          <button id="btnConfirmarIntervencion" class="intervencion-submit">Intervenir</button>
+        </div>
+      </section>
+    </div>
+  `;
+
+  const radios = document.querySelectorAll('input[name="tipoIntervencion"]');
+  const cantidadParcial = document.getElementById('cantidadParcial');
+  const btnConfirmar = document.getElementById('btnConfirmarIntervencion');
+
+  function updateCantidadParcial(){
+    const selected = document.querySelector('input[name="tipoIntervencion"]:checked')?.value;
+    const isParcial = selected === 'estiba_parcial';
+    cantidadParcial.disabled = !isParcial;
+
+    if(isParcial){
+      cantidadParcial.focus();
+    }else{
+      cantidadParcial.value = '';
+    }
+  }
+
+  radios.forEach(radio => {
+    radio.addEventListener('change', updateCantidadParcial);
+  });
+
+  updateCantidadParcial();
+
+  btnConfirmar.addEventListener('click', () => {
+    const tipo = document.querySelector('input[name="tipoIntervencion"]:checked')?.value || '';
+    const motivo = document.getElementById('motivoIntervencion')?.value || '';
+
+    if(!motivo){
+      alert('Seleccione un motivo de intervención.');
+      return;
+    }
+
+    if(tipo === 'estiba_parcial'){
+      const cantidad = Number(cantidadParcial.value);
+      if(!cantidad || cantidad <= 0){
+        alert('Ingrese la cantidad para la intervención parcial.');
+        return;
+      }
+    }
+
+    historyStack.length = 0;
+    renderNode(menuTree);
+  });
+
+  backBtn.disabled = historyStack.length === 0;
+}
+
 function renderNode(node){
   if(node.custom === 'mapa_boxes'){
     renderMapaBoxes();
+    return;
+  }
+
+  if(node.custom === 'detalle_estiba_6'){
+    renderContenedor6Detail();
     return;
   }
 
