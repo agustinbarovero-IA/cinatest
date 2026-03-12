@@ -1888,7 +1888,10 @@ fullscreenBtn.addEventListener('click', async () => {
 });
 
 userBtn.addEventListener('click', () => openModule('https://sistema.cinafrio.com/intranet2/app.php/persona/306/show'));
-qrBox.addEventListener('click', () => openModule('https://sistema.cinafrio.com/intranet/index.php/estiba/scan'));
+qrBox.addEventListener('click', () => {
+  historyStack.push(menuTree);
+  renderContenedor6Detail();
+});
 sinUbicacionBox.addEventListener('click', () => openModule('https://sistema.cinafrio.com/intranet/index.php/estiba/sinPosicion'));
 vencidasBox.addEventListener('click', () => openModule('https://sistema.cinafrio.com/intranet/index.php/infostock/vencimientos'));
 
