@@ -619,6 +619,270 @@ body{min-height:100vh;}
   text-transform:uppercase;
 }
 
+/* MAPA DE BOXES */
+.boxes-wrap{
+  width:100%;
+  max-width:1200px;
+  display:grid;
+  gap:14px;
+}
+
+.boxes-header{
+  background:linear-gradient(135deg,#163A7A,#0C2554);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:20px;
+  box-shadow:var(--shadow-main);
+  padding:18px;
+}
+
+.boxes-header h2{
+  margin:0;
+  font-size:1.25rem;
+  font-weight:800;
+}
+
+.boxes-header p{
+  margin:6px 0 0;
+  font-size:.88rem;
+  color:var(--text-soft);
+}
+
+.boxes-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(180px,1fr));
+  gap:14px;
+}
+
+.box-card{
+  min-height:150px;
+  border:none;
+  border-radius:18px;
+  background:linear-gradient(135deg,#163A7A,#0C2554);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:var(--shadow-main);
+  color:#fff;
+  padding:14px;
+  cursor:pointer;
+  transition:transform .18s ease, filter .18s ease, box-shadow .18s ease;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  text-align:left;
+}
+
+.box-card:hover{
+  transform:translateY(-3px);
+  filter:brightness(1.05);
+  box-shadow:0 18px 34px rgba(0,0,0,.30);
+}
+
+.box-card-number{
+  font-size:2rem;
+  font-weight:900;
+  line-height:1;
+}
+
+.box-card-title{
+  font-size:.95rem;
+  font-weight:800;
+  text-transform:uppercase;
+}
+
+.box-card-meta{
+  font-size:.76rem;
+  color:var(--text-soft);
+  line-height:1.2;
+}
+
+/* DETALLE ESTIBA */
+.estiba-detail-wrap{
+  width:100%;
+  max-width:1100px;
+  margin:0 auto;
+  display:grid;
+  gap:14px;
+}
+
+.estiba-header-card,
+.estiba-info-card,
+.estiba-actions-card,
+.estiba-detail-card{
+  background:linear-gradient(135deg,#163A7A,#0C2554);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:20px;
+  box-shadow:var(--shadow-main);
+  padding:18px;
+}
+
+.estiba-header-card{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:16px;
+  align-items:center;
+}
+
+.estiba-title{
+  margin:0;
+  font-size:1.5rem;
+  font-weight:800;
+  line-height:1.05;
+}
+
+.estiba-subtitle{
+  margin:6px 0 0;
+  font-size:.88rem;
+  color:var(--text-soft);
+  font-weight:600;
+}
+
+.estiba-module-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:flex-end;
+}
+
+.estiba-module-btn{
+  border:none;
+  border-radius:12px;
+  padding:10px 14px;
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+  transition:transform .18s ease, filter .18s ease;
+}
+
+.estiba-module-btn:hover{
+  transform:translateY(-2px);
+  filter:brightness(1.05);
+}
+
+.estiba-module-btn.logistica{background:linear-gradient(135deg,#36B0C9,#0891b2)}
+.estiba-module-btn.calidad{background:linear-gradient(135deg,#E36B2C,#c2410c)}
+.estiba-module-btn.salir{background:linear-gradient(135deg,#475569,#334155)}
+
+.estiba-info-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+
+.estiba-info-box{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:16px;
+  padding:14px;
+}
+
+.estiba-info-label{
+  font-size:.72rem;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  color:rgba(255,255,255,.75);
+  font-weight:800;
+}
+
+.estiba-info-value{
+  margin-top:6px;
+  font-size:1.05rem;
+  font-weight:800;
+}
+
+.estiba-ocupacion{
+  display:grid;
+  gap:10px;
+}
+
+.estiba-ocupacion-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+
+.estiba-progress{
+  width:100%;
+  height:18px;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.10);
+}
+
+.estiba-progress-bar{
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+}
+
+.estiba-actions-card{
+  display:flex;
+  justify-content:center;
+}
+
+.estiba-actions-grid{
+  width:100%;
+  max-width:760px;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+}
+
+.estiba-action-btn{
+  border:none;
+  border-radius:16px;
+  min-height:78px;
+  padding:14px;
+  color:#fff;
+  font-weight:800;
+  font-size:.95rem;
+  cursor:pointer;
+  transition:transform .18s ease, filter .18s ease, box-shadow .18s ease;
+  box-shadow:var(--shadow-main);
+}
+
+.estiba-action-btn:hover{
+  transform:translateY(-3px);
+  filter:brightness(1.05);
+}
+
+.estiba-action-btn.intervenir{background:linear-gradient(135deg,#E36B2C,#c2410c)}
+.estiba-action-btn.fotos{background:linear-gradient(135deg,#36B0C9,#0284c7)}
+.estiba-action-btn.temperaturas{background:linear-gradient(135deg,#00A887,#047857)}
+
+.estiba-detail-title{
+  margin:0 0 14px 0;
+  font-size:1.05rem;
+  font-weight:800;
+  text-transform:uppercase;
+}
+
+.estiba-detail-table{
+  display:grid;
+  gap:10px;
+}
+
+.estiba-detail-row{
+  display:grid;
+  grid-template-columns:1.4fr .8fr;
+  gap:12px;
+  align-items:center;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:14px;
+  padding:12px 14px;
+}
+
+.estiba-detail-product{
+  font-weight:700;
+}
+
+.estiba-detail-date{
+  justify-self:end;
+  font-weight:800;
+  color:#fef08a;
+}
+
 .footer-bar{
   text-align:center;
   font-size:.74rem;
@@ -770,6 +1034,28 @@ body.compact-mode .plant-badge{
   font-size:.58rem;
 }
 
+body.compact-mode .boxes-grid{
+  grid-template-columns:repeat(4,minmax(160px,1fr));
+  gap:10px;
+}
+
+body.compact-mode .box-card{
+  min-height:128px;
+  padding:12px;
+}
+
+body.compact-mode .box-card-number{
+  font-size:1.7rem;
+}
+
+body.compact-mode .box-card-title{
+  font-size:.86rem;
+}
+
+body.compact-mode .box-card-meta{
+  font-size:.68rem;
+}
+
 body.compact-mode .footer-bar{
   font-size:.66rem;
 }
@@ -786,6 +1072,10 @@ body.compact-mode .footer-bar{
   .equipment-grid{
     grid-template-columns:repeat(3,minmax(240px,1fr));
   }
+  .boxes-grid,
+  body.compact-mode .boxes-grid{
+    grid-template-columns:repeat(3,minmax(160px,1fr));
+  }
   body.compact-mode .equipment-grid{
     grid-template-columns:repeat(3,minmax(220px,1fr));
   }
@@ -795,6 +1085,28 @@ body.compact-mode .footer-bar{
   .dashboard-grid,
   .equipment-grid{
     grid-template-columns:repeat(2,minmax(240px,1fr));
+  }
+  .boxes-grid,
+  body.compact-mode .boxes-grid{
+    grid-template-columns:repeat(2,minmax(160px,1fr));
+  }
+  .estiba-header-card{
+    grid-template-columns:1fr;
+  }
+  .estiba-module-actions{
+    justify-content:flex-start;
+  }
+  .estiba-info-grid{
+    grid-template-columns:1fr;
+  }
+  .estiba-actions-grid{
+    grid-template-columns:1fr;
+  }
+  .estiba-detail-row{
+    grid-template-columns:1fr;
+  }
+  .estiba-detail-date{
+    justify-self:start;
   }
   body.compact-mode .equipment-grid{
     grid-template-columns:repeat(2,minmax(220px,1fr));
@@ -817,7 +1129,9 @@ body.compact-mode .footer-bar{
   }
   .dashboard-grid,
   .equipment-grid,
-  body.compact-mode .equipment-grid{
+  .boxes-grid,
+  body.compact-mode .equipment-grid,
+  body.compact-mode .boxes-grid{
     grid-template-columns:1fr;
   }
   .dashboard-card{
@@ -941,7 +1255,7 @@ const menuTree = {
       { title: 'CREAR NUEVOS PRODUCTOS', url: 'https://sistema.cinafrio.com/intranet/index.php/producto' }
     ]},
     { title: 'DASHBOARD', children: [
-      { title: 'MAPA DE BOXES', url: 'https://sistema.cinafrio.com/intranet/index.php/box/map' },
+      { title: 'MAPA DE BOXES' },
       { title: 'DASHBOARD LOGISTICA NACIONAL' },
       { title: 'DASHBOARD LOGISTICA FISCAL' },
       { title: 'DASHBOARD EQUIPAMIENTO' },
@@ -1070,17 +1384,24 @@ const dashboardEquipamientoData = [
   { tipo:'Autoelevador', icono:'🛗', denominacion:'AE-06', estado:'Cargando', planta:'Otros', horas:'02:10hs', usuario:'mbazan' },
   { tipo:'Autoelevador', icono:'🛗', denominacion:'AE-07', estado:'En marcha', planta:'Deposito Fiscal', horas:'00:55hs', usuario:'fvera' },
   { tipo:'Autoelevador', icono:'🛗', denominacion:'AE-08', estado:'Falla', planta:'Mantenimiento', horas:'04:25hs', usuario:'acastro' },
-
   { tipo:'Zorra electrica', icono:'🟦', denominacion:'ZE-01', estado:'En marcha', planta:'Nacional', horas:'00:32hs', usuario:'jmartin' },
   { tipo:'Zorra electrica', icono:'🟦', denominacion:'ZE-02', estado:'Cargando', planta:'Nacional', horas:'01:05hs', usuario:'rsosa' },
   { tipo:'Zorra electrica', icono:'🟦', denominacion:'ZE-03', estado:'En marcha', planta:'Deposito Fiscal', horas:'00:11hs', usuario:'pdominguez' },
   { tipo:'Zorra electrica', icono:'🟦', denominacion:'ZE-04', estado:'Falla', planta:'Mantenimiento', horas:'05:50hs', usuario:'cmedina' },
   { tipo:'Zorra electrica', icono:'🟦', denominacion:'ZE-05', estado:'En marcha', planta:'Otros', horas:'00:48hs', usuario:'sgimenez' },
-
   { tipo:'Autoelevador diesel', icono:'⛽', denominacion:'AD-01', estado:'En marcha', planta:'Deposito Fiscal', horas:'02:30hs', usuario:'rbenitez' },
   { tipo:'Limpiador', icono:'🤖', denominacion:'RL-01', estado:'Cargando', planta:'Mantenimiento', horas:'00:25hs', usuario:'lortiz' },
   { tipo:'Camion', icono:'🚚', denominacion:'CM-01', estado:'En marcha', planta:'Nacional', horas:'06:10hs', usuario:'druiz' }
 ];
+
+const boxesData = Array.from({length:16}, (_,i) => ({
+  numero:i+1,
+  titulo:`Contenedor ${i+1}`,
+  ubicacion:`16-5-${Math.floor(i/4)+1}-${(i%4)+1}`,
+  tipo:i+1 === 6 ? 'Pallet especial' : 'Pallet',
+  ocupacion: i+1 === 6 ? 78 : (35 + (i*4)),
+  estiba: i+1 === 6 ? '65984-3' : `6598${i+1}-1`
+}));
 
 const historyStack = [];
 const menuGrid = document.getElementById('menuGrid');
@@ -1125,7 +1446,8 @@ function getIconMarkup(title){
     'OTROS SISTEMAS':'🧩',
     'INFORMACION DOCUMENTADA':'📚',
     'REGISTRO PR 44':'🗂',
-    'FORMACION':'👨‍🏫'
+    'FORMACION':'👨‍🏫',
+    'MAPA DE BOXES':'🗺'
   };
 
   return symbolMap[title] || getTextInitials(title);
@@ -1158,15 +1480,12 @@ function openModule(url){
 function darkenColor(hex, amount){
   let color = hex.replace('#', '');
   if (color.length === 3) color = color.split('').map(c => c + c).join('');
-
   let r = parseInt(color.substring(0,2),16);
   let g = parseInt(color.substring(2,4),16);
   let b = parseInt(color.substring(4,6),16);
-
   r = Math.max(0, Math.min(255, r + amount));
   g = Math.max(0, Math.min(255, g + amount));
   b = Math.max(0, Math.min(255, b + amount));
-
   return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
 }
 
@@ -1291,16 +1610,12 @@ function renderDashboardEquipamiento(){
 
       <div class="equipment-row">
         <div class="equipment-label">Estado</div>
-        <div class="equipment-value">
-          <span class="state-badge">${item.estado}</span>
-        </div>
+        <div class="equipment-value"><span class="state-badge">${item.estado}</span></div>
       </div>
 
       <div class="equipment-row">
         <div class="equipment-label">Planta</div>
-        <div class="equipment-value">
-          <span class="plant-badge">${item.planta}</span>
-        </div>
+        <div class="equipment-value"><span class="plant-badge">${item.planta}</span></div>
       </div>
 
       <div class="equipment-row">
@@ -1321,7 +1636,148 @@ function renderDashboardEquipamiento(){
   backBtn.disabled = historyStack.length === 0;
 }
 
+function renderMapaBoxes(){
+  screenTitle.textContent = 'MAPA DE BOXES';
+  screenSubtitle.textContent = 'SELECCIONE UN CONTENEDOR';
+  menuGrid.className = '';
+  menuGrid.innerHTML = '';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'boxes-wrap';
+  wrap.innerHTML = `
+    <div class="boxes-header">
+      <h2>Mapa interno de contenedores</h2>
+      <p>Presione el contenedor que desea consultar. El contenedor 6 abre el detalle solicitado.</p>
+    </div>
+    <div class="boxes-grid" id="boxesGrid"></div>
+  `;
+
+  const boxesGrid = wrap.querySelector('#boxesGrid');
+
+  boxesData.forEach(box => {
+    const btn = document.createElement('button');
+    btn.className = 'box-card';
+    btn.type = 'button';
+    btn.innerHTML = `
+      <div class="box-card-number">${box.numero}</div>
+      <div class="box-card-title">${box.titulo}</div>
+      <div class="box-card-meta">
+        Estiba: ${box.estiba}<br>
+        Ubicación: ${box.ubicacion}
+      </div>
+    `;
+
+    btn.addEventListener('click', () => {
+      historyStack.push({ title:'MAPA DE BOXES', custom:'mapa_boxes' });
+      if(box.numero === 6){
+        renderContenedor6Detail();
+      }else{
+        alert(`Contenedor ${box.numero} seleccionado`);
+      }
+    });
+
+    boxesGrid.appendChild(btn);
+  });
+
+  menuGrid.appendChild(wrap);
+  backBtn.disabled = historyStack.length === 0;
+}
+
+function renderContenedor6Detail(){
+  screenTitle.textContent = 'ESTIBA 65984-3';
+  screenSubtitle.textContent = 'DETALLE DE CONTENEDOR 6';
+  menuGrid.className = '';
+  menuGrid.innerHTML = `
+    <div class="estiba-detail-wrap">
+      <section class="estiba-header-card">
+        <div>
+          <h2 class="estiba-title">ESTIBA 65984-3</h2>
+          <p class="estiba-subtitle">Contenedor 6 · Información operativa y de calidad</p>
+        </div>
+
+        <div class="estiba-module-actions">
+          <button class="estiba-module-btn logistica" id="btnModuloLogistica">Logística</button>
+          <button class="estiba-module-btn calidad" id="btnModuloCalidad">Calidad</button>
+          <button class="estiba-module-btn salir" id="btnSalirMenuPrincipal">Salir al menú principal</button>
+        </div>
+      </section>
+
+      <section class="estiba-info-card">
+        <div class="estiba-info-grid">
+          <div class="estiba-info-box">
+            <div class="estiba-info-label">Ubicación</div>
+            <div class="estiba-info-value">16-5-4-2</div>
+          </div>
+
+          <div class="estiba-info-box">
+            <div class="estiba-info-label">Tipo</div>
+            <div class="estiba-info-value">Pallet</div>
+          </div>
+
+          <div class="estiba-info-box" style="grid-column:1 / -1;">
+            <div class="estiba-ocupacion">
+              <div class="estiba-ocupacion-top">
+                <div class="estiba-info-label">Ocupación</div>
+                <div class="estiba-info-value" style="margin-top:0;">78%</div>
+              </div>
+              <div class="estiba-progress">
+                <div class="estiba-progress-bar" style="width:78%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="estiba-actions-card">
+        <div class="estiba-actions-grid">
+          <button class="estiba-action-btn intervenir">Intervenir</button>
+          <button class="estiba-action-btn fotos">Cargar fotos</button>
+          <button class="estiba-action-btn temperaturas">Cargar temperaturas</button>
+        </div>
+      </section>
+
+      <section class="estiba-detail-card">
+        <h3 class="estiba-detail-title">Detalle</h3>
+        <div class="estiba-detail-table">
+          <div class="estiba-detail-row">
+            <div class="estiba-detail-product">Bondiola de cerdo congelada</div>
+            <div class="estiba-detail-date">15/05/2026</div>
+          </div>
+          <div class="estiba-detail-row">
+            <div class="estiba-detail-product">Pechito de cerdo congelado</div>
+            <div class="estiba-detail-date">22/05/2026</div>
+          </div>
+          <div class="estiba-detail-row">
+            <div class="estiba-detail-product">Pulpa de cerdo exportación</div>
+            <div class="estiba-detail-date">03/06/2026</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  `;
+
+  document.getElementById('btnModuloLogistica')?.addEventListener('click', () => {
+    alert('Abrir módulo Logística');
+  });
+
+  document.getElementById('btnModuloCalidad')?.addEventListener('click', () => {
+    alert('Abrir módulo Calidad');
+  });
+
+  document.getElementById('btnSalirMenuPrincipal')?.addEventListener('click', () => {
+    historyStack.length = 0;
+    renderNode(menuTree);
+  });
+
+  backBtn.disabled = historyStack.length === 0;
+}
+
 function renderNode(node){
+  if(node.custom === 'mapa_boxes'){
+    renderMapaBoxes();
+    return;
+  }
+
   const items = node.children || [];
   const level = historyStack.length;
 
@@ -1355,6 +1811,12 @@ function renderNode(node){
       `;
 
       tile.addEventListener('click', () => {
+        if(item.title === 'MAPA DE BOXES'){
+          historyStack.push(node);
+          renderMapaBoxes();
+          return;
+        }
+
         if(item.title === 'DASHBOARD LOGISTICA NACIONAL'){
           historyStack.push(node);
           renderDashboardLogisticaNacional();
