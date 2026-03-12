@@ -1048,12 +1048,6 @@ body{min-height:100vh;}
   filter:brightness(1.05);
 }
 
-.temperaturas-grid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px;
-}
-
 .temperaturas-list{
   display:grid;
   gap:10px;
@@ -1405,7 +1399,6 @@ body.compact-mode .footer-bar{
     width:100%;
   }
 
-  .temperaturas-grid,
   .temperaturas-row{
     grid-template-columns:1fr;
   }
@@ -1488,6 +1481,8 @@ body.compact-mode .footer-bar{
 </div>
 
 <script>
+const USER_NAME = 'agustin.barovero';
+
 const menuTree = {
   title: 'INICIO',
   children: [
@@ -1722,6 +1717,11 @@ const qrBox = document.getElementById('qrBox');
 const sinUbicacionBox = document.getElementById('sinUbicacionBox');
 const vencidasBox = document.getElementById('vencidasBox');
 
+function setHeader(title){
+  screenTitle.textContent = title;
+  screenSubtitle.textContent = USER_NAME;
+}
+
 function getTextInitials(text){
   return text.split(/\s+/).filter(Boolean).slice(0,2).map(word => word[0]).join('').toUpperCase();
 }
@@ -1851,8 +1851,7 @@ function buildStatusRow(item){
 }
 
 function renderDashboardLogisticaNacional(){
-  screenTitle.textContent = 'DASHBOARD LOGISTICA NACIONAL';
-  screenSubtitle.textContent = 'agustin.barovero';
+  setHeader('DASHBOARD LOGISTICA NACIONAL');
   menuGrid.className = '';
   menuGrid.innerHTML = '';
 
@@ -1901,8 +1900,7 @@ function getEquipmentCardClass(estado){
 }
 
 function renderDashboardEquipamiento(){
-  screenTitle.textContent = 'DASHBOARD EQUIPAMIENTO';
-  screenSubtitle.textContent = 'agustin.barovero';
+  setHeader('DASHBOARD EQUIPAMIENTO');
   menuGrid.className = '';
   menuGrid.innerHTML = '';
 
@@ -1951,8 +1949,7 @@ function renderDashboardEquipamiento(){
 }
 
 function renderMapaBoxes(){
-  screenTitle.textContent = 'MAPA DE BOXES';
-  screenSubtitle.textContent = 'agustin.barovero';
+  setHeader('MAPA DE BOXES');
   menuGrid.className = '';
   menuGrid.innerHTML = '';
 
@@ -1986,7 +1983,7 @@ function renderMapaBoxes(){
       if(box.numero === 6){
         renderContenedor6Detail();
       }else{
-        alert(\`Contenedor ${box.numero} seleccionado\`);
+        alert(`Contenedor ${box.numero} seleccionado`);
       }
     });
 
@@ -1998,8 +1995,7 @@ function renderMapaBoxes(){
 }
 
 function renderContenedor6Detail(){
-  screenTitle.textContent = 'ESTIBA 65984-3';
-  screenSubtitle.textContent = 'agustin.barovero';
+  setHeader('ESTIBA 65984-3');
   menuGrid.className = '';
   menuGrid.innerHTML = `
     <div class="estiba-detail-wrap">
@@ -2046,7 +2042,7 @@ function renderContenedor6Detail(){
         <div class="estiba-actions-grid">
           <button class="estiba-action-btn intervenir" id="btnAbrirIntervencion">Intervenir</button>
           <button class="estiba-action-btn liberar" id="btnAbrirLiberacion">Liberar</button>
-          <button class="estiba-action-btn fotos">Cargar fotos</button>
+          <button class="estiba-action-btn fotos" id="btnAbrirFotos">Cargar fotos</button>
           <button class="estiba-action-btn temperaturas" id="btnAbrirTemperaturas">Cargar temperaturas</button>
         </div>
       </section>
@@ -2080,6 +2076,10 @@ function renderContenedor6Detail(){
     renderTemperaturasForm();
   });
 
+  document.getElementById('btnAbrirFotos')?.addEventListener('click', () => {
+    alert('Abrir carga de fotos');
+  });
+
   document.getElementById('btnModuloLogistica')?.addEventListener('click', () => {
     alert('Abrir módulo Logística');
   });
@@ -2099,14 +2099,12 @@ function renderContenedor6Detail(){
 function renderAccionEstibaForm(tipoAccion){
   const esLiberacion = tipoAccion === 'liberar';
   const tituloAccion = esLiberacion ? 'LIBERACION DE ESTIBA' : 'INTERVENCION DE ESTIBA';
-  const subtituloAccion = 'agustin.barovero';
   const verboAccion = esLiberacion ? 'Liberar' : 'Intervenir';
   const descripcionAccion = esLiberacion
     ? 'Complete la información para registrar la liberación.'
     : 'Complete la información para registrar la intervención.';
 
-  screenTitle.textContent = tituloAccion;
-  screenSubtitle.textContent = subtituloAccion;
+  setHeader(tituloAccion);
   menuGrid.className = '';
   menuGrid.innerHTML = `
     <div class="intervencion-wrap">
@@ -2225,8 +2223,7 @@ function renderAccionEstibaForm(tipoAccion){
 }
 
 function renderTemperaturasForm(){
-  screenTitle.textContent = 'CARGA DE TEMPERATURAS';
-  screenSubtitle.textContent = 'agustin.barovero';
+  setHeader('CARGA DE TEMPERATURAS');
   menuGrid.className = '';
   menuGrid.innerHTML = `
     <div class="temperaturas-wrap">
@@ -2237,7 +2234,7 @@ function renderTemperaturasForm(){
 
       <section class="temperaturas-card">
         <h3 class="temperaturas-section-title">Temperaturas</h3>
-        <div class="temperaturas-list" id="temperaturasList">
+        <div class="temperaturas-list">
           ${Array.from({length:10}, (_,i) => `
             <div class="temperaturas-row">
               <div class="temperaturas-row-title">Registro ${i+1}</div>
@@ -2321,8 +2318,7 @@ function renderNode(node){
   const items = node.children || [];
   const level = historyStack.length;
 
-  screenTitle.textContent = level ? node.title : 'BIENVENIDOS AL SISTEMA DE GRUPO CINA';
-  screenSubtitle.textContent = 'agustin.barovero';
+  setHeader(level ? node.title : 'BIENVENIDOS AL SISTEMA DE GRUPO CINA');
 
   menuGrid.className = `menu-grid ${getGridLayout(items.length || 1)}`;
   menuGrid.innerHTML = '';
