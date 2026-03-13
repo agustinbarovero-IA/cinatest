@@ -3780,343 +3780,272 @@ body{
 }
 
 
+
 /* ═══════════════════════════════════════════════════════════════
-   MÓDULO: CARGAS — tabla diaria de movimientos
+   MÓDULO: CARGAS v3 — compacto, zebra, columnas congeladas
    ═══════════════════════════════════════════════════════════════ */
 .cargas-wrap {
   display: flex;
   flex-direction: column;
   gap: 8px;
   width: 100%;
-  height: calc(100dvh - 158px);
+  height: calc(100dvh - 162px);
   box-sizing: border-box;
   overflow: hidden;
 }
 
-/* ── Toolbar ── */
+/* ── Toolbar ─────────────────────────────────────── */
 .cargas-toolbar {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   flex-wrap: nowrap;
-  padding: 8px 12px;
-  background: rgba(0,15,48,.75);
+  padding: 7px 12px;
+  background: rgba(0,15,48,.8);
   border: 1px solid rgba(255,255,255,.12);
-  border-radius: 12px;
+  border-radius: 11px;
   flex-shrink: 0;
 }
-.cargas-nav-group { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.cargas-nav-group { display: flex; align-items: center; gap: 3px; flex-shrink: 0; }
 .cargas-nav-btn {
-  width: 28px; height: 28px;
-  border-radius: 7px;
-  border: 1px solid rgba(255,255,255,.18);
-  background: rgba(255,255,255,.08);
-  color: rgba(255,255,255,.75);
-  font-size: .88rem;
-  font-weight: 900;
-  cursor: pointer;
-  transition: all .13s;
+  width: 26px; height: 26px; border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.16);
+  background: rgba(255,255,255,.07);
+  color: rgba(255,255,255,.7); font-size: .85rem; font-weight: 900;
+  cursor: pointer; transition: all .12s;
   display: flex; align-items: center; justify-content: center;
 }
-.cargas-nav-btn:hover { background: rgba(54,176,201,.25); border-color: rgba(54,176,201,.5); color:#fff; }
-.cargas-nav-today { width: auto; padding: 0 10px; font-size: .7rem; }
+.cargas-nav-btn:hover { background: rgba(54,176,201,.22); border-color: rgba(54,176,201,.5); color:#fff; }
+.cargas-nav-today { width: auto; padding: 0 9px; font-size: .67rem; font-weight: 800; }
 .cargas-fecha-display {
-  padding: 5px 14px;
-  border-radius: 8px;
-  background: rgba(54,176,201,.2);
-  border: 1px solid rgba(54,176,201,.4);
-  color: #36B0C9;
-  font-size: .8rem;
-  font-weight: 900;
-  min-width: 86px;
-  text-align: center;
-  flex-shrink: 0;
+  padding: 4px 13px; border-radius: 7px;
+  background: rgba(54,176,201,.18); border: 1px solid rgba(54,176,201,.38);
+  color: #36B0C9; font-size: .78rem; font-weight: 900; min-width: 82px; text-align: center; flex-shrink: 0;
 }
 .cargas-filter-group { display: flex; gap: 3px; flex-shrink: 0; }
 .cargas-filter-btn {
-  padding: 4px 11px;
-  border-radius: 7px;
-  border: 1px solid rgba(255,255,255,.14);
-  background: rgba(255,255,255,.06);
-  color: rgba(255,255,255,.55);
-  font-size: .68rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all .13s;
-  white-space: nowrap;
+  padding: 4px 10px; border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.13); background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.52); font-size: .65rem; font-weight: 800; text-transform: uppercase;
+  cursor: pointer; transition: all .12s; white-space: nowrap;
 }
 .cargas-filter-btn.active,
-.cargas-filter-btn:hover { background: rgba(54,176,201,.2); border-color: rgba(54,176,201,.4); color:#fff; }
+.cargas-filter-btn:hover { background: rgba(54,176,201,.18); border-color: rgba(54,176,201,.4); color:#fff; }
 .cargas-nueva-btn {
-  padding: 5px 14px;
-  border-radius: 8px;
-  border: none;
+  padding: 4px 13px; border-radius: 7px; border: none;
   background: linear-gradient(135deg,#00A887,#007A62);
-  color: #fff;
-  font-size: .72rem;
-  font-weight: 900;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: .3px;
-  white-space: nowrap;
-  flex-shrink: 0;
+  color: #fff; font-size: .68rem; font-weight: 900;
+  cursor: pointer; text-transform: uppercase; letter-spacing: .3px; white-space: nowrap; flex-shrink: 0;
 }
 .cargas-nueva-btn:hover { filter: brightness(1.1); }
 .cargas-search-wrap { flex: 1; min-width: 0; }
 .cargas-search {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 6px 11px;
-  border-radius: 8px;
-  border: 1px solid rgba(255,255,255,.13);
-  background: rgba(255,255,255,.07);
-  color: #fff;
-  font-size: .75rem;
-  font-weight: 600;
-  outline: none;
-  transition: border-color .2s;
+  width: 100%; box-sizing: border-box; padding: 5px 10px;
+  border-radius: 7px; border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.07); color: #fff; font-size: .72rem; font-weight: 600; outline: none;
 }
 .cargas-search::placeholder { color: rgba(255,255,255,.3); }
 .cargas-search:focus { border-color: rgba(54,176,201,.5); }
 
-/* ── Tabla ── */
+/* ── Tabla principal ─────────────────────────────── */
 .cargas-table-wrap {
-  flex: 1;
-  overflow: auto;
-  border-radius: 12px;
-  border: 1px solid rgba(0,0,0,.12);
-  background: #f0f4f8;          /* Fondo claro, amigable para uso prolongado */
-  box-shadow: 0 2px 16px rgba(0,0,0,.18);
+  flex: 1; overflow: auto;
+  border-radius: 11px;
+  border: 1px solid #d1d9e6;
+  background: #f4f7fb;
+  box-shadow: 0 2px 14px rgba(0,0,0,.15);
+  /* Scroll suave */
+  scroll-behavior: smooth;
 }
 .cargas-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: .72rem;
-  table-layout: fixed;
+  width: 100%; border-collapse: collapse;
+  font-size: .71rem; table-layout: fixed;
 }
 
 /* Cabecera */
+.cargas-table thead tr {
+  position: sticky; top: 0; z-index: 4;
+}
 .cargas-table thead th {
-  background: #1a2d52;
-  color: rgba(255,255,255,.75);
-  font-size: .62rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: .25px;
-  padding: 7px 6px;
-  text-align: left;
-  position: sticky;
-  top: 0;
-  z-index: 3;
+  background: #1e3a5f;
+  color: rgba(255,255,255,.78);
+  font-size: .6rem; font-weight: 800; text-transform: uppercase; letter-spacing: .25px;
+  padding: 6px 5px; text-align: left;
+  border-right: 1px solid rgba(255,255,255,.07);
   white-space: nowrap;
-  border-right: 1px solid rgba(255,255,255,.06);
 }
 .cargas-table thead th:last-child { border-right: none; }
+/* Alineación de cabeceras según tipo */
+.cargas-table thead th.ct-num,
+.cargas-table thead th.ct-top,
+.cargas-table thead th.ct-f2 { text-align: right; }
+.cargas-table thead th.ct-tipo,
+.cargas-table thead th.ct-acc { text-align: center; }
 
-/* Column widths — ajustadas para entrar en pantalla */
-.ct-tipo   { width: 46px; }
-.ct-num    { width: 68px; }
-.ct-box    { width: 64px; }
-.ct-tron   { width: 80px; }
-.ct-cargas { width: 68px; }
-.ct-cli    { width: 80px; }
-.ct-resp   { width: 66px; }
-.ct-vehi   { width: 70px; }
-.ct-acop   { width: 60px; }
-.ct-fecha  { width: 52px; text-align: center; }
-.ct-mov    { width: 60px; text-align: center; }
-.ct-ticket { width: 56px; }
-.ct-acc    { width: 62px; }
+/* ── Columnas congeladas ── */
+.ct-tipo { position: sticky; left: 0;       z-index: 2; width: 48px;  min-width: 48px; }
+.ct-num  { position: sticky; left: 48px;    z-index: 2; width: 70px;  min-width: 70px; }
+.ct-box  { position: sticky; left: 118px;   z-index: 2; width: 72px;  min-width: 72px; }
 
-/* Filas de datos */
-.cargas-row td {
-  padding: 5px 6px;
-  border-bottom: 1px solid rgba(0,0,0,.07);
+/* Widths resto */
+.ct-tron   { width: 82px;  }
+.ct-cargas { width: 72px;  }
+.ct-cli    { width: 90px;  }
+.ct-resp   { width: 68px;  }
+.ct-vehi   { width: 72px;  }
+.ct-acop   { width: 62px;  }
+.ct-f2     { width: 52px;  text-align: right; }
+.ct-top    { width: 82px;  text-align: right; }
+.ct-ticket { width: 60px;  }
+.ct-acc    { width: 120px; }
+
+/* ── Filas de datos ── */
+.cr td {
+  padding: 5px 5px;
+  border-bottom: 1px solid #dde3ed;
   color: #1e293b;
   vertical-align: middle;
-  background: #fff;
+  height: 40px;
+  max-height: 40px;
+  overflow: hidden;
 }
-.cargas-row:hover td { background: #f1f8ff; }
-.cargas-row.en-planta td:first-child { border-left: 3px solid #f97316; }
-.cargas-row.planificado td:first-child { border-left: 3px solid #6b7280; }
-.cargas-row.liberado    td:first-child { border-left: 3px solid #00A887; }
+/* Zebra */
+.cr:nth-child(odd)  td { background: #ffffff; }
+.cr:nth-child(even) td { background: #f0f4fa; }
+.cr:hover td { background: #e3eeff !important; }
 
-/* Filas separadoras de grupo */
+/* Columnas congeladas heredan background del zebra */
+.cr:nth-child(odd)  td.ct-tipo,
+.cr:nth-child(odd)  td.ct-num,
+.cr:nth-child(odd)  td.ct-box  { background: #ffffff; }
+.cr:nth-child(even) td.ct-tipo,
+.cr:nth-child(even) td.ct-num,
+.cr:nth-child(even) td.ct-box  { background: #f0f4fa; }
+.cr:hover td.ct-tipo,
+.cr:hover td.ct-num,
+.cr:hover td.ct-box  { background: #e3eeff !important; }
+
+/* Borde izquierdo por estado */
+.cr.cr-en-planta   td.ct-tipo { border-left: 3px solid #f97316; }
+.cr.cr-planificado td.ct-tipo { border-left: 3px solid #94a3b8; }
+.cr.cr-liberado    td.ct-tipo { border-left: 3px solid #00A887; }
+
+/* ── Filas separadoras de grupo ── */
 .cargas-sep-row td {
-  background: #e8edf4;
-  padding: 5px 8px;
-  border-top: 2px solid rgba(0,0,0,.08);
-  border-bottom: 1px solid rgba(0,0,0,.08);
+  background: #dde6f4 !important;
+  padding: 4px 8px !important;
+  height: auto !important;
+  border-top: 2px solid #b8c8e0;
+  border-bottom: 1px solid #ccd6e8;
+  position: sticky; left: 0;
 }
-.cargas-sep-label { margin-right: 8px; font-size: .64rem; }
-.cargas-sep-count { font-size: .63rem; color: #64748b; font-weight: 700; }
+.cargas-sep-row { position: relative; }
+.cargas-sep-label { margin-right: 8px; }
+.cargas-sep-count { font-size: .62rem; color: #64748b; font-weight: 700; }
 
-/* Tipo badge */
-.cargas-tipo-badge {
-  display: inline-block;
-  padding: 2px 6px;
-  border-radius: 5px;
-  font-size: .6rem;
-  font-weight: 900;
-  letter-spacing: .3px;
-  white-space: nowrap;
+/* ── Chips de tipo ── */
+.ct-tipo-chip {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 6px; border-radius: 5px;
+  font-size: .62rem; font-weight: 900; letter-spacing: .2px; white-space: nowrap;
 }
-.cargas-tipo-badge.entrada  { background: rgba(54,176,201,.18); color: #0e7490; border: 1px solid rgba(54,176,201,.4); }
-.cargas-tipo-badge.salida-t { background: rgba(0,168,135,.15);  color: #065f46; border: 1px solid rgba(0,168,135,.35); }
+.ct-tipo-chip.entrada  { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+.ct-tipo-chip.salida-t { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
 
-/* N° transporte */
-.cargas-transp-num { font-weight: 900; color: #1e40af; font-size: .75rem; }
+/* ── Número transporte ── */
+.ct-transp { font-weight: 900; color: #1d4ed8; font-size: .74rem; }
 
-/* Box */
-.cargas-box-chip {
-  display: inline-block;
-  padding: 2px 7px;
-  border-radius: 5px;
-  background: #e2e8f0;
-  border: 1px solid #cbd5e1;
-  font-weight: 800;
-  font-size: .68rem;
-  color: #334155;
-  white-space: nowrap;
+/* ── Box chip ── */
+.ct-box-chip {
+  display: inline-block; padding: 2px 7px; border-radius: 5px;
+  background: #e2e8f0; border: 1px solid #cbd5e1;
+  font-weight: 800; font-size: .67rem; color: #334155; white-space: nowrap;
 }
-
-/* Tronera */
-.cargas-tronera-chip {
-  display: inline-block;
-  padding: 2px 6px;
-  border-radius: 5px;
-  background: #ede9fe;
-  border: 1px solid #c4b5fd;
-  font-size: .65rem;
-  font-weight: 800;
-  color: #5b21b6;
-  white-space: nowrap;
+/* ── Tronera chip ── */
+.ct-tron-chip {
+  display: inline-block; padding: 2px 6px; border-radius: 5px;
+  background: #ede9fe; border: 1px solid #c4b5fd;
+  font-size: .64rem; font-weight: 800; color: #5b21b6; white-space: nowrap;
 }
-.cargas-asignar-btn {
-  padding: 2px 7px;
-  border-radius: 5px;
-  border: 1px solid #93c5fd;
-  background: #eff6ff;
-  color: #1d4ed8;
-  font-size: .62rem;
-  font-weight: 800;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all .13s;
+.ct-asignar-btn {
+  padding: 2px 7px; border-radius: 5px;
+  border: 1px solid #93c5fd; background: #eff6ff;
+  color: #1d4ed8; font-size: .61rem; font-weight: 800; cursor: pointer; white-space: nowrap;
 }
-.cargas-asignar-btn:hover { background: #dbeafe; }
+.ct-asignar-btn:hover { background: #dbeafe; }
 
-/* Cargas: apiladas */
-.cargas-cargas-col { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; }
-.cargas-num-carga {
-  display: inline-block;
-  padding: 1px 5px;
-  border-radius: 4px;
-  background: #fef9c3;
-  border: 1px solid #fde68a;
-  color: #92400e;
-  font-weight: 800;
-  font-size: .64rem;
-  white-space: nowrap;
+/* ── Cargas apiladas ── */
+.ct-stack       { display: flex; flex-direction: column; gap: 2px; }
+.ct-stack-h     { flex-direction: row; flex-wrap: wrap; }
+.ct-carga-chip  {
+  display: inline-block; padding: 1px 5px; border-radius: 4px;
+  background: #fef9c3; border: 1px solid #fde68a;
+  color: #92400e; font-weight: 800; font-size: .62rem; white-space: nowrap;
+}
+/* ── Cliente chips ── */
+.ct-cli-chip {
+  display: inline-block; padding: 2px 5px; border-radius: 4px; border: 1px solid;
+  font-size: .62rem; font-weight: 900; white-space: nowrap;
+  filter: saturate(1.3) brightness(.72);
+}
+.ct-empty { color: #94a3b8; font-size: .7rem; }
+
+/* ── Text helpers ── */
+.ct-txt  { font-size: .68rem; color: #475569; }
+.ct-bold { font-size: .7rem; font-weight: 800; color: #1e293b; }
+
+/* ── Fechas 2 niveles ── */
+.ct-dv-date {
+  display: block; font-weight: 800; font-size: .69rem; color: #1e293b; text-align: right;
+}
+.ct-dv-time {
+  display: block; font-size: .63rem; color: #64748b; font-weight: 700; text-align: right;
 }
 
-/* Estado chips */
+/* ── Tiempo operación semáforo ── */
+.ct-top-val {
+  display: block; font-weight: 800; font-size: .68rem; color: #1e293b; text-align: right; white-space: nowrap;
+}
+
+/* ── Ticket ── */
+.cargas-ticket { font-size: .67rem; font-weight: 700; color: #374151; }
+
+/* ── Acciones ── */
+.ct-acc-row { display: flex; gap: 3px; align-items: center; }
+.ct-acc-btn {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 3px 6px; border-radius: 5px;
+  border: 1px solid #e2e8f0; background: #f8fafc;
+  font-size: .61rem; font-weight: 800; cursor: pointer;
+  color: #334155; white-space: nowrap; transition: all .12s;
+}
+.ct-acc-btn:hover  { border-color: #93c5fd; background: #eff6ff; color: #1d4ed8; }
+.ct-acc-ver:hover  { border-color: #93c5fd; background: #eff6ff; }
+.ct-acc-oper:hover { border-color: #86efac; background: #f0fdf4; color: #15803d; }
+.ct-acc-tiempo {
+  width: 24px; height: 24px; padding: 0;
+  justify-content: center; font-size: .75rem;
+}
+.ct-acc-tiempo:hover { border-color: #fde68a; background: #fefce8; }
+
+.cargas-empty {
+  text-align: center; padding: 28px !important;
+  color: #94a3b8 !important; font-style: italic; background: #fff !important;
+}
+
+/* ── Footer ── */
+.cargas-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 6px;
+  font-size: .67rem; color: rgba(255,255,255,.4); font-weight: 700;
+  padding: 2px 3px; flex-shrink: 0;
+}
+.cargas-legend { display: flex; gap: 6px; align-items: center; }
 .cargas-estado-chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: 99px;
-  font-size: .62rem;
-  font-weight: 800;
-  white-space: nowrap;
+  display: inline-flex; align-items: center;
+  padding: 2px 8px; border-radius: 99px;
+  font-size: .6rem; font-weight: 800; white-space: nowrap;
 }
 .cargas-estado-chip.en-planta   { background: rgba(249,115,22,.15); color: #c2410c; border: 1px solid rgba(249,115,22,.3); }
 .cargas-estado-chip.planificado { background: rgba(107,114,128,.15);color: #374151; border: 1px solid rgba(107,114,128,.25); }
 .cargas-estado-chip.liberado    { background: rgba(0,168,135,.15);  color: #065f46; border: 1px solid rgba(0,168,135,.3); }
-
-/* Clientes siglas — sobre fondo claro los colores se ajustan */
-.cargas-cli-wrap { display: flex; flex-wrap: wrap; gap: 2px; }
-.cargas-cli-sigla {
-  display: inline-block;
-  padding: 2px 5px;
-  border-radius: 4px;
-  border: 1px solid;
-  font-size: .62rem;
-  font-weight: 900;
-  letter-spacing: .1px;
-  cursor: default;
-  white-space: nowrap;
-  filter: saturate(1.4) brightness(.75); /* oscurecer para legibilidad en fondo claro */
-}
-.cargas-cli-empty { color: #94a3b8; font-size: .68rem; }
-
-/* Responsable */
-.cargas-resp { font-size: .68rem; color: #475569; }
-
-/* Fechas de 2 niveles */
-.ct-fecha-2l { padding: 4px 5px !important; }
-.ct-date-d {
-  display: block;
-  font-weight: 800;
-  font-size: .7rem;
-  color: #1e293b;
-  text-align: center;
-}
-.ct-date-t {
-  display: block;
-  font-weight: 700;
-  font-size: .65rem;
-  color: #64748b;
-  text-align: center;
-}
-.ct-dash { color: #cbd5e1; font-size: .8rem; }
-
-/* Tiempo operación */
-.cargas-top-val {
-  display: block;
-  font-weight: 900;
-  font-size: .7rem;
-  color: #1e40af;
-  text-align: center;
-}
-
-/* Ticket báscula */
-.cargas-ticket { font-size: .68rem; font-weight: 700; color: #374151; }
-
-/* Acciones */
-.cargas-acc-btns { display: flex; gap: 3px; }
-.cargas-acc-btn {
-  width: 22px; height: 22px;
-  border-radius: 5px;
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
-  font-size: .7rem;
-  cursor: pointer;
-  transition: all .13s;
-  display: flex; align-items: center; justify-content: center;
-}
-.cargas-acc-btn:hover { background: #e0f2fe; border-color: #7dd3fc; }
-
-.cargas-empty {
-  text-align: center;
-  padding: 32px !important;
-  color: #94a3b8 !important;
-  font-style: italic;
-  background: #fff !important;
-}
-
-/* Footer */
-.cargas-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-  font-size: .7rem;
-  color: rgba(255,255,255,.45);
-  font-weight: 700;
-  padding: 2px 4px;
-  flex-shrink: 0;
-}
-.cargas-legend { display: flex; gap: 6px; align-items: center; }

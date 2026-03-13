@@ -5069,66 +5069,80 @@ function renderCargas(fiscal) {
 }
 
 function buildCargaRow(c, estClass) {
+  // Tipo con icono
   const tipoBadge = c.tipo === 'Entrada'
-    ? '<span class="cargas-tipo-badge entrada">↓ ENT</span>'
-    : '<span class="cargas-tipo-badge salida-t">↑ SAL</span>';
+    ? '<span class="ct-tipo-chip entrada">⬇ ENT</span>'
+    : '<span class="ct-tipo-chip salida-t">⬆ SAL</span>';
 
+  // Clientes como chips
   const clientesHTML = c.clientes.length === 0
-    ? '<span class="cargas-cli-empty">—</span>'
+    ? '<span class="ct-empty">—</span>'
     : c.clientes.map(cl => {
         const s = getClienteSigla(cl);
-        return `<span class="cargas-cli-sigla" style="background:${s.color}22;border-color:${s.color}55;color:${s.color}" title="${cl}">${s.sigla}</span>`;
+        return `<span class="ct-cli-chip" style="background:${s.color}1a;border-color:${s.color}60;color:${s.color}" title="${cl}">${s.sigla}</span>`;
       }).join('');
 
-  // Cargas: una por línea
-  const cargasHTML = c.cargas.length === 0 ? '<span style="color:rgba(0,0,0,.3)">—</span>'
-    : c.cargas.map(n => `<div class="cargas-num-carga">${n}</div>`).join('');
+  // Cargas apiladas como chips
+  const cargasHTML = c.cargas.length === 0
+    ? '<span class="ct-empty">—</span>'
+    : c.cargas.map(n => `<span class="ct-carga-chip">${n}</span>`).join('');
 
+  // Box chip
+  const boxHTML = c.box
+    ? `<span class="ct-box-chip">${c.box}</span>`
+    : '<span class="ct-empty">—</span>';
+
+  // Tronera chip
   const tronHTML = c.tronera
-    ? `<span class="cargas-tronera-chip">${c.tronera}</span>`
-    : '<button class="cargas-asignar-btn">⇄ Asignar</button>';
+    ? `<span class="ct-tron-chip">${c.tronera}</span>`
+    : '<button class="ct-asignar-btn">⇄ Asignar</button>';
 
-  const boxHTML = c.box ? `<span class="cargas-box-chip">${c.box}</span>` : '—';
-
-  // Fecha en 2 niveles: dd/mm arriba, HH:MM abajo
+  // Fecha 2 niveles
   const fmtDT = s => {
-    if (!s) return '<span class="ct-dash">—</span>';
+    if (!s) return '<span class="ct-empty">—</span>';
     const d = s.slice(8,10) + '/' + s.slice(5,7);
     const t = s.length > 10 ? s.slice(11,16) : '';
-    return `<span class="ct-date-d">${d}</span>${t ? '<span class="ct-date-t">' + t + '</span>' : ''}`;
+    return `<span class="ct-dv-date">${d}</span>${t ? '<span class="ct-dv-time">' + t + '</span>' : ''}`;
   };
-  const fmtDate = s => s ? `<span class="ct-date-d">${s.slice(8,10)+'/'+s.slice(5,7)}</span>` : '<span class="ct-dash">—</span>';
+  const fmtDate = s => s
+    ? `<span class="ct-dv-date">${s.slice(8,10)+'/'+s.slice(5,7)}</span>`
+    : '<span class="ct-empty">—</span>';
 
-  // Tiempo de operación: calcular si hay llegada y salida
-  let tOp = '—';
+  // Tiempo operación con semáforo
+  let topHtml = '<span class="ct-empty">—</span>';
+  let totalMin = 0;
   if (c.llegada && c.salida) {
     const ms = new Date(c.salida.replace(' ','T')) - new Date(c.llegada.replace(' ','T'));
-    const hh = Math.floor(ms/3600000), mm = Math.floor((ms%3600000)/60000);
-    tOp = hh + 'h ' + String(mm).padStart(2,'0') + 'm';
+    const hh = Math.floor(ms/3600000);
+    const mm = Math.floor((ms%3600000)/60000);
+    totalMin = hh*60 + mm;
+    const txt = hh + 'h ' + String(mm).padStart(2,'0') + 'm';
+    const dot = totalMin < 120 ? '🟢' : totalMin < 240 ? '🟡' : '🔴';
+    topHtml = `<span class="ct-top-val">${dot} ${txt}</span>`;
   } else if (c.movimiento && c.movimiento !== '—') {
-    tOp = c.movimiento;
+    topHtml = `<span class="ct-top-val">⚪ ${c.movimiento}</span>`;
   }
 
-  return `<tr class="cargas-row ${estClass}">
+  return `<tr class="cr cr-${estClass}">
     <td class="ct-tipo">${tipoBadge}</td>
-    <td class="ct-num"><span class="cargas-transp-num">${c.id}</span></td>
+    <td class="ct-num"><span class="ct-transp">${c.id}</span></td>
     <td class="ct-box">${boxHTML}</td>
     <td class="ct-tron">${tronHTML}</td>
-    <td class="ct-cargas"><div class="cargas-cargas-col">${cargasHTML}</div></td>
-    <td class="ct-cli"><div class="cargas-cli-wrap">${clientesHTML}</div></td>
-    <td class="ct-resp"><span class="cargas-resp">${c.responsable||'—'}</span></td>
-    <td class="ct-vehi"><b>${c.vehiculo||'—'}</b></td>
-    <td class="ct-acop">${c.acoplado||'—'}</td>
-    <td class="ct-fecha ct-fecha-2l">${fmtDate(c.planLlegada)}</td>
-    <td class="ct-fecha ct-fecha-2l">${fmtDT(c.llegada)}</td>
-    <td class="ct-mov"><span class="cargas-top-val">${tOp}</span></td>
-    <td class="ct-fecha ct-fecha-2l">${fmtDT(c.salida)}</td>
-    <td class="ct-ticket"><span class="cargas-ticket">${c.ticketSalida||'—'}</span></td>
+    <td class="ct-cargas"><div class="ct-stack">${cargasHTML}</div></td>
+    <td class="ct-cli"><div class="ct-stack ct-stack-h">${clientesHTML}</div></td>
+    <td class="ct-resp ct-txt">${c.responsable||'—'}</td>
+    <td class="ct-vehi ct-bold">${c.vehiculo||'—'}</td>
+    <td class="ct-acop ct-txt">${c.acoplado||'—'}</td>
+    <td class="ct-f2">${fmtDate(c.planLlegada)}</td>
+    <td class="ct-f2">${fmtDT(c.llegada)}</td>
+    <td class="ct-top">${topHtml}</td>
+    <td class="ct-f2">${fmtDT(c.salida)}</td>
+    <td class="ct-ticket ct-txt">${c.ticketSalida||'—'}</td>
     <td class="ct-acc">
-      <div class="cargas-acc-btns">
-        <button class="cargas-acc-btn" data-accion="ver"    data-id="${c.id}" title="Ver">👁</button>
-        <button class="cargas-acc-btn" data-accion="editar" data-id="${c.id}" title="Editar">✏</button>
-        <button class="cargas-acc-btn" data-accion="horas"  data-id="${c.id}" title="Horas">🕐</button>
+      <div class="ct-acc-row">
+        <button class="ct-acc-btn ct-acc-ver"    data-accion="ver"    data-id="${c.id}">👁 Ver</button>
+        <button class="ct-acc-btn ct-acc-oper"   data-accion="editar" data-id="${c.id}">📦 Operar</button>
+        <button class="ct-acc-btn ct-acc-tiempo" data-accion="horas"  data-id="${c.id}">⏱</button>
       </div>
     </td>
   </tr>`;
