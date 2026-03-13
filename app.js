@@ -12,8 +12,8 @@ const menuTree = {
       title: 'LOGISTICA NACIONAL',
       children: [
         { title: 'CARGAS' },
-        { title: 'PRE ENTRADAS', url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/0/fiscal/0' },
-        { title: 'ENTRADAS',     url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/1/fiscal/0' },
+        { title: 'PRE ENTRADAS' },
+        { title: 'ENTRADAS' },
         { title: 'PRE SALIDAS',  url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/0/fiscal/0' },
         { title: 'SALIDAS',      url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/1/fiscal/0' }
       ]
@@ -22,8 +22,8 @@ const menuTree = {
       title: 'LOGISTICA FISCAL',
       children: [
         { title: 'CARGAS', fiscal: true },
-        { title: 'PRE ENTRADAS',              url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/0/fiscal/1' },
-        { title: 'ENTRADAS',                  url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/1/fiscal/1' },
+        { title: 'PRE ENTRADAS', fiscal: true },
+        { title: 'ENTRADAS', fiscal: true },
         { title: 'PRE SALIDAS',               url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/0/fiscal/1' },
         { title: 'SALIDAS',                   url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/1/fiscal/1' },
         { title: 'REPORTE DEPOSITO FISCAL AFIP', url: 'https://sistema.cinafrio.com/intranet2/app.php/reportestockafip/' }
@@ -3408,6 +3408,8 @@ function renderNode(node) {
         if (item.title === 'ESTIBAS CONGELADAS')             { historyStack.push(node); renderIndicadorEstibasCongeladas();   return; }
         if (item.title === 'CARGAS' && node.title === 'LOGISTICA NACIONAL') { historyStack.push(node); renderCargas(false); return; }
         if (item.title === 'CARGAS' && node.title === 'LOGISTICA FISCAL')   { historyStack.push(node); renderCargas(true);  return; }
+                if (item.title === 'PRE ENTRADAS') { historyStack.push(node); renderEntradasModule(true, item.fiscal||false);  return; }
+        if (item.title === 'ENTRADAS')      { historyStack.push(node); renderEntradasModule(false, item.fiscal||false); return; }
                 if (item.title === 'FACTURACION' && node.title === 'ADMINISTRACION') { historyStack.push(node); renderFacturacion(); return; }
         if (item.title === 'REMITOS'     && node.title === 'ADMINISTRACION') { historyStack.push(node); renderRemitos();      return; }
         if (item.title === 'COMPRAS'     && node.title === 'ADMINISTRACION') { historyStack.push(node); renderCompras();      return; }
@@ -5436,4 +5438,205 @@ function buildCargaRow(c, estClass) {
       </div>
     </td>
   </tr>`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MÓDULO: PRE-ENTRADAS / ENTRADAS
+   ═══════════════════════════════════════════════════════════════ */
+
+const entradasData = [
+  { carga:169784, entrada:70007, remito:'0213-00097339', referencia:'136658',
+    cliente:'MINERVA FOOD ( 0013 PLANTA SWIFT )',
+    certificados:['0013-A-050830','0013-A-050831','0013-A-050832','0013-A-050833','0013-A-050829'],
+    calidad:'Pendiente', movimiento:'', devolucion:false, verificado:false, tipo:'pre' },
+  { carga:169789, entrada:70006, remito:'0008-00000983', referencia:'',
+    cliente:'MINERVA FOODS (CTRO. DE DIST.) CONGELADO',
+    certificados:[], calidad:'Pendiente', movimiento:'', devolucion:false, verificado:false, tipo:'pre' },
+  { carga:169788, entrada:70005, remito:'0000-00000000', referencia:'',
+    cliente:'LOGISTICA RR CONGELADOS SA',
+    certificados:['5235-A-035689'], calidad:'Pendiente', movimiento:'13/03/2026', devolucion:false, verificado:false, tipo:'pre' },
+  { carga:169787, entrada:70004, remito:'0001-00022866', referencia:'',
+    cliente:'IPANCO SRL DN',
+    certificados:[], calidad:'Pendiente', movimiento:'', devolucion:false, verificado:false, tipo:'pre' },
+  { carga:169783, entrada:70003, remito:'0292-00004643', referencia:'4002',
+    cliente:'MINERVA FOODS ( 1113 PLANTA VILLA MERCEDES )',
+    certificados:['1113-A-022202','1113-A-022205','1113-A-022206'], calidad:'Pendiente', movimiento:'', devolucion:false, verificado:false, tipo:'pre' },
+  // Entradas (clasificadas)
+  { carga:169760, entrada:69992, remito:'9998-00029264', referencia:'4902425241 / 4902425240 / 4902425129',
+    cliente:'QUICKFOOD S.A. (SAN JORGE)',
+    certificados:['1014-A-017507','1014-A-017508'], calidad:'Pendiente', movimiento:'13/03/2026', devolucion:false, verificado:false, tipo:'ent' },
+  { carga:169762, entrada:69990, remito:'0902-00013924', referencia:'',
+    cliente:'RAFAELA ALIMENTOS S.A. (CASILDA)',
+    certificados:['1399-A-017640'], calidad:'Pendiente', movimiento:'12/03/2026', devolucion:false, verificado:false, tipo:'ent' },
+  { carga:169751, entrada:69989, remito:'3301-00010258', referencia:'4902420019/18/17',
+    cliente:'QUICKFOOD S.A. (SAN JORGE)',
+    certificados:['1014-A-017505','1014-A-017506'], calidad:'Pendiente', movimiento:'12/03/2026', devolucion:false, verificado:false, tipo:'ent' },
+  { carga:169747, entrada:69988, remito:'0001-00022861', referencia:'',
+    cliente:'IPANCO SRL DN',
+    certificados:[], calidad:'Pendiente', movimiento:'12/03/2026', devolucion:false, verificado:false, tipo:'ent' },
+  { carga:169736, entrada:69985, remito:'0000-00000000', referencia:'',
+    cliente:'LOGISTICA RR CONGELADOS SA',
+    certificados:['5235-A-035659'], calidad:'Completo', movimiento:'12/03/2026', devolucion:false, verificado:false, tipo:'ent' },
+];
+
+function renderEntradasModule(esPre, fiscal) {
+  const titulo = esPre ? 'PRE-ENTRADAS' : 'ENTRADAS';
+  setHeader(titulo + (fiscal ? ' — FISCAL' : ''));
+  setExpandedMode(false);
+  showMetaPanel(true);
+  menuGrid.className = '';
+  menuGrid.innerHTML = '';
+  syncBackBtn();
+
+  const clientesUnicos = [...new Set(entradasData.map(e => e.cliente))].sort();
+
+  let filtros = {
+    cliente:'', stock:false, estado:'Todos', tratamiento:'Todos',
+    devoluciones:false, verificado:false, nroEntrada:'', busqueda:''
+  };
+
+  const wrap = document.createElement('div');
+  wrap.className = 'ent-wrap';
+  menuGrid.appendChild(wrap);
+
+  const render = () => {
+    const tipo = esPre ? 'pre' : 'ent';
+    const datos = entradasData.filter(e => {
+      if (e.tipo !== tipo) return false;
+      if (filtros.cliente && !e.cliente.toUpperCase().includes(filtros.cliente.toUpperCase())) return false;
+      if (filtros.devoluciones && !e.devolucion) return false;
+      if (filtros.verificado && !e.verificado) return false;
+      if (filtros.nroEntrada && !String(e.entrada).includes(filtros.nroEntrada)) return false;
+      if (filtros.estado !== 'Todos' && e.calidad !== filtros.estado) return false;
+      if (filtros.busqueda) {
+        const q = filtros.busqueda.toLowerCase();
+        if (!e.remito.toLowerCase().includes(q) &&
+            !e.referencia.toLowerCase().includes(q) &&
+            !e.certificados.some(c => c.toLowerCase().includes(q))) return false;
+      }
+      return true;
+    });
+
+    wrap.innerHTML = `
+      <!-- FILTROS -->
+      <div class="ent-filters-card">
+        <div class="ent-filters-row">
+          <div class="ent-filter-group">
+            <label class="ent-filter-label">Cliente</label>
+            <select class="ent-select ent-select-wide" id="fCliente">
+              <option value="">Todos los Clientes</option>
+              ${clientesUnicos.map(c => `<option value="${c}" ${filtros.cliente===c?'selected':''}>${c}</option>`).join('')}
+            </select>
+          </div>
+          ${!esPre ? `<div class="ent-filter-group ent-filter-check">
+            <label class="ent-filter-label">Stock</label>
+            <input type="checkbox" class="ent-check" id="fStock" ${filtros.stock?'checked':''}>
+          </div>` : ''}
+          <div class="ent-filter-group">
+            <label class="ent-filter-label">Estado</label>
+            <select class="ent-select" id="fEstado">
+              <option value="Todos">Todos</option>
+              <option value="Pendiente" ${filtros.estado==='Pendiente'?'selected':''}>Pendiente</option>
+              <option value="Completo" ${filtros.estado==='Completo'?'selected':''}>Completo</option>
+            </select>
+          </div>
+          <div class="ent-filter-group">
+            <label class="ent-filter-label">Tratamiento</label>
+            <select class="ent-select" id="fTratamiento">
+              <option value="Todos">Todos</option>
+              <option value="Congelado">Congelado</option>
+              <option value="Refrigerado">Refrigerado</option>
+            </select>
+          </div>
+          <div class="ent-filter-group ent-filter-check">
+            <label class="ent-filter-label">Devoluciones</label>
+            <input type="checkbox" class="ent-check" id="fDev" ${filtros.devoluciones?'checked':''}>
+          </div>
+          <div class="ent-filter-group ent-filter-check">
+            <label class="ent-filter-label">Verificado</label>
+            <input type="checkbox" class="ent-check" id="fVer" ${filtros.verificado?'checked':''}>
+          </div>
+          <div class="ent-filter-group">
+            <label class="ent-filter-label">N° Entrada</label>
+            <input type="text" class="ent-input-sm" id="fNroEnt" value="${filtros.nroEntrada}" placeholder="">
+          </div>
+          <div class="ent-filter-group ent-filter-search">
+            <label class="ent-filter-label">Buscar por:</label>
+            <div class="ent-search-row">
+              <input type="text" class="ent-input-search" id="fBusqueda" value="${filtros.busqueda}" placeholder="N° Remito / N° Referencia / Certificado">
+              <button class="ent-search-btn" id="fBuscarBtn">🔍</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLA -->
+      <div class="ent-table-wrap">
+        <table class="ent-table">
+          <thead>
+            <tr>
+              <th class="ent-th-carga">Carga</th>
+              <th class="ent-th-ent">Entrada</th>
+              <th class="ent-th-rem">Remito</th>
+              <th class="ent-th-ref">Número Referencia</th>
+              <th class="ent-th-cli">Cliente</th>
+              <th class="ent-th-cert">Certificado</th>
+              <th class="ent-th-cal">Control Calidad</th>
+              <th class="ent-th-mov">Movimiento</th>
+              <th class="ent-th-acc">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${datos.length === 0
+              ? '<tr><td colspan="9" class="ent-empty">No hay registros con los filtros aplicados</td></tr>'
+              : datos.map((e, i) => `
+                <tr class="ent-row ${i%2===0?'even':'odd'}">
+                  <td class="ent-td-carga">${e.carga}</td>
+                  <td class="ent-td-ent"><span class="ent-ent-num">${e.entrada}</span></td>
+                  <td class="ent-td-rem">${e.remito}</td>
+                  <td class="ent-td-ref">${e.referencia||''}</td>
+                  <td class="ent-td-cli">${e.cliente}</td>
+                  <td class="ent-td-cert">${e.certificados.length === 0
+                    ? '<span class="ent-cert-empty">—</span>'
+                    : e.certificados.map(c => `<div class="ent-cert-line">${c}</div>`).join('')}</td>
+                  <td class="ent-td-cal">
+                    ${e.calidad === 'Completo'
+                      ? '<span class="ent-cal-chip completo">✅ Completo</span>'
+                      : '<span class="ent-cal-chip pendiente">❌ Pendiente</span>'}
+                  </td>
+                  <td class="ent-td-mov">${e.movimiento||''}</td>
+                  <td class="ent-td-acc">
+                    <div class="ent-acc-row">
+                      <button class="ent-acc-ver" data-idx="${i}">Ver</button>
+                      ${esPre ? `<button class="ent-acc-del" data-idx="${i}" title="Eliminar">🗑</button>` : ''}
+                    </div>
+                  </td>
+                </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+      <div class="ent-footer">${datos.length} registro${datos.length!==1?'s':''}</div>`;
+
+    // Eventos filtros
+    wrap.querySelector('#fCliente').onchange  = e => { filtros.cliente = e.target.value; render(); };
+    wrap.querySelector('#fEstado').onchange   = e => { filtros.estado = e.target.value; render(); };
+    wrap.querySelector('#fTratamiento').onchange = e => { filtros.tratamiento = e.target.value; render(); };
+    wrap.querySelector('#fDev').onchange      = e => { filtros.devoluciones = e.target.checked; render(); };
+    wrap.querySelector('#fVer').onchange      = e => { filtros.verificado = e.target.checked; render(); };
+    const nroEnt = wrap.querySelector('#fNroEnt');
+    nroEnt.oninput = e => { filtros.nroEntrada = e.target.value; render(); };
+    nroEnt.onkeydown = e => e.stopPropagation();
+    const busq = wrap.querySelector('#fBusqueda');
+    busq.onkeydown = e => { e.stopPropagation(); if (e.key==='Enter') { filtros.busqueda = busq.value; render(); } };
+    wrap.querySelector('#fBuscarBtn').onclick = () => { filtros.busqueda = busq.value; render(); };
+    if (!esPre) wrap.querySelector('#fStock').onchange = e => { filtros.stock = e.target.checked; render(); };
+    wrap.querySelectorAll('.ent-acc-ver').forEach(btn => {
+      btn.onclick = () => showToast('Abriendo entrada #' + datos[+btn.dataset.idx].entrada);
+    });
+    wrap.querySelectorAll('.ent-acc-del').forEach(btn => {
+      btn.onclick = () => showToast('Eliminar entrada #' + datos[+btn.dataset.idx].entrada);
+    });
+  };
+
+  render();
 }
