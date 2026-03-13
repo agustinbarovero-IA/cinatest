@@ -4379,6 +4379,87 @@ body{
 }
 .estado-btn-falla:hover { background: rgba(239,68,68,.3) !important; }
 
+/* ── Tile imagen personalizada ── */
+.tile-custom-img {
+  width: 44px; height: 44px; object-fit: contain;
+  margin: 2px 0;
+}
+
+/* ── Badges estado equipo en modal ── */
+.estado-equip-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 99px;
+  font-size: .72rem; font-weight: 900;
+}
+.estado-equip-badge.state-running  { background: rgba(0,168,135,.2);  color: #00A887; border: 1px solid rgba(0,168,135,.4); }
+.estado-equip-badge.state-falla    { background: rgba(239,68,68,.2);   color: #f87171; border: 1px solid rgba(239,68,68,.4); }
+.estado-equip-badge.state-cargando { background: rgba(250,204,21,.15); color: #fbbf24; border: 1px solid rgba(250,204,21,.3); }
+
+/* ── Botones de cambio de estado ── */
+.estado-btn-cargando {
+  background: rgba(250,204,21,.18) !important; border-color: rgba(250,204,21,.4) !important;
+  color: #fbbf24 !important;
+}
+.estado-btn-cargando:hover { background: rgba(250,204,21,.3) !important; }
+.estado-btn-falla {
+  background: rgba(239,68,68,.18) !important; border-color: rgba(239,68,68,.4) !important;
+  color: #f87171 !important;
+}
+.estado-btn-falla:hover { background: rgba(239,68,68,.3) !important; }
+
+/* ── Tile imagen personalizada ── */
+.tile-custom-img {
+  width: 44px; height: 44px; object-fit: contain;
+  margin: 2px 0;
+}
+
+/* ── Badges estado equipo en modal ── */
+.estado-equip-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 99px;
+  font-size: .72rem; font-weight: 900;
+}
+.estado-equip-badge.state-running  { background: rgba(0,168,135,.2);  color: #00A887; border: 1px solid rgba(0,168,135,.4); }
+.estado-equip-badge.state-falla    { background: rgba(239,68,68,.2);   color: #f87171; border: 1px solid rgba(239,68,68,.4); }
+.estado-equip-badge.state-cargando { background: rgba(250,204,21,.15); color: #fbbf24; border: 1px solid rgba(250,204,21,.3); }
+
+/* ── Botones de cambio de estado ── */
+.estado-btn-cargando {
+  background: rgba(250,204,21,.18) !important; border-color: rgba(250,204,21,.4) !important;
+  color: #fbbf24 !important;
+}
+.estado-btn-cargando:hover { background: rgba(250,204,21,.3) !important; }
+.estado-btn-falla {
+  background: rgba(239,68,68,.18) !important; border-color: rgba(239,68,68,.4) !important;
+  color: #f87171 !important;
+}
+.estado-btn-falla:hover { background: rgba(239,68,68,.3) !important; }
+
+/* ── Tile imagen personalizada ── */
+.tile-custom-img {
+  width: 44px; height: 44px; object-fit: contain;
+  margin: 2px 0;
+}
+
+/* ── Badges estado equipo en modal ── */
+.estado-equip-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 99px;
+  font-size: .72rem; font-weight: 900;
+}
+.estado-equip-badge.state-running  { background: rgba(0,168,135,.2);  color: #00A887; border: 1px solid rgba(0,168,135,.4); }
+.estado-equip-badge.state-falla    { background: rgba(239,68,68,.2);   color: #f87171; border: 1px solid rgba(239,68,68,.4); }
+.estado-equip-badge.state-cargando { background: rgba(250,204,21,.15); color: #fbbf24; border: 1px solid rgba(250,204,21,.3); }
+
+/* ── Botones de cambio de estado ── */
+.estado-btn-cargando {
+  background: rgba(250,204,21,.18) !important; border-color: rgba(250,204,21,.4) !important;
+  color: #fbbf24 !important;
+}
+.estado-btn-cargando:hover { background: rgba(250,204,21,.3) !important; }
+.estado-btn-falla {
+  background: rgba(239,68,68,.18) !important; border-color: rgba(239,68,68,.4) !important;
+  color: #f87171 !important;
+}
+.estado-btn-falla:hover { background: rgba(239,68,68,.3) !important; }
+
 /* ═══════════════════════════════════════════════════════════════
    CHECKLIST: EQUIPO EN MARCHA
    ═══════════════════════════════════════════════════════════════ */
@@ -4536,3 +4617,343 @@ body{
 .chk-btn-retirar { background: linear-gradient(135deg,#00A887,#007A62); border-color: transparent; color: #fff; }
 .chk-btn-retirar:hover { filter: brightness(1.1); }
 .chk-disabled { opacity: .4; cursor: not-allowed !important; filter: none !important; }
+
+/* ═══════════════════════════════════════════════════════════════
+   CHECKLIST: EQUIPO EN MARCHA — sin scroll, 2 columnas
+   ═══════════════════════════════════════════════════════════════ */
+.chk-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,8,28,.78); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .22s; padding: 12px;
+}
+.chk-overlay.chk-visible { opacity: 1; }
+
+/* Modal: ancho grande para 2 columnas, altura que entre en pantalla */
+.chk-modal {
+  background: #0d1f42;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 16px;
+  width: min(1020px, 98vw);
+  max-height: 96dvh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 64px rgba(0,0,0,.6);
+  overflow: hidden;
+}
+
+/* ── Header ── */
+.chk-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px 10px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  flex-shrink: 0;
+}
+.chk-header-info { display: flex; align-items: center; gap: 10px; }
+.chk-equip-badge {
+  padding: 3px 11px; border-radius: 6px;
+  background: rgba(54,176,201,.2); border: 1px solid rgba(54,176,201,.4);
+  color: #36B0C9; font-size: .7rem; font-weight: 900; text-transform: uppercase;
+}
+.chk-equip-denom { font-size: .98rem; font-weight: 900; color: #fff; }
+.chk-close {
+  width: 28px; height: 28px; border-radius: 7px;
+  border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.6); font-size: .85rem; cursor: pointer; flex-shrink: 0;
+}
+.chk-close:hover { background: rgba(255,255,255,.15); color: #fff; }
+
+/* ── Datos compactos en una fila ── */
+.chk-datos-grid {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  padding: 10px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.chk-dato { display: flex; flex-direction: column; gap: 3px; }
+.chk-dato-input { min-width: 120px; }
+.chk-dato-label {
+  font-size: .58rem; font-weight: 800; color: rgba(255,255,255,.38);
+  text-transform: uppercase; letter-spacing: .3px; white-space: nowrap;
+}
+.chk-dato-val { font-size: .8rem; font-weight: 900; color: #fff; white-space: nowrap; }
+.chk-input {
+  padding: 5px 10px; border-radius: 7px;
+  border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.08);
+  color: #fff; font-size: .78rem; font-weight: 700; outline: none;
+  width: 100%; box-sizing: border-box;
+}
+.chk-input:focus { border-color: rgba(54,176,201,.6); }
+.chk-input.chk-required-err { border-color: rgba(239,68,68,.7); animation: chk-shake .25s; }
+@keyframes chk-shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+.chk-input::placeholder { color: rgba(255,255,255,.22); }
+
+/* Progreso inline */
+.chk-progress-inline { flex: 1; min-width: 140px; }
+.chk-progress-bar-bg {
+  width: 100%; height: 6px; border-radius: 99px; background: rgba(255,255,255,.1); margin-top: 4px;
+}
+.chk-progress-bar-fill {
+  height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, #00A887, #36B0C9); transition: width .2s;
+}
+
+/* ── DOS COLUMNAS de checklist ── */
+.chk-cols-wrap {
+  display: flex;
+  gap: 0;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;        /* no scroll — todo debe entrar */
+  padding: 0 20px;
+}
+.chk-col-divider {
+  width: 1px; background: rgba(255,255,255,.08); flex-shrink: 0; margin: 8px 10px;
+}
+.chk-table {
+  flex: 1; border-collapse: collapse; font-size: .72rem;
+  table-layout: fixed; width: 100%;
+}
+.chk-table thead th {
+  background: rgba(255,255,255,.05);
+  color: rgba(255,255,255,.45);
+  font-size: .59rem; font-weight: 900; text-transform: uppercase; letter-spacing: .25px;
+  padding: 6px 6px; text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.chk-th-elem { text-align: left; }
+.chk-th-si { width: 48px; color: #4ade80; }
+.chk-th-no { width: 48px; color: #f87171; }
+
+.chk-row td { padding: 5px 6px; border-bottom: 1px solid rgba(255,255,255,.04); }
+.chk-row:nth-child(even) td { background: rgba(255,255,255,.02); }
+.chk-row:hover td { background: rgba(255,255,255,.05); }
+.chk-row-done  td { background: rgba(0,168,135,.08)  !important; }
+.chk-row-falla td { background: rgba(239,68,68,.1)   !important; }
+
+.chk-td-elem { font-size: .71rem; color: rgba(255,255,255,.82); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chk-td-opt  { text-align: center; padding: 4px 3px !important; }
+
+/* Botones ✓ y ✗ — más grandes */
+.chk-opt-btn {
+  width: 40px; height: 34px; border-radius: 7px;
+  font-size: 1rem; font-weight: 900; cursor: pointer;
+  border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.07);
+  color: rgba(255,255,255,.4); transition: all .12s;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.chk-opt-btn:hover { background: rgba(255,255,255,.14); color: #fff; transform: scale(1.08); }
+.chk-sel-si { background: rgba(34,197,94,.25); border-color: rgba(34,197,94,.6); color: #4ade80; }
+.chk-sel-si:hover { background: rgba(34,197,94,.38); }
+.chk-sel-no { background: rgba(239,68,68,.25); border-color: rgba(239,68,68,.6); color: #f87171; }
+.chk-sel-no:hover { background: rgba(239,68,68,.38); }
+
+/* Alerta falla */
+.chk-alerta-falla {
+  margin: 0 20px 4px;
+  padding: 6px 14px; border-radius: 8px;
+  background: rgba(239,68,68,.15); border: 1px solid rgba(239,68,68,.35);
+  color: #f87171; font-size: .71rem; font-weight: 800; flex-shrink: 0;
+}
+
+/* ── Footer con botones GRANDES ── */
+.chk-footer {
+  display: flex; gap: 10px; padding: 12px 20px;
+  border-top: 1px solid rgba(255,255,255,.1);
+  flex-shrink: 0;
+}
+.chk-btn {
+  flex: 1; padding: 13px 10px; border-radius: 11px;
+  font-size: .82rem; font-weight: 900; cursor: pointer;
+  transition: all .13s; text-align: center; border: 1px solid transparent;
+  letter-spacing: .2px;
+}
+.chk-btn-rechazar {
+  background: rgba(107,114,128,.2); border-color: rgba(107,114,128,.4);
+  color: rgba(255,255,255,.75);
+}
+.chk-btn-rechazar:hover { background: rgba(107,114,128,.35); color: #fff; }
+.chk-btn-falla {
+  background: rgba(245,158,11,.2); border-color: rgba(245,158,11,.5);
+  color: #fbbf24;
+}
+.chk-btn-falla:hover { background: rgba(245,158,11,.35); }
+.chk-btn-retirar {
+  background: linear-gradient(135deg,#00A887,#007A62);
+  border-color: transparent; color: #fff;
+  font-size: .88rem;
+}
+.chk-btn-retirar:hover:not(:disabled) { filter: brightness(1.12); }
+.chk-disabled { opacity: .38; cursor: not-allowed; }
+
+/* ═══════════════════════════════════════════════════════════════
+   CHECKLIST: EQUIPO EN MARCHA — 2 pasos, todo en pantalla, sin scroll
+   ═══════════════════════════════════════════════════════════════ */
+.chk-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,8,28,.78); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .22s; padding: 12px;
+}
+.chk-overlay.chk-visible { opacity: 1; }
+
+.chk-modal {
+  background: #0d1f42;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 16px;
+  width: min(560px, 97vw);
+  height: min(88dvh, 740px);   /* altura fija — todo debe entrar sin scroll */
+  display: flex; flex-direction: column;
+  box-shadow: 0 24px 64px rgba(0,0,0,.6);
+  overflow: hidden;
+}
+
+/* ── Header ── */
+.chk-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 18px 10px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  flex-shrink: 0;
+}
+.chk-header-info { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.chk-equip-badge {
+  padding: 3px 10px; border-radius: 6px;
+  background: rgba(54,176,201,.2); border: 1px solid rgba(54,176,201,.4);
+  color: #36B0C9; font-size: .68rem; font-weight: 900; text-transform: uppercase;
+}
+.chk-equip-denom { font-size: .95rem; font-weight: 900; color: #fff; }
+.chk-paso-label  { font-size: .65rem; font-weight: 800; color: rgba(255,255,255,.38); padding: 2px 8px; border-radius: 99px; background: rgba(255,255,255,.07); }
+.chk-close {
+  width: 28px; height: 28px; border-radius: 7px;
+  border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.6); font-size: .85rem; cursor: pointer; flex-shrink: 0;
+}
+.chk-close:hover { background: rgba(255,255,255,.15); color: #fff; }
+
+/* ── Datos compactos — una sola fila ── */
+.chk-datos-grid {
+  display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap;
+  padding: 9px 18px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  flex-shrink: 0;
+}
+.chk-dato { display: flex; flex-direction: column; gap: 2px; }
+.chk-dato-label {
+  font-size: .57rem; font-weight: 800; color: rgba(255,255,255,.36);
+  text-transform: uppercase; letter-spacing: .3px; white-space: nowrap;
+}
+.chk-dato-val { font-size: .8rem; font-weight: 900; color: #fff; white-space: nowrap; }
+.chk-input {
+  padding: 5px 10px; border-radius: 7px;
+  border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.08);
+  color: #fff; font-size: .77rem; font-weight: 700; outline: none; width: 110px;
+}
+.chk-input:focus  { border-color: rgba(54,176,201,.6); }
+.chk-input.chk-required-err { border-color: rgba(239,68,68,.7); animation: chkShake .25s; }
+@keyframes chkShake { 0%,100%{transform:translateX(0)} 30%{transform:translateX(-4px)} 70%{transform:translateX(4px)} }
+.chk-input::placeholder { color: rgba(255,255,255,.22); }
+
+.chk-progress-inline { flex: 1; min-width: 120px; }
+.chk-progress-bar-bg {
+  width: 100%; height: 5px; border-radius: 99px; background: rgba(255,255,255,.1); margin-top: 4px;
+}
+.chk-progress-bar-fill {
+  height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg,#00A887,#36B0C9); transition: width .2s;
+}
+
+/* ── Lista ítems — ocupa TODO el espacio disponible, sin scroll ── */
+.chk-list-wrap {
+  flex: 1; min-height: 0;    /* critical: sin esto flex no comprime */
+  overflow: hidden;          /* no scroll — los 9 ítems deben entrar */
+  padding: 4px 18px 2px;
+  display: flex; flex-direction: column;
+}
+.chk-table { flex: 1; border-collapse: collapse; width: 100%; }
+.chk-table thead th {
+  background: rgba(255,255,255,.05);
+  color: rgba(255,255,255,.45);
+  font-size: .59rem; font-weight: 900; text-transform: uppercase; letter-spacing: .22px;
+  padding: 5px 6px; text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+.chk-th-elem { text-align: left; }
+.chk-th-si   { width: 56px; color: #4ade80; }
+.chk-th-no   { width: 56px; color: #f87171; }
+
+.chk-row td  { border-bottom: 1px solid rgba(255,255,255,.04); padding: 0; }
+/* distribuir altura igual entre las 9 filas */
+.chk-table tbody { }
+.chk-row:nth-child(even) td { background: rgba(255,255,255,.02); }
+.chk-row:hover td { background: rgba(255,255,255,.05); }
+.chk-row-done  td { background: rgba(0,168,135,.08)  !important; }
+.chk-row-falla td { background: rgba(239,68,68,.1)   !important; }
+
+.chk-td-elem {
+  font-size: .73rem; color: rgba(255,255,255,.82); font-weight: 600;
+  padding: 6px 6px 6px 8px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.chk-td-opt  { text-align: center; padding: 5px 4px; }
+
+/* Botones ✓ / ✗ — grandes y cómodos */
+.chk-opt-btn {
+  width: 44px; height: 36px; border-radius: 8px;
+  font-size: 1.05rem; font-weight: 900; cursor: pointer;
+  border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.07);
+  color: rgba(255,255,255,.4); transition: all .12s;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.chk-opt-btn:hover { background: rgba(255,255,255,.14); color: #fff; transform: scale(1.06); }
+.chk-sel-si { background: rgba(34,197,94,.25); border-color: rgba(34,197,94,.6); color: #4ade80; }
+.chk-sel-si:hover { background: rgba(34,197,94,.4); }
+.chk-sel-no { background: rgba(239,68,68,.25); border-color: rgba(239,68,68,.6); color: #f87171; }
+.chk-sel-no:hover { background: rgba(239,68,68,.4); }
+
+/* Alerta falla */
+.chk-alerta-falla {
+  margin: 3px 18px;
+  padding: 5px 12px; border-radius: 7px;
+  background: rgba(239,68,68,.15); border: 1px solid rgba(239,68,68,.32);
+  color: #f87171; font-size: .69rem; font-weight: 800; flex-shrink: 0;
+}
+
+/* ── Footer — 3 botones grandes, siempre visibles ── */
+.chk-footer {
+  display: flex; gap: 8px; padding: 10px 18px;
+  border-top: 1px solid rgba(255,255,255,.1);
+  flex-shrink: 0;
+}
+.chk-btn {
+  flex: 1; padding: 12px 8px; border-radius: 10px;
+  font-size: .78rem; font-weight: 900; cursor: pointer;
+  transition: all .13s; text-align: center; border: 1px solid transparent;
+  letter-spacing: .15px;
+}
+.chk-btn-rechazar {
+  background: rgba(107,114,128,.2); border-color: rgba(107,114,128,.38); color: rgba(255,255,255,.72);
+}
+.chk-btn-rechazar:hover { background: rgba(107,114,128,.35); color: #fff; }
+.chk-btn-falla {
+  background: rgba(245,158,11,.2); border-color: rgba(245,158,11,.45); color: #fbbf24;
+}
+.chk-btn-falla:hover { background: rgba(245,158,11,.35); }
+.chk-btn-retirar {
+  background: linear-gradient(135deg,#00A887,#007A62); color: #fff;
+}
+.chk-btn-retirar:hover:not(:disabled) { filter: brightness(1.1); }
+.chk-disabled { opacity: .35; cursor: not-allowed; }
+.chk-disabled:hover { filter: none !important; transform: none !important; }
+
+/* ── Badges de estado en modal cambio ── */
+.estado-equip-badge { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: .72rem; font-weight: 900; }
+.estado-equip-badge.state-running  { background: rgba(0,168,135,.2);  color: #00A887; border: 1px solid rgba(0,168,135,.4); }
+.estado-equip-badge.state-falla    { background: rgba(239,68,68,.2);   color: #f87171; border: 1px solid rgba(239,68,68,.4); }
+.estado-equip-badge.state-cargando { background: rgba(250,204,21,.15); color: #fbbf24; border: 1px solid rgba(250,204,21,.3); }
+.estado-btn-cargando { background: rgba(250,204,21,.18) !important; border-color: rgba(250,204,21,.4) !important; color: #fbbf24 !important; }
+.estado-btn-cargando:hover { background: rgba(250,204,21,.3) !important; }
+.estado-btn-falla    { background: rgba(239,68,68,.18) !important; border-color: rgba(239,68,68,.4) !important; color: #f87171 !important; }
+.estado-btn-falla:hover { background: rgba(239,68,68,.3) !important; }

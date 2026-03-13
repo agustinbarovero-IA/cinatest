@@ -5684,6 +5684,18 @@ function renderLogMod(tipo, fiscal) {
 /* ═══════════════════════════════════════════════════════════════
    CHECKLIST: EQUIPO EN MARCHA
    ═══════════════════════════════════════════════════════════════ */
+
+
+
+/* ═══════════════════════════════════════════════════════════════
+   MODAL: CAMBIO DE ESTADO DE EQUIPO (En marcha ↔ Falla / Cargando)
+   ═══════════════════════════════════════════════════════════════ */
+
+
+/* ═══════════════════════════════════════════════════════════════
+   CHECKLIST: EQUIPO EN MARCHA (estado Cargando → En marcha)
+   2 pasos: ítems 1-9 → continuar → ítems 10-18 + horas iniciales
+   ═══════════════════════════════════════════════════════════════ */
 const CHECKLIST_ITEMS = [
   'Extinguidores 1 Kg.',
   'Espejos retrovisores',
@@ -5707,27 +5719,38 @@ const CHECKLIST_ITEMS = [
 
 function openChecklistEnMarcha(index) {
   document.getElementById('checklistModal')?.remove();
-
-  const item    = dashboardEquipamientoData[index];
-  const now     = new Date();
+  const item = dashboardEquipamientoData[index];
+  const now  = new Date();
   const horaStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
   const checks  = {};
-  CHECKLIST_ITEMS.forEach((_,i) => { checks[i] = null; });
-
-  // Guardar valores de inputs entre re-renders
-  let horasIniVal = '', horasFinVal = '';
+  CHECKLIST_ITEMS.forEach((_, i) => { checks[i] = null; });
+  let paso = 1;          // paso 1: ítems 0-8 | paso 2: ítems 9-17 + horas
+  let horasIniVal = '';  // SIN horas finales aquí
 
   const modal = document.createElement('div');
   modal.id = 'checklistModal';
   modal.className = 'chk-overlay';
   document.body.appendChild(modal);
+  requestAnimationFrame(() => modal.classList.add('chk-visible'));
 
   const render = () => {
+    const start    = paso === 1 ? 0 : 9;
+    const end      = paso === 1 ? 9 : 18;
+    const items    = CHECKLIST_ITEMS.slice(start, end);
     const respondidos = Object.values(checks).filter(v => v !== null).length;
-    const total       = CHECKLIST_ITEMS.length;
-    const pct         = Math.round(respondidos / total * 100);
-    const hayFalla    = Object.values(checks).some(v => v === 'no');
-    const completo    = respondidos === total && horasIniVal.trim() !== '';
+    const stepDone = items.every((_, i) => checks[start + i] !== null);
+    const hayFalla = Object.values(checks).some(v => v === 'no');
+    const horasOk  = paso === 2 ? horasIniVal.trim() !== '' : true;
+    const puedeRetirar = paso === 2 && stepDone && horasOk;
+
+    const rows = items.map((elem, i) => {
+      const idx = start + i;
+      return `<tr class="chk-row ${checks[idx]!==null?'chk-row-done':''} ${checks[idx]==='no'?'chk-row-falla':''}">
+        <td class="chk-td-elem">${elem}</td>
+        <td class="chk-td-opt"><button class="chk-opt-btn ${checks[idx]==='si'?'chk-sel-si':''}" data-idx="${idx}" data-val="si">✓</button></td>
+        <td class="chk-td-opt"><button class="chk-opt-btn ${checks[idx]==='no'?'chk-sel-no':''}" data-idx="${idx}" data-val="no">✗</button></td>
+      </tr>`;
+    }).join('');
 
     modal.innerHTML = `
       <div class="chk-modal">
@@ -5735,84 +5758,61 @@ function openChecklistEnMarcha(index) {
           <div class="chk-header-info">
             <span class="chk-equip-badge">${item.tipo}</span>
             <span class="chk-equip-denom">${item.denominacion}</span>
+            <span class="chk-paso-label">Paso ${paso} de 2</span>
           </div>
           <button class="chk-close" id="chkClose">✕</button>
         </div>
 
         <div class="chk-datos-grid">
-          <div class="chk-dato">
-            <span class="chk-dato-label">Equipo</span>
-            <span class="chk-dato-val">${item.denominacion}</span>
-          </div>
-          <div class="chk-dato">
-            <span class="chk-dato-label">Usuario</span>
-            <span class="chk-dato-val">${item.usuario}</span>
-          </div>
-          <div class="chk-dato">
-            <span class="chk-dato-label">Hora de inicio</span>
-            <span class="chk-dato-val">${horaStr}</span>
-          </div>
+          <div class="chk-dato"><span class="chk-dato-label">Equipo</span><span class="chk-dato-val">${item.denominacion}</span></div>
+          <div class="chk-dato"><span class="chk-dato-label">Usuario</span><span class="chk-dato-val">${item.usuario}</span></div>
+          <div class="chk-dato"><span class="chk-dato-label">Hora inicio</span><span class="chk-dato-val">${horaStr}</span></div>
+          ${paso === 2 ? `
           <div class="chk-dato">
             <span class="chk-dato-label">Hs. uso iniciales <span style="color:#f87171">*</span></span>
-            <input class="chk-input ${!horasIniVal && completo===false ? '' : ''}" type="text" id="chkHorasIni" value="${horasIniVal}" placeholder="Ej: 1250 hs" />
+            <input class="chk-input ${!horasOk&&puedeRetirar===false?'':''}\" type="text" id="chkHorasIni" value="${horasIniVal}" placeholder="Ej: 1250">
+          </div>` : `<div class="chk-dato"></div>`}
+          <div class="chk-dato chk-progress-inline">
+            <span class="chk-dato-label">${respondidos}/18 completados</span>
+            <div class="chk-progress-bar-bg">
+              <div class="chk-progress-bar-fill" style="width:${Math.round(respondidos/18*100)}%"></div>
+            </div>
           </div>
-          <div class="chk-dato">
-            <span class="chk-dato-label">Hs. uso finales</span>
-            <input class="chk-input" type="text" id="chkHorasFin" value="${horasFinVal}" placeholder="Ej: 1258 hs" />
-          </div>
-        </div>
-
-        <div class="chk-progress-wrap">
-          <div class="chk-progress-bar-bg">
-            <div class="chk-progress-bar-fill" style="width:${pct}%"></div>
-          </div>
-          <span class="chk-progress-label">${respondidos} / ${total}</span>
         </div>
 
         <div class="chk-list-wrap">
           <table class="chk-table">
             <thead><tr>
-              <th class="chk-th-elem">Elemento</th>
+              <th class="chk-th-elem">Elemento (${paso === 1 ? '1–9' : '10–18'})</th>
               <th class="chk-th-si">SI</th>
               <th class="chk-th-no">NO</th>
             </tr></thead>
-            <tbody>
-              ${CHECKLIST_ITEMS.map((elem, i) => `
-                <tr class="chk-row ${checks[i]!==null?'chk-row-done':''} ${checks[i]==='no'?'chk-row-falla':''}">
-                  <td class="chk-td-elem">${elem}</td>
-                  <td class="chk-td-opt"><button class="chk-opt-btn chk-si ${checks[i]==='si'?'chk-sel-si':''}" data-idx="${i}" data-val="si">✓</button></td>
-                  <td class="chk-td-opt"><button class="chk-opt-btn chk-no ${checks[i]==='no'?'chk-sel-no':''}" data-idx="${i}" data-val="no">✗</button></td>
-                </tr>`).join('')}
-            </tbody>
+            <tbody>${rows}</tbody>
           </table>
         </div>
 
         ${hayFalla ? '<div class="chk-alerta-falla">⚠️ Hay elementos con falla detectada</div>' : ''}
 
         <div class="chk-footer">
-          <button class="chk-btn chk-btn-rechazar" id="chkRechazar">🚫 Rechazar</button>
+          <button class="chk-btn chk-btn-rechazar" id="chkRechazar">🚫 Rechazar uso</button>
           <button class="chk-btn chk-btn-falla"    id="chkFalla">⚠️ Informar falla</button>
-          <button class="chk-btn chk-btn-retirar ${!completo?'chk-disabled':''}" id="chkRetirar" ${!completo?'disabled':''}>✅ Retirar equipo</button>
+          ${paso === 1
+            ? `<button class="chk-btn chk-btn-retirar ${!stepDone?'chk-disabled':''}" id="chkContinuar" ${!stepDone?'disabled':''}>Continuar →</button>`
+            : `<button class="chk-btn chk-btn-retirar ${!puedeRetirar?'chk-disabled':''}" id="chkRetirar" ${!puedeRetirar?'disabled':''}>✅ Retirar equipo</button>`
+          }
         </div>
       </div>`;
 
-    // Opts checklist
+    // Eventos botones de checklist
     modal.querySelectorAll('.chk-opt-btn').forEach(btn => {
       btn.onclick = e => {
         e.stopPropagation();
         const i = +btn.dataset.idx, v = btn.dataset.val;
         checks[i] = checks[i] === v ? null : v;
-        horasIniVal = modal.querySelector('#chkHorasIni')?.value || horasIniVal;
-        horasFinVal = modal.querySelector('#chkHorasFin')?.value || horasFinVal;
+        if (paso === 2) horasIniVal = modal.querySelector('#chkHorasIni')?.value || horasIniVal;
         render();
       };
     });
-
-    const ini = modal.querySelector('#chkHorasIni');
-    const fin = modal.querySelector('#chkHorasFin');
-    ini.oninput = e => { horasIniVal = e.target.value; };
-    fin.oninput = e => { horasFinVal = e.target.value; };
-    ini.onkeydown = fin.onkeydown = e => e.stopPropagation();
 
     modal.querySelector('#chkClose').onclick    = close;
     modal.querySelector('#chkRechazar').onclick = () => { close(); showToast('🚫 Uso rechazado — ' + item.denominacion); };
@@ -5821,34 +5821,34 @@ function openChecklistEnMarcha(index) {
       close(); renderDashboardEquipamiento();
       showToast('⚠️ Falla informada — ' + item.denominacion);
     };
-    modal.querySelector('#chkRetirar').onclick  = () => {
-      if (!completo) {
-        // highlight campo obligatorio
-        const el = modal.querySelector('#chkHorasIni');
-        el.classList.add('chk-required-err');
-        el.focus();
-        return;
-      }
-      dashboardEquipamientoData[index].estado = 'En marcha';
-      dashboardEquipamientoData[index].horas  = horasIniVal;
-      close(); renderDashboardEquipamiento();
-      showToast('✅ Equipo en marcha — ' + item.denominacion);
-    };
+
+    if (paso === 1) {
+      modal.querySelector('#chkContinuar').onclick = () => { if (!stepDone) return; paso = 2; render(); };
+    } else {
+      const ini = modal.querySelector('#chkHorasIni');
+      ini.oninput   = e => { horasIniVal = e.target.value; };
+      ini.onkeydown = e => e.stopPropagation();
+      modal.querySelector('#chkRetirar').onclick = () => {
+        if (!puedeRetirar) { ini.classList.add('chk-required-err'); ini.focus(); return; }
+        dashboardEquipamientoData[index].estado = 'En marcha';
+        dashboardEquipamientoData[index].horas  = horasIniVal;
+        close(); renderDashboardEquipamiento();
+        showToast('✅ Equipo en marcha — ' + item.denominacion);
+      };
+    }
   };
 
   render();
-  requestAnimationFrame(() => modal.classList.add('chk-visible'));
-
   function close() { modal.classList.remove('chk-visible'); setTimeout(() => modal.remove(), 220); }
   modal.addEventListener('click', e => { if (e.target === modal) close(); });
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   MODAL: CAMBIO DE ESTADO DE EQUIPO (En marcha ↔ Falla / Cargando)
+   MODAL: CAMBIO DE ESTADO (En marcha / Falla → otro estado)
+   Pide horas finales obligatorias
    ═══════════════════════════════════════════════════════════════ */
 function openCambioEstadoEquipo(index) {
   document.getElementById('estadoEquipModal')?.remove();
-
   const item    = dashboardEquipamientoData[index];
   const esFalla = item.estado === 'Falla';
   const esMarcha= item.estado === 'En marcha';
@@ -5865,16 +5865,16 @@ function openCambioEstadoEquipo(index) {
     ? [{ val:'Cargando', label:'🔋 Pasar a Cargando', cls:'estado-btn-cargando' }]
     : esMarcha
     ? [
-        { val:'Falla',    label:'⚠️ Informar falla',    cls:'estado-btn-falla'    },
-        { val:'Cargando', label:'🔋 Pasar a Cargando',  cls:'estado-btn-cargando' },
+        { val:'Falla',    label:'⚠️ Informar falla',   cls:'estado-btn-falla'    },
+        { val:'Cargando', label:'🔋 Pasar a Cargando', cls:'estado-btn-cargando' },
       ]
     : [];
 
-  const estadoBadgeCls = item.estado === 'En marcha' ? 'state-running' : item.estado === 'Falla' ? 'state-falla' : 'state-cargando';
+  const badgeCls = item.estado === 'En marcha' ? 'state-running' : item.estado === 'Falla' ? 'state-falla' : 'state-cargando';
 
   const render = () => {
     modal.innerHTML = `
-      <div class="chk-modal" style="height:auto;min-height:0;max-height:min(500px,90dvh)">
+      <div class="chk-modal" style="height:auto;max-height:min(460px,90dvh)">
         <div class="chk-header">
           <div class="chk-header-info">
             <span class="chk-equip-badge">${item.tipo}</span>
@@ -5884,22 +5884,18 @@ function openCambioEstadoEquipo(index) {
         </div>
         <div style="padding:14px 20px;display:flex;flex-direction:column;gap:12px;overflow-y:auto">
           <div style="display:flex;align-items:center;gap:10px">
-            <span style="font-size:.65rem;font-weight:800;color:rgba(255,255,255,.42);text-transform:uppercase">Estado actual</span>
-            <span class="estado-equip-badge ${estadoBadgeCls}">${item.estado}</span>
-            <span style="font-size:.72rem;color:rgba(255,255,255,.5);margin-left:4px">· ${item.usuario}</span>
+            <span style="font-size:.65rem;font-weight:800;color:rgba(255,255,255,.4);text-transform:uppercase">Estado actual</span>
+            <span class="estado-equip-badge ${badgeCls}">${item.estado}</span>
+            <span style="font-size:.72rem;color:rgba(255,255,255,.45);margin-left:4px">· ${item.usuario}</span>
           </div>
-
           <div class="chk-dato">
             <span class="chk-dato-label">Horas de uso finales <span style="color:#f87171">*</span></span>
             <input class="chk-input ${errMsg?'chk-required-err':''}" type="text" id="estHorasFin" value="${horasFinVal}" placeholder="Ej: 1258 hs" />
-            ${errMsg ? `<span class="chk-input-req-label">${errMsg}</span>` : ''}
+            ${errMsg ? `<span style="font-size:.6rem;color:#f87171;font-weight:800;margin-top:2px">${errMsg}</span>` : ''}
           </div>
-
-          <p style="font-size:.72rem;color:rgba(255,255,255,.45);margin:0;line-height:1.4">
-            ${esFalla ? 'El equipo está en falla. Registrá las horas finales antes de cambiar el estado.'
-                      : 'Registrá las horas finales antes de cambiar el estado del equipo.'}
+          <p style="font-size:.72rem;color:rgba(255,255,255,.42);margin:0;line-height:1.45">
+            ${esFalla ? 'El equipo está en falla. Registrá las horas finales antes de cambiar el estado.' : 'Registrá las horas finales antes de cambiar el estado del equipo.'}
           </p>
-
           <div style="display:flex;flex-direction:column;gap:7px">
             ${opciones.map(o => `<button class="chk-btn ${o.cls}" data-val="${o.val}">${o.label}</button>`).join('')}
             <button class="chk-btn" style="background:rgba(107,114,128,.15);border-color:rgba(107,114,128,.28);color:rgba(255,255,255,.55)" id="estCancelar">Cancelar</button>
@@ -5907,10 +5903,10 @@ function openCambioEstadoEquipo(index) {
         </div>
       </div>`;
 
-    const horasInput = modal.querySelector('#estHorasFin');
-    horasInput.oninput = e => { horasFinVal = e.target.value; };
-    horasInput.onkeydown = e => e.stopPropagation();
-    setTimeout(() => horasInput.focus(), 80);
+    const inp = modal.querySelector('#estHorasFin');
+    inp.oninput   = e => { horasFinVal = e.target.value; };
+    inp.onkeydown = e => e.stopPropagation();
+    setTimeout(() => inp.focus(), 80);
 
     modal.querySelector('#estClose').onclick    = close;
     modal.querySelector('#estCancelar').onclick = close;
@@ -5919,11 +5915,7 @@ function openCambioEstadoEquipo(index) {
     modal.querySelectorAll('[data-val]').forEach(btn => {
       btn.onclick = () => {
         horasFinVal = modal.querySelector('#estHorasFin').value.trim();
-        if (!horasFinVal) {
-          errMsg = 'Campo obligatorio';
-          render();
-          return;
-        }
+        if (!horasFinVal) { errMsg = 'Campo obligatorio'; render(); return; }
         dashboardEquipamientoData[index].estado = btn.dataset.val;
         dashboardEquipamientoData[index].horas  = horasFinVal;
         close(); renderDashboardEquipamiento();
@@ -5934,6 +5926,5 @@ function openCambioEstadoEquipo(index) {
 
   render();
   requestAnimationFrame(() => modal.classList.add('chk-visible'));
-
   function close() { modal.classList.remove('chk-visible'); setTimeout(() => modal.remove(), 220); }
 }
