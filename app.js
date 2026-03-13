@@ -896,6 +896,9 @@ function renderDashboardEquipamiento() {
   menuGrid.className = '';
   menuGrid.innerHTML = '';
 
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'width:100%;box-sizing:border-box;padding:0 4px;';
+
   const grid = document.createElement('div');
   grid.className = 'equipment-grid';
 
@@ -950,7 +953,8 @@ function renderDashboardEquipamiento() {
     grid.appendChild(card);
   });
 
-  menuGrid.appendChild(grid);
+  wrapper.appendChild(grid);
+  menuGrid.appendChild(wrapper);
   syncBackBtn();
 }
 
