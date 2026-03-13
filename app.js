@@ -2701,6 +2701,17 @@ function renderMapaBoxes() {
     }
   };
 
+  // Lista de espera — camiones en playa aguardando box
+  const listaEspera = [
+    { patente:'KMR 918', tipo:'Entrada', llegada: new Date(Date.now() - 14*60000)  },
+    { patente:'PPX 621', tipo:'Salida',  llegada: new Date(Date.now() - 38*60000)  },
+    { patente:'ZZP 311', tipo:'Entrada', llegada: new Date(Date.now() - 72*60000)  },
+    { patente:'LPO 555', tipo:'Salida',  llegada: new Date(Date.now() - 95*60000)  },
+    { patente:'FGA 100', tipo:'Entrada', llegada: new Date(Date.now() - 118*60000) },
+    { patente:'AH 912',  tipo:'Salida',  llegada: new Date(Date.now() - 145*60000) },
+  ];
+  let listaExpanded = false;
+
   const wrap = document.createElement('div');
   wrap.className = 'mapa-wrap';
 
@@ -2722,10 +2733,34 @@ function renderMapaBoxes() {
         </div>
         <button class="mapa-refresh-btn" id="mRefresh">↻ Actualizar</button>
       </div>
-      <div class="mapa-canvas-wrap">
-        <svg class="mapa-svg" viewBox="0 0 1100 640" xmlns="http://www.w3.org/2000/svg" id="mSVG">
-          ${esN ? _nacional(state, ST, BG) : _fiscal(state, ST, BG)}
-        </svg>
+      <div class="mapa-body-row">
+        <div class="mapa-canvas-wrap">
+          <svg class="mapa-svg" viewBox="0 0 1100 640" xmlns="http://www.w3.org/2000/svg" id="mSVG">
+            ${esN ? _nacional(state, ST, BG) : _fiscal(state, ST, BG)}
+          </svg>
+        </div>
+        <div class="mapa-espera-panel">
+          <div class="mapa-espera-header" id="mEsperaToggle">
+            <span class="mapa-espera-title">Lista de espera</span>
+            <span class="mapa-espera-count">(${listaEspera.length})</span>
+            ${listaEspera.length > 4 ? '<span class="mapa-espera-arrow" id="mArrow">' + (listaExpanded ? '▲' : '▼') + '</span>' : ''}
+          </div>
+          <div class="mapa-espera-list ${listaExpanded ? 'expanded' : ''}" id="mEsperaList">
+            ${listaEspera.slice(0, listaExpanded ? 999 : 4).map((c, i) => {
+              const mins  = Math.floor((Date.now() - c.llegada) / 60000);
+              const hh    = Math.floor(mins/60), mm = mins%60;
+              const tStr  = hh > 0 ? hh + 'h ' + String(mm).padStart(2,'0') + 'm' : mm + 'm';
+              const dot   = mins < 30 ? '🟢' : mins < 60 ? '🟡' : '🔴';
+              const tipoCls = c.tipo === 'Entrada' ? 'ent' : 'sal';
+              return `<div class="mapa-espera-row">
+                <span class="mapa-espera-idx">${i+1}</span>
+                <span class="mapa-espera-tipo ${tipoCls}">${c.tipo === 'Entrada' ? '⬇' : '⬆'}</span>
+                <span class="mapa-espera-patente">${c.patente}</span>
+                <span class="mapa-espera-tiempo">${dot} ${tStr}</span>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
       </div>`;
 
     wrap.querySelectorAll('.mapa-plant-btn').forEach(b => {
@@ -2740,6 +2775,14 @@ function renderMapaBoxes() {
       if (id === 'B6') renderContenedor6Detail();
       else showToast('Box ' + id + ' — Click para ver detalle');
     });
+    const toggleBtn = wrap.querySelector('#mEsperaToggle');
+    if (toggleBtn) {
+      toggleBtn.onclick = () => {
+        if (listaEspera.length <= 4) return;
+        listaExpanded = !listaExpanded;
+        draw();
+      };
+    }
   };
 
   draw();
