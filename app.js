@@ -6064,114 +6064,108 @@ const PR6_MAQUINISTAS = [
 let pr6Registros = [];
 
 function renderPR6Contraste() {
+  const now = new Date();
+  const fechaStr = now.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const horaStr  = now.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+  const isoFecha = now.toISOString().split('T')[0];
+
+  menuGrid.className = 'menu-grid';
   menuGrid.innerHTML = `
     <div class="pr6-wrap">
 
-      <!-- HEADER -->
-      <div class="pr6-page-header">
-        <button class="pr6-back-btn" id="pr6BackBtn">← Volver</button>
-        <div class="pr6-page-title">
-          <span class="pr6-badge">PR-6</span>
-          <div>
-            <div class="pr6-title-main">Contraste de Termómetros</div>
-            <div class="pr6-title-sub">Registro de control — Mantenimiento</div>
-          </div>
+      <div class="pr6-topbar">
+        <button class="mod-back-btn" id="pr6BackBtn">← Volver</button>
+        <div class="pr6-topbar-center">
+          <span class="pr6-badge-sm">PR-6</span>
+          <span class="pr6-topbar-title">Contraste de Termómetros</span>
         </div>
-        <button class="pr6-historial-btn" id="pr6HistorialBtn">📋 Ver historial</button>
+        <button class="pr6-hist-trigger" id="pr6HistorialBtn">📋 Historial</button>
       </div>
 
-      <!-- CONTENIDO PRINCIPAL -->
-      <div class="pr6-content">
-
-        <!-- PANEL IZQUIERDO: Datos del registro -->
-        <div class="pr6-panel-left">
-          <div class="pr6-panel-header">
-            <span class="pr6-panel-icon">👤</span>
-            <span>Datos de Registro</span>
-          </div>
-
-          <div class="pr6-field">
-            <label class="pr6-label">Maquinista <span class="pr6-req">*</span></label>
-            <select class="pr6-select" id="pr6Maquinista">
-              <option value="">— Seleccionar —</option>
-              ${PR6_MAQUINISTAS.map(m => `<option value="${m}">${m}</option>`).join('')}
-            </select>
-          </div>
-
-          <div class="pr6-field">
-            <label class="pr6-label">Turno <span class="pr6-req">*</span></label>
-            <select class="pr6-select" id="pr6Turno">
-              <option value="">— Seleccionar —</option>
-              <option value="MAÑANA">MAÑANA</option>
-              <option value="TARDE">TARDE</option>
-              <option value="NOCHE">NOCHE</option>
-            </select>
-          </div>
-
-          <div class="pr6-field">
-            <label class="pr6-label">Fecha <span class="pr6-req">*</span></label>
-            <input type="date" class="pr6-input" id="pr6Fecha" />
-          </div>
-
-          <div class="pr6-field">
-            <label class="pr6-label">Hora <span class="pr6-req">*</span></label>
-            <div class="pr6-hora-row">
-              <select class="pr6-select pr6-hora-sel" id="pr6Hh">
-                ${Array.from({length:24},(_,i)=>i).map(h=>`<option value="${String(h).padStart(2,'0')}">${String(h).padStart(2,'0')}</option>`).join('')}
-              </select>
-              <span class="pr6-hora-sep">:</span>
-              <select class="pr6-select pr6-hora-sel" id="pr6Mm">
-                ${['00','05','10','15','20','25','30','35','40','45','50','55'].map(m=>`<option value="${m}">${m}</option>`).join('')}
-              </select>
-            </div>
-          </div>
-
-          <button class="pr6-guardar-btn" id="pr6GuardarBtn">💾 Guardar Registro</button>
+      <div class="pr6-meta-row">
+        <div class="pr6-meta-item">
+          <div class="pr6-meta-label">📅 Fecha</div>
+          <div class="pr6-meta-val" id="pr6FechaDisp">${fechaStr}</div>
+          <input type="hidden" id="pr6Fecha" value="${isoFecha}">
         </div>
-
-        <!-- PANEL DERECHO: Detalle de contrastes -->
-        <div class="pr6-panel-right">
-          <div class="pr6-panel-header">
-            <span class="pr6-panel-icon">🌡️</span>
-            <span>Detalle de Contrastes</span>
-          </div>
-
-          <!-- Cabecera de columnas -->
-          <div class="pr6-grid-header">
-            <div class="pr6-col-camara">Cámara</div>
-            <div class="pr6-col-num">Ptr Nº1</div>
-            <div class="pr6-col-num">Ptr Nº2</div>
-            <div class="pr6-col-num">Temp PLC</div>
-            <div class="pr6-col-num">T. Puesta</div>
-            <div class="pr6-col-num">T. Alcanz.</div>
-            <div class="pr6-col-obs">Observaciones</div>
-            <div class="pr6-col-del"></div>
-          </div>
-
-          <!-- Filas de contraste -->
-          <div id="pr6Filas"></div>
-
-          <!-- Botón agregar -->
-          <button class="pr6-agregar-btn" id="pr6AgregarBtn">
-            <span class="pr6-agregar-plus">+</span> Agregar cámara
-          </button>
+        <div class="pr6-meta-item">
+          <div class="pr6-meta-label">🕐 Hora</div>
+          <div class="pr6-meta-val" id="pr6HoraDisp">${horaStr}</div>
+          <input type="hidden" id="pr6Hora" value="${horaStr}">
         </div>
-
+        <div class="pr6-meta-item pr6-meta-grow">
+          <div class="pr6-meta-label">👤 Maquinista <span style="color:#ef4444">*</span></div>
+          <select class="pr6-sel-maq" id="pr6Maquinista">
+            <option value="">— Seleccionar —</option>
+            ${PR6_MAQUINISTAS.map(m => "<option value=\""+m+"\">"+m+"</option>").join('')}
+          </select>
+        </div>
+        <div class="pr6-meta-item">
+          <div class="pr6-meta-label">🔄 Turno <span style="color:#ef4444">*</span></div>
+          <div class="pr6-turno-btns" id="pr6TurnoBtns">
+            <button class="pr6-turno-btn" data-turno="MAÑANA">☀️ Mañana</button>
+            <button class="pr6-turno-btn" data-turno="TARDE">🌤 Tarde</button>
+            <button class="pr6-turno-btn" data-turno="NOCHE">🌙 Noche</button>
+          </div>
+          <input type="hidden" id="pr6Turno" value="">
+        </div>
       </div>
+
+      <div class="pr6-section">
+        <div class="pr6-section-title"><span>❄️</span> Seleccioná las cámaras a contrastar</div>
+        <div class="pr6-camara-chips" id="pr6CamaraChips">
+          ${PR6_CAMARAS.map(c => "<button class=\"pr6-chip\" data-camara=\""+c+"\">"+c+"</button>").join('')}
+        </div>
+      </div>
+
+      <div class="pr6-section">
+        <div class="pr6-section-title"><span>🌡️</span> Datos de contraste</div>
+        <div class="pr6-tabla-wrap">
+          <div class="pr6-tabla-head">
+            <div class="pr6-th pr6-th-cam">Cámara</div>
+            <div class="pr6-th pr6-th-num">Ptr N°1</div>
+            <div class="pr6-th pr6-th-num">Ptr N°2</div>
+            <div class="pr6-th pr6-th-num">Temp PLC</div>
+            <div class="pr6-th pr6-th-num">T. Puesta</div>
+            <div class="pr6-th pr6-th-num">T. Alcanz.</div>
+            <div class="pr6-th pr6-th-obs">Observaciones</div>
+            <div class="pr6-th pr6-th-del"></div>
+          </div>
+          <div id="pr6Filas" class="pr6-filas-body"></div>
+        </div>
+        <div class="pr6-tabla-footer">
+          <button class="pr6-add-row-btn" id="pr6AgregarBtn">＋ Agregar fila manual</button>
+        </div>
+      </div>
+
+      <div class="pr6-actions">
+        <button class="pr6-guardar-btn" id="pr6GuardarBtn">💾 Guardar Registro</button>
+      </div>
+
     </div>
   `;
 
-  // Fecha actual por defecto
-  const hoy = new Date();
-  document.getElementById('pr6Fecha').value = hoy.toISOString().split('T')[0];
-  const hh = String(hoy.getHours()).padStart(2,'0');
-  document.getElementById('pr6Hh').value = hh;
+  document.getElementById('pr6TurnoBtns').addEventListener('click', e => {
+    const btn = e.target.closest('[data-turno]');
+    if (!btn) return;
+    document.querySelectorAll('.pr6-turno-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('pr6Turno').value = btn.dataset.turno;
+  });
 
-  // Agregar primera fila automáticamente
-  pr6AgregarFila();
+  document.getElementById('pr6CamaraChips').addEventListener('click', e => {
+    const chip = e.target.closest('[data-camara]');
+    if (!chip) return;
+    const camara = chip.dataset.camara;
+    chip.classList.toggle('active');
+    if (chip.classList.contains('active')) {
+      pr6AgregarFila(camara);
+    } else {
+      pr6EliminarFilaPorCamara(camara);
+    }
+  });
 
-  // Eventos
-  document.getElementById('pr6AgregarBtn').addEventListener('click', pr6AgregarFila);
+  document.getElementById('pr6AgregarBtn').addEventListener('click', () => pr6AgregarFila(''));
   document.getElementById('pr6GuardarBtn').addEventListener('click', pr6GuardarRegistro);
   document.getElementById('pr6BackBtn').addEventListener('click', () => { historyStack.pop(); renderNode(historyStack.pop() || menuTree); });
   document.getElementById('pr6HistorialBtn').addEventListener('click', pr6MostrarHistorial);
@@ -6179,39 +6173,48 @@ function renderPR6Contraste() {
 
 function pr6AgregarFila(camaraVal) {
   const contenedor = document.getElementById('pr6Filas');
-  const id = 'pr6fila_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+  const id = 'pr6f_' + Date.now() + '_' + Math.random().toString(36).slice(2,5);
   const div = document.createElement('div');
-  div.className = 'pr6-fila';
+  div.className = 'pr6-row';
   div.id = id;
+  div.dataset.camara = camaraVal || '';
+  const camaraCell = camaraVal
+    ? `<div class="pr6-td pr6-td-cam"><span class="pr6-cam-tag">${camaraVal}</span></div>`
+    : `<div class="pr6-td pr6-td-cam"><select class="pr6-sel-inline pr6-sel-camara">${['<option value="">— Cámara —</option>',...PR6_CAMARAS.map(c=>`<option value="${c}">${c}</option>`)].join('')}</select></div>`;
   div.innerHTML = `
-    <div class="pr6-col-camara">
-      <select class="pr6-select pr6-sel-camara">
-        <option value="">— Cámara —</option>
-        ${PR6_CAMARAS.map(c=>`<option value="${c}" ${c===(camaraVal||'')?'selected':''}>${c}</option>`).join('')}
-      </select>
-    </div>
-    <div class="pr6-col-num"><input type="number" class="pr6-input pr6-num" placeholder="—" step="0.1"></div>
-    <div class="pr6-col-num"><input type="number" class="pr6-input pr6-num" placeholder="—" step="0.1"></div>
-    <div class="pr6-col-num"><input type="number" class="pr6-input pr6-num" placeholder="—" step="0.1"></div>
-    <div class="pr6-col-num"><input type="number" class="pr6-input pr6-num" placeholder="—" step="0.1"></div>
-    <div class="pr6-col-num"><input type="number" class="pr6-input pr6-num" placeholder="—" step="0.1"></div>
-    <div class="pr6-col-obs"><textarea class="pr6-textarea" placeholder="Observaciones..." rows="1"></textarea></div>
-    <div class="pr6-col-del">
-      <button class="pr6-eliminar-btn" onclick="pr6EliminarFila('${id}')">🗑</button>
+    ${camaraCell}
+    <div class="pr6-td pr6-td-num"><input type="number" class="pr6-num-inp" placeholder="—" step="0.1"></div>
+    <div class="pr6-td pr6-td-num"><input type="number" class="pr6-num-inp" placeholder="—" step="0.1"></div>
+    <div class="pr6-td pr6-td-num"><input type="number" class="pr6-num-inp" placeholder="—" step="0.1"></div>
+    <div class="pr6-td pr6-td-num"><input type="number" class="pr6-num-inp" placeholder="—" step="0.1"></div>
+    <div class="pr6-td pr6-td-num"><input type="number" class="pr6-num-inp" placeholder="—" step="0.1"></div>
+    <div class="pr6-td pr6-td-obs"><textarea class="pr6-obs-inp" placeholder="—" rows="1"></textarea></div>
+    <div class="pr6-td pr6-td-del">
+      <button class="pr6-del-btn" onclick="pr6EliminarFila('${id}','${(camaraVal||'').replace(/'/g,"\\'")}')">✕</button>
     </div>
   `;
   contenedor.appendChild(div);
-
-  // Auto-resize textarea
   const ta = div.querySelector('textarea');
   ta.addEventListener('input', () => { ta.style.height='auto'; ta.style.height=ta.scrollHeight+'px'; });
 }
 
-function pr6EliminarFila(id) {
+function pr6EliminarFila(id, camaraVal) {
   const el = document.getElementById(id);
   if (el) {
-    el.classList.add('pr6-fila-removing');
-    setTimeout(() => el.remove(), 220);
+    el.style.cssText += 'opacity:0;transform:translateX(10px);transition:all .18s;';
+    setTimeout(() => el.remove(), 200);
+  }
+  if (camaraVal) {
+    const chip = document.querySelector('.pr6-chip[data-camara="'+camaraVal+'"]');
+    if (chip) chip.classList.remove('active');
+  }
+}
+
+function pr6EliminarFilaPorCamara(camara) {
+  const fila = document.querySelector('#pr6Filas .pr6-row[data-camara="'+camara+'"]');
+  if (fila) {
+    fila.style.cssText += 'opacity:0;transform:translateX(10px);transition:all .18s;';
+    setTimeout(() => fila.remove(), 200);
   }
 }
 
@@ -6219,118 +6222,64 @@ function pr6GuardarRegistro() {
   const maquinista = document.getElementById('pr6Maquinista').value;
   const turno      = document.getElementById('pr6Turno').value;
   const fecha      = document.getElementById('pr6Fecha').value;
-  const hora       = document.getElementById('pr6Hh').value + ':' + document.getElementById('pr6Mm').value;
-
-  // Validaciones
-  const errores = [];
-  if (!maquinista) errores.push('Seleccioná el maquinista');
-  if (!turno)      errores.push('Seleccioná el turno');
-  if (!fecha)      errores.push('Ingresá la fecha');
-
-  const filas = document.querySelectorAll('.pr6-fila');
-  if (filas.length === 0) errores.push('Agregá al menos una cámara');
-
-  const detalles = [];
-  filas.forEach(fila => {
-    const camara = fila.querySelector('.pr6-sel-camara').value;
-    const nums   = fila.querySelectorAll('.pr6-num');
-    const obs    = fila.querySelector('textarea').value.trim();
-    if (!camara) errores.push('Seleccioná la cámara en todas las filas');
-    detalles.push({
-      camara,
-      ptrN1:    nums[0].value || null,
-      ptrN2:    nums[1].value || null,
-      tempPLC:  nums[2].value || null,
-      tPuesta:  nums[3].value || null,
-      tAlcanz:  nums[4].value || null,
-      obs
-    });
+  const hora       = document.getElementById('pr6Hora').value;
+  if (!maquinista) { pr6MostrarToast('Seleccioná un maquinista', 'error'); return; }
+  if (!turno)      { pr6MostrarToast('Seleccioná el turno', 'error'); return; }
+  const filas = [...document.querySelectorAll('#pr6Filas .pr6-row')];
+  if (!filas.length) { pr6MostrarToast('Agregá al menos una cámara', 'error'); return; }
+  const detalles = filas.map(f => {
+    const cam = f.dataset.camara || f.querySelector('.pr6-sel-camara')?.value || '';
+    const nums = [...f.querySelectorAll('.pr6-num-inp')].map(i => i.value);
+    const obs  = f.querySelector('textarea')?.value || '';
+    return { camara:cam, ptr1:nums[0], ptr2:nums[1], plc:nums[2], puesta:nums[3], alcanzada:nums[4], obs };
   });
-
-  if (errores.length > 0) {
-    pr6MostrarToast('⚠️ ' + errores[0], 'error');
-    return;
-  }
-
-  const registro = {
-    id: Date.now(),
-    maquinista, turno, fecha, hora,
-    detalles,
-    usuario: USER_NAME,
-    guardadoEn: new Date().toLocaleString('es-AR')
-  };
-
-  pr6Registros.unshift(registro);
-  pr6MostrarToast('✅ Registro guardado correctamente', 'ok');
-
-  // Resetear formulario
-  setTimeout(() => {
-    document.getElementById('pr6Maquinista').value = '';
-    document.getElementById('pr6Turno').value = '';
-    document.getElementById('pr6Filas').innerHTML = '';
-    const hoy = new Date();
-    document.getElementById('pr6Fecha').value = hoy.toISOString().split('T')[0];
-    pr6AgregarFila();
-  }, 800);
+  if (detalles.some(d => !d.camara)) { pr6MostrarToast('Hay filas sin cámara seleccionada', 'error'); return; }
+  pr6Registros.push({ maquinista, turno, fecha, hora, detalles, ts: new Date().toLocaleString('es-AR') });
+  pr6MostrarToast('✓ Registro guardado correctamente', 'ok');
+  setTimeout(() => renderPR6Contraste(), 1400);
 }
 
 function pr6MostrarHistorial() {
-  if (pr6Registros.length === 0) {
-    pr6MostrarToast('📋 No hay registros guardados aún', 'info');
-    return;
-  }
-
+  if (!pr6Registros.length) { pr6MostrarToast('No hay registros guardados aún', 'info'); return; }
   const overlay = document.createElement('div');
   overlay.className = 'pr6-hist-overlay';
   overlay.innerHTML = `
     <div class="pr6-hist-modal">
       <div class="pr6-hist-header">
-        <span>📋 Historial de Registros PR-6</span>
-        <button class="pr6-hist-close" onclick="this.closest('.pr6-hist-overlay').remove()">✕</button>
+        <span>📋 Historial de registros</span>
+        <button class="pr6-hist-close" id="pr6HClose">✕</button>
       </div>
       <div class="pr6-hist-body">
-        ${pr6Registros.map(r => `
+        ${pr6Registros.slice().reverse().map(r => `
           <div class="pr6-hist-card">
             <div class="pr6-hist-card-header">
-              <span class="pr6-hist-maq">👤 ${r.maquinista}</span>
-              <span class="pr6-hist-turno pr6-turno-${r.turno.toLowerCase()}">${r.turno}</span>
-              <span class="pr6-hist-fecha">📅 ${r.fecha} ${r.hora}</span>
+              <span class="pr6-hist-maq">${r.maquinista}</span>
+              <span class="pr6-hist-turno pr6-turno-${r.turno.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}">${r.turno}</span>
+              <span class="pr6-hist-fecha">${r.fecha} ${r.hora}</span>
             </div>
-            <table class="pr6-hist-table">
-              <thead>
-                <tr>
-                  <th>Cámara</th><th>Ptr Nº1</th><th>Ptr Nº2</th>
-                  <th>Temp PLC</th><th>T. Puesta</th><th>T. Alcanz.</th><th>Obs.</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${r.detalles.map(d=>`
-                  <tr>
-                    <td>${d.camara}</td>
-                    <td>${d.ptrN1??'—'}</td><td>${d.ptrN2??'—'}</td>
-                    <td>${d.tempPLC??'—'}</td><td>${d.tPuesta??'—'}</td>
-                    <td>${d.tAlcanz??'—'}</td>
-                    <td class="pr6-td-obs">${d.obs||'—'}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-            <div class="pr6-hist-footer">Guardado: ${r.guardadoEn} · por ${r.usuario}</div>
-          </div>
-        `).join('')}
+            <table class="pr6-hist-table"><thead><tr>
+              <th>Cámara</th><th>Ptr 1</th><th>Ptr 2</th><th>PLC</th><th>Puesta</th><th>Alcanz.</th><th>Obs.</th>
+            </tr></thead><tbody>
+              ${r.detalles.map(d=>`<tr>
+                <td>${d.camara}</td><td>${d.ptr1||'—'}</td><td>${d.ptr2||'—'}</td>
+                <td>${d.plc||'—'}</td><td>${d.puesta||'—'}</td><td>${d.alcanzada||'—'}</td>
+                <td class="pr6-td-obs">${d.obs||'—'}</td>
+              </tr>`).join('')}
+            </tbody></table>
+            <div class="pr6-hist-footer">Guardado: ${r.ts}</div>
+          </div>`).join('')}
       </div>
-    </div>
-  `;
+    </div>`;
   document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if (e.target===overlay) overlay.remove(); });
+  document.getElementById('pr6HClose').addEventListener('click', () => overlay.remove());
 }
 
-function pr6MostrarToast(msg, tipo) {
-  const old = document.querySelector('.pr6-toast');
-  if (old) old.remove();
-  const t = document.createElement('div');
-  t.className = `pr6-toast pr6-toast-${tipo}`;
+function pr6MostrarToast(msg, tipo='ok') {
+  let t = document.querySelector('.pr6-toast');
+  if (!t) { t = document.createElement('div'); t.className='pr6-toast'; document.body.appendChild(t); }
   t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.classList.add('pr6-toast-show'), 10);
-  setTimeout(() => { t.classList.remove('pr6-toast-show'); setTimeout(()=>t.remove(),300); }, 3000);
+  t.className = 'pr6-toast pr6-toast-'+tipo+' pr6-toast-show';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('pr6-toast-show'), 2800);
 }
