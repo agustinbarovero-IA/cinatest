@@ -3779,16 +3779,18 @@ body{
   .perfil-nombre { font-size: 1.2rem; }
 }
 
+
 /* ═══════════════════════════════════════════════════════════════
-   MÓDULO: CARGAS — tabla de movimientos diarios
+   MÓDULO: CARGAS — tabla diaria de movimientos
    ═══════════════════════════════════════════════════════════════ */
 .cargas-wrap {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
-  height: 100%;
+  height: calc(100dvh - 158px);
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 /* ── Toolbar ── */
@@ -3796,82 +3798,81 @@ body{
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
-  padding: 10px 14px;
-  background: rgba(0,15,48,.7);
+  flex-wrap: nowrap;
+  padding: 8px 12px;
+  background: rgba(0,15,48,.75);
   border: 1px solid rgba(255,255,255,.12);
-  border-radius: 14px;
+  border-radius: 12px;
   flex-shrink: 0;
 }
-.cargas-nav-group {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
+.cargas-nav-group { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
 .cargas-nav-btn {
-  width: 30px; height: 30px;
-  border-radius: 8px;
+  width: 28px; height: 28px;
+  border-radius: 7px;
   border: 1px solid rgba(255,255,255,.18);
   background: rgba(255,255,255,.08);
-  color: rgba(255,255,255,.7);
-  font-size: .9rem;
+  color: rgba(255,255,255,.75);
+  font-size: .88rem;
   font-weight: 900;
   cursor: pointer;
-  transition: all .15s;
+  transition: all .13s;
   display: flex; align-items: center; justify-content: center;
 }
 .cargas-nav-btn:hover { background: rgba(54,176,201,.25); border-color: rgba(54,176,201,.5); color:#fff; }
+.cargas-nav-today { width: auto; padding: 0 10px; font-size: .7rem; }
 .cargas-fecha-display {
   padding: 5px 14px;
   border-radius: 8px;
   background: rgba(54,176,201,.2);
   border: 1px solid rgba(54,176,201,.4);
   color: #36B0C9;
-  font-size: .82rem;
+  font-size: .8rem;
   font-weight: 900;
-  min-width: 90px;
+  min-width: 86px;
   text-align: center;
+  flex-shrink: 0;
 }
-.cargas-filter-group { display: flex; gap: 4px; }
+.cargas-filter-group { display: flex; gap: 3px; flex-shrink: 0; }
 .cargas-filter-btn {
-  padding: 5px 12px;
-  border-radius: 8px;
+  padding: 4px 11px;
+  border-radius: 7px;
   border: 1px solid rgba(255,255,255,.14);
   background: rgba(255,255,255,.06);
   color: rgba(255,255,255,.55);
-  font-size: .72rem;
+  font-size: .68rem;
   font-weight: 800;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all .15s;
+  transition: all .13s;
+  white-space: nowrap;
 }
 .cargas-filter-btn.active,
-.cargas-filter-btn:hover { background: rgba(54,176,201,.2); border-color: rgba(54,176,201,.45); color: #fff; }
+.cargas-filter-btn:hover { background: rgba(54,176,201,.2); border-color: rgba(54,176,201,.4); color:#fff; }
 .cargas-nueva-btn {
-  padding: 6px 16px;
-  border-radius: 9px;
+  padding: 5px 14px;
+  border-radius: 8px;
   border: none;
   background: linear-gradient(135deg,#00A887,#007A62);
   color: #fff;
-  font-size: .78rem;
+  font-size: .72rem;
   font-weight: 900;
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: .3px;
-  transition: all .15s;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 .cargas-nueva-btn:hover { filter: brightness(1.1); }
-.cargas-search-wrap { flex: 1; min-width: 180px; }
+.cargas-search-wrap { flex: 1; min-width: 0; }
 .cargas-search {
   width: 100%;
   box-sizing: border-box;
-  padding: 7px 12px;
-  border-radius: 9px;
-  border: 1px solid rgba(255,255,255,.14);
+  padding: 6px 11px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.13);
   background: rgba(255,255,255,.07);
   color: #fff;
-  font-size: .78rem;
+  font-size: .75rem;
   font-weight: 600;
   outline: none;
   transition: border-color .2s;
@@ -3881,181 +3882,228 @@ body{
 
 /* ── Tabla ── */
 .cargas-table-wrap {
-  width: 100%;
-  overflow-x: auto;
-  background: rgba(0,10,36,.6);
-  border: 1px solid rgba(255,255,255,.10);
-  border-radius: 14px;
   flex: 1;
+  overflow: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.12);
+  background: #f0f4f8;          /* Fondo claro, amigable para uso prolongado */
+  box-shadow: 0 2px 16px rgba(0,0,0,.18);
 }
 .cargas-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: .73rem;
-  white-space: nowrap;
+  font-size: .72rem;
+  table-layout: fixed;
 }
+
+/* Cabecera */
 .cargas-table thead th {
-  background: rgba(255,255,255,.07);
-  color: rgba(255,255,255,.5);
-  font-size: .63rem;
+  background: #1a2d52;
+  color: rgba(255,255,255,.75);
+  font-size: .62rem;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: .3px;
-  padding: 8px 7px;
+  letter-spacing: .25px;
+  padding: 7px 6px;
   text-align: left;
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: 3;
   white-space: nowrap;
-  border-bottom: 1px solid rgba(255,255,255,.08);
+  border-right: 1px solid rgba(255,255,255,.06);
 }
-/* Column widths */
-.ct-tipo   { width: 54px; }
-.ct-num    { width: 72px; }
-.ct-box    { width: 72px; }
-.ct-tron   { width: 90px; }
-.ct-cargas { width: 90px; }
-.ct-estado { width: 78px; }
-.ct-cli    { width: 100px; }
-.ct-resp   { width: 70px; }
-.ct-vehi   { width: 68px; }
-.ct-acop   { width: 64px; }
-.ct-fecha  { width: 80px; }
-.ct-ticket { width: 64px; }
-.ct-acc    { width: 70px; }
+.cargas-table thead th:last-child { border-right: none; }
 
+/* Column widths — ajustadas para entrar en pantalla */
+.ct-tipo   { width: 46px; }
+.ct-num    { width: 68px; }
+.ct-box    { width: 64px; }
+.ct-tron   { width: 80px; }
+.ct-cargas { width: 68px; }
+.ct-cli    { width: 80px; }
+.ct-resp   { width: 66px; }
+.ct-vehi   { width: 70px; }
+.ct-acop   { width: 60px; }
+.ct-fecha  { width: 52px; text-align: center; }
+.ct-mov    { width: 60px; text-align: center; }
+.ct-ticket { width: 56px; }
+.ct-acc    { width: 62px; }
+
+/* Filas de datos */
 .cargas-row td {
-  padding: 7px 7px;
-  border-bottom: 1px solid rgba(255,255,255,.05);
-  color: rgba(255,255,255,.8);
+  padding: 5px 6px;
+  border-bottom: 1px solid rgba(0,0,0,.07);
+  color: #1e293b;
   vertical-align: middle;
+  background: #fff;
 }
-.cargas-row:last-child td { border-bottom: none; }
-.cargas-row:hover td { background: rgba(255,255,255,.03); }
+.cargas-row:hover td { background: #f1f8ff; }
+.cargas-row.en-planta td:first-child { border-left: 3px solid #f97316; }
+.cargas-row.planificado td:first-child { border-left: 3px solid #6b7280; }
+.cargas-row.liberado    td:first-child { border-left: 3px solid #00A887; }
 
-/* Row color by estado */
-.cargas-row.en-planta td:first-child { border-left: 3px solid #F97316; }
-.cargas-row.salida    td:first-child  { border-left: 3px solid #00A887; }
-.cargas-row.pendiente td:first-child  { border-left: 3px solid #6B7280; }
+/* Filas separadoras de grupo */
+.cargas-sep-row td {
+  background: #e8edf4;
+  padding: 5px 8px;
+  border-top: 2px solid rgba(0,0,0,.08);
+  border-bottom: 1px solid rgba(0,0,0,.08);
+}
+.cargas-sep-label { margin-right: 8px; font-size: .64rem; }
+.cargas-sep-count { font-size: .63rem; color: #64748b; font-weight: 700; }
 
 /* Tipo badge */
 .cargas-tipo-badge {
   display: inline-block;
-  padding: 3px 7px;
-  border-radius: 6px;
-  font-size: .62rem;
+  padding: 2px 6px;
+  border-radius: 5px;
+  font-size: .6rem;
   font-weight: 900;
   letter-spacing: .3px;
+  white-space: nowrap;
 }
-.cargas-tipo-badge.entrada { background: rgba(54,176,201,.2); color: #36B0C9; border: 1px solid rgba(54,176,201,.4); }
-.cargas-tipo-badge.salida  { background: rgba(0,168,135,.2);  color: #00A887; border: 1px solid rgba(0,168,135,.4); }
+.cargas-tipo-badge.entrada  { background: rgba(54,176,201,.18); color: #0e7490; border: 1px solid rgba(54,176,201,.4); }
+.cargas-tipo-badge.salida-t { background: rgba(0,168,135,.15);  color: #065f46; border: 1px solid rgba(0,168,135,.35); }
 
-/* Número transporte */
-.cargas-transp-num { font-weight: 900; color: #FACC15; }
+/* N° transporte */
+.cargas-transp-num { font-weight: 900; color: #1e40af; font-size: .75rem; }
 
-/* Box + tronera */
+/* Box */
 .cargas-box-chip {
   display: inline-block;
-  padding: 2px 8px;
-  border-radius: 6px;
-  background: rgba(255,255,255,.1);
-  border: 1px solid rgba(255,255,255,.2);
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: #e2e8f0;
+  border: 1px solid #cbd5e1;
   font-weight: 800;
-  font-size: .7rem;
-  color: #fff;
+  font-size: .68rem;
+  color: #334155;
+  white-space: nowrap;
 }
+
+/* Tronera */
 .cargas-tronera-chip {
   display: inline-block;
-  padding: 2px 7px;
-  border-radius: 6px;
-  background: rgba(167,139,250,.15);
-  border: 1px solid rgba(167,139,250,.3);
-  font-size: .68rem;
-  font-weight: 800;
-  color: #A78BFA;
-}
-.cargas-asignar-btn {
-  padding: 2px 8px;
-  border-radius: 6px;
-  border: 1px solid rgba(54,176,201,.4);
-  background: rgba(54,176,201,.12);
-  color: #36B0C9;
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: #ede9fe;
+  border: 1px solid #c4b5fd;
   font-size: .65rem;
   font-weight: 800;
-  cursor: pointer;
-  transition: all .15s;
+  color: #5b21b6;
+  white-space: nowrap;
 }
-.cargas-asignar-btn:hover { background: rgba(54,176,201,.25); }
+.cargas-asignar-btn {
+  padding: 2px 7px;
+  border-radius: 5px;
+  border: 1px solid #93c5fd;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: .62rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .13s;
+}
+.cargas-asignar-btn:hover { background: #dbeafe; }
 
-/* Números de carga */
+/* Cargas: apiladas */
+.cargas-cargas-col { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; }
 .cargas-num-carga {
   display: inline-block;
-  padding: 1px 6px;
-  border-radius: 5px;
-  background: rgba(250,204,21,.12);
-  border: 1px solid rgba(250,204,21,.25);
-  color: #FACC15;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: #fef9c3;
+  border: 1px solid #fde68a;
+  color: #92400e;
   font-weight: 800;
-  font-size: .66rem;
-  margin-bottom: 2px;
+  font-size: .64rem;
+  white-space: nowrap;
 }
 
 /* Estado chips */
 .cargas-estado-chip {
-  display: inline-block;
-  padding: 3px 8px;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
   border-radius: 99px;
-  font-size: .63rem;
+  font-size: .62rem;
   font-weight: 800;
   white-space: nowrap;
 }
-.cargas-estado-chip.en-planta { background: rgba(249,115,22,.18); color: #F97316; border: 1px solid rgba(249,115,22,.35); }
-.cargas-estado-chip.salida    { background: rgba(0,168,135,.18);  color: #00A887; border: 1px solid rgba(0,168,135,.35); }
-.cargas-estado-chip.pendiente { background: rgba(107,114,128,.18);color: #9CA3AF; border: 1px solid rgba(107,114,128,.3); }
+.cargas-estado-chip.en-planta   { background: rgba(249,115,22,.15); color: #c2410c; border: 1px solid rgba(249,115,22,.3); }
+.cargas-estado-chip.planificado { background: rgba(107,114,128,.15);color: #374151; border: 1px solid rgba(107,114,128,.25); }
+.cargas-estado-chip.liberado    { background: rgba(0,168,135,.15);  color: #065f46; border: 1px solid rgba(0,168,135,.3); }
 
-/* Clientes siglas */
-.cargas-cli-wrap {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 3px;
-  max-width: 100px;
-}
+/* Clientes siglas — sobre fondo claro los colores se ajustan */
+.cargas-cli-wrap { display: flex; flex-wrap: wrap; gap: 2px; }
 .cargas-cli-sigla {
   display: inline-block;
-  padding: 2px 6px;
-  border-radius: 5px;
+  padding: 2px 5px;
+  border-radius: 4px;
   border: 1px solid;
-  font-size: .63rem;
+  font-size: .62rem;
   font-weight: 900;
-  letter-spacing: .2px;
+  letter-spacing: .1px;
   cursor: default;
   white-space: nowrap;
+  filter: saturate(1.4) brightness(.75); /* oscurecer para legibilidad en fondo claro */
 }
-.cargas-cli-empty { color: rgba(255,255,255,.25); font-style: italic; }
+.cargas-cli-empty { color: #94a3b8; font-size: .68rem; }
 
-/* Vehículo / resp */
-.cargas-vehi { font-weight: 800; font-size: .72rem; }
-.cargas-resp { font-size: .7rem; color: rgba(255,255,255,.6); }
+/* Responsable */
+.cargas-resp { font-size: .68rem; color: #475569; }
+
+/* Fechas de 2 niveles */
+.ct-fecha-2l { padding: 4px 5px !important; }
+.ct-date-d {
+  display: block;
+  font-weight: 800;
+  font-size: .7rem;
+  color: #1e293b;
+  text-align: center;
+}
+.ct-date-t {
+  display: block;
+  font-weight: 700;
+  font-size: .65rem;
+  color: #64748b;
+  text-align: center;
+}
+.ct-dash { color: #cbd5e1; font-size: .8rem; }
+
+/* Tiempo operación */
+.cargas-top-val {
+  display: block;
+  font-weight: 900;
+  font-size: .7rem;
+  color: #1e40af;
+  text-align: center;
+}
+
+/* Ticket báscula */
+.cargas-ticket { font-size: .68rem; font-weight: 700; color: #374151; }
 
 /* Acciones */
-.cargas-acc-btns { display: flex; gap: 4px; }
+.cargas-acc-btns { display: flex; gap: 3px; }
 .cargas-acc-btn {
-  width: 24px; height: 24px;
-  border-radius: 6px;
-  border: 1px solid rgba(255,255,255,.14);
-  background: rgba(255,255,255,.06);
-  font-size: .75rem;
+  width: 22px; height: 22px;
+  border-radius: 5px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: .7rem;
   cursor: pointer;
-  transition: all .15s;
+  transition: all .13s;
   display: flex; align-items: center; justify-content: center;
 }
-.cargas-acc-btn:hover { background: rgba(54,176,201,.2); border-color: rgba(54,176,201,.4); }
+.cargas-acc-btn:hover { background: #e0f2fe; border-color: #7dd3fc; }
 
 .cargas-empty {
   text-align: center;
   padding: 32px !important;
-  color: rgba(255,255,255,.3) !important;
+  color: #94a3b8 !important;
   font-style: italic;
+  background: #fff !important;
 }
 
 /* Footer */
@@ -4064,10 +4112,11 @@ body{
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
-  font-size: .72rem;
-  color: rgba(255,255,255,.4);
+  gap: 6px;
+  font-size: .7rem;
+  color: rgba(255,255,255,.45);
   font-weight: 700;
-  padding: 4px 2px;
+  padding: 2px 4px;
+  flex-shrink: 0;
 }
-.cargas-legend { display: flex; gap: 8px; align-items: center; }
+.cargas-legend { display: flex; gap: 6px; align-items: center; }

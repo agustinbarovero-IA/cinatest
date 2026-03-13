@@ -4946,35 +4946,75 @@ function renderCargas(fiscal) {
   let busqueda    = '';
   let filtroTipo  = 'Todos';
 
-  const fmt = d => d.toISOString().split('T')[0];
+  const fmt        = d => d.toISOString().split('T')[0];
   const fmtDisplay = d => d.toLocaleDateString('es-AR', { day:'2-digit', month:'2-digit', year:'numeric' });
 
   const wrap = document.createElement('div');
   wrap.className = 'cargas-wrap';
   menuGrid.appendChild(wrap);
 
+  const GRUPOS = [
+    { key:'en-planta',   label:'En Planta',   estados:['En Planta'] },
+    { key:'planificado', label:'Planificado',  estados:['Planificado','Pendiente'] },
+    { key:'liberado',    label:'Liberado',     estados:['Salida'] },
+  ];
+
+  const estadoClass = e => e === 'En Planta' ? 'en-planta' : e === 'Salida' ? 'liberado' : 'planificado';
+
   const render = () => {
     const fechaStr = fmt(fechaActual);
-    const datos = cargasData.filter(c => {
-      const matchFecha = c.planLlegada === fechaStr || c.llegada?.startsWith(fechaStr);
-      const matchBusq  = !busqueda || 
+    const todos = cargasData.filter(c => {
+      const mF = c.planLlegada === fechaStr || (c.llegada && c.llegada.startsWith(fechaStr));
+      const mB = !busqueda ||
         String(c.id).includes(busqueda) ||
-        c.vehiculo?.toLowerCase().includes(busqueda) ||
-        c.acoplado?.toLowerCase().includes(busqueda) ||
-        c.cargas?.some(x => x.includes(busqueda));
-      const matchTipo  = filtroTipo === 'Todos' || c.tipo === filtroTipo;
-      return matchBusq && matchTipo;
+        (c.vehiculo||'').toLowerCase().includes(busqueda) ||
+        (c.acoplado||'').toLowerCase().includes(busqueda) ||
+        (c.cargas||[]).some(x => x.includes(busqueda));
+      const mT = filtroTipo === 'Todos' || c.tipo === filtroTipo;
+      return mF && mB && mT;
     });
 
+    // Agrupar
+    const grupos = GRUPOS.map(g => ({
+      ...g,
+      items: todos.filter(c => g.estados.includes(c.estado))
+    })).filter(g => g.items.length > 0);
+
+    const thead = `<thead><tr>
+      <th class="ct-tipo">Tipo</th>
+      <th class="ct-num">N° Transp.</th>
+      <th class="ct-box">Box</th>
+      <th class="ct-tron">Tronera</th>
+      <th class="ct-cargas">Cargas</th>
+      <th class="ct-cli">Cliente</th>
+      <th class="ct-resp">Resp.</th>
+      <th class="ct-vehi">Vehículo</th>
+      <th class="ct-acop">Acoplado</th>
+      <th class="ct-fecha">Plan Llegada</th>
+      <th class="ct-fecha">Llegada</th>
+      <th class="ct-mov">T. Operación</th>
+      <th class="ct-fecha">Salida</th>
+      <th class="ct-ticket">Tck. Báscula</th>
+      <th class="ct-acc">Acciones</th>
+    </tr></thead>`;
+
+    const tbody = grupos.map(g => {
+      const sepRow = `<tr class="cargas-sep-row cargas-sep-${g.key}">
+        <td colspan="15">
+          <span class="cargas-sep-label cargas-estado-chip ${g.key}">${g.label}</span>
+          <span class="cargas-sep-count">${g.items.length} registro${g.items.length!==1?'s':''}</span>
+        </td>
+      </tr>`;
+      return sepRow + g.items.map(c => buildCargaRow(c, estadoClass(c.estado))).join('');
+    }).join('');
+
     wrap.innerHTML = `
-      <!-- TOOLBAR -->
       <div class="cargas-toolbar">
         <div class="cargas-nav-group">
-          <button class="cargas-nav-btn" id="cNavFirst">«</button>
           <button class="cargas-nav-btn" id="cNavPrev">‹</button>
           <div class="cargas-fecha-display">${fmtDisplay(fechaActual)}</div>
           <button class="cargas-nav-btn" id="cNavNext">›</button>
-          <button class="cargas-nav-btn" id="cNavLast">»</button>
+          <button class="cargas-nav-btn cargas-nav-today" id="cNavLast">Hoy</button>
         </div>
         <div class="cargas-filter-group">
           <button class="cargas-filter-btn ${filtroTipo==='Todos'?'active':''}" data-tipo="Todos">Todos</button>
@@ -4983,68 +5023,44 @@ function renderCargas(fiscal) {
         </div>
         <button class="cargas-nueva-btn" id="cNueva">＋ Nueva</button>
         <div class="cargas-search-wrap">
-          <input class="cargas-search" id="cSearch" placeholder="🔍 N° Carga / Vehículo / Acoplado..." value="${busqueda}" />
+          <input class="cargas-search" id="cSearch" placeholder="🔍  N° Carga / Vehículo / Acoplado..." value="${busqueda}" />
         </div>
       </div>
 
-      <!-- TABLA -->
       <div class="cargas-table-wrap">
         <table class="cargas-table">
-          <thead>
-            <tr>
-              <th class="ct-tipo">Tipo</th>
-              <th class="ct-num">N° Transp.</th>
-              <th class="ct-box">Box</th>
-              <th class="ct-tron">Tronera</th>
-              <th class="ct-cargas">Cargas</th>
-              <th class="ct-estado">Estado</th>
-              <th class="ct-cli">Cliente</th>
-              <th class="ct-resp">Resp.</th>
-              <th class="ct-vehi">Vehículo</th>
-              <th class="ct-acop">Acoplado</th>
-              <th class="ct-fecha">Plan Llegada</th>
-              <th class="ct-fecha">Llegada</th>
-              <th class="ct-fecha">Movimiento</th>
-              <th class="ct-fecha">Salida</th>
-              <th class="ct-ticket">Tck. Báscula</th>
-              <th class="ct-acc">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${datos.length === 0
-              ? '<tr><td colspan="16" class="cargas-empty">No hay registros para esta fecha</td></tr>'
-              : datos.map(c => buildCargaRow(c)).join('')}
+          ${thead}
+          <tbody>${todos.length === 0
+            ? '<tr><td colspan="15" class="cargas-empty">No hay registros para esta fecha</td></tr>'
+            : tbody}
           </tbody>
         </table>
       </div>
+
       <div class="cargas-footer">
-        <span>${datos.length} registro${datos.length!==1?'s':''} · ${fmtDisplay(fechaActual)}</span>
+        <span>${todos.length} registro${todos.length!==1?'s':''} · ${fmtDisplay(fechaActual)}</span>
         <span class="cargas-legend">
           <span class="cargas-estado-chip en-planta">En Planta</span>
-          <span class="cargas-estado-chip salida">Salida</span>
-          <span class="cargas-estado-chip pendiente">Pendiente</span>
+          <span class="cargas-estado-chip planificado">Planificado</span>
+          <span class="cargas-estado-chip liberado">Liberado</span>
         </span>
       </div>`;
 
-    // Eventos toolbar
-    wrap.querySelector('#cNavFirst').onclick = () => { fechaActual = new Date(2026,2,1);    render(); };
     wrap.querySelector('#cNavPrev').onclick  = () => { fechaActual.setDate(fechaActual.getDate()-1); render(); };
     wrap.querySelector('#cNavNext').onclick  = () => { fechaActual.setDate(fechaActual.getDate()+1); render(); };
     wrap.querySelector('#cNavLast').onclick  = () => { fechaActual = new Date(); render(); };
     wrap.querySelectorAll('.cargas-filter-btn').forEach(btn => {
       btn.onclick = () => { filtroTipo = btn.dataset.tipo; render(); };
     });
-    wrap.querySelector('#cSearch').oninput  = e => { busqueda = e.target.value.toLowerCase().trim(); render(); };
+    wrap.querySelector('#cSearch').oninput   = e => { busqueda = e.target.value.toLowerCase().trim(); render(); };
     wrap.querySelector('#cSearch').onkeydown = e => e.stopPropagation();
-    wrap.querySelector('#cNueva').onclick = () => showToast('Abriendo nueva carga...');
-    // Acciones fila
+    wrap.querySelector('#cNueva').onclick    = () => showToast('Abriendo nueva carga...');
     wrap.querySelectorAll('[data-accion]').forEach(btn => {
       btn.onclick = () => {
-        const accion = btn.dataset.accion;
-        const id     = btn.dataset.id;
+        const accion = btn.dataset.accion, id = btn.dataset.id;
         if (accion === 'ver')    showToast('Abriendo carga #' + id);
         if (accion === 'editar') showToast('Editando carga #' + id);
-        if (accion === 'horas')  showToast('Registrando horas carga #' + id);
+        if (accion === 'horas')  showToast('Horas carga #' + id);
       };
     });
   };
@@ -5052,55 +5068,62 @@ function renderCargas(fiscal) {
   render();
 }
 
-function buildCargaRow(c) {
-  // Tipo: badge coloreado
+function buildCargaRow(c, estClass) {
   const tipoBadge = c.tipo === 'Entrada'
     ? '<span class="cargas-tipo-badge entrada">↓ ENT</span>'
-    : '<span class="cargas-tipo-badge salida">↑ SAL</span>';
+    : '<span class="cargas-tipo-badge salida-t">↑ SAL</span>';
 
-  // Estado
-  const estadoClass = c.estado === 'En Planta' ? 'en-planta' : c.estado === 'Salida' ? 'salida' : 'pendiente';
-
-  // Clientes como siglas coloreadas con tooltip
-  const clientesHTML = c.clientes.length === 0 ? '<span class="cargas-cli-empty">—</span>'
+  const clientesHTML = c.clientes.length === 0
+    ? '<span class="cargas-cli-empty">—</span>'
     : c.clientes.map(cl => {
         const s = getClienteSigla(cl);
         return `<span class="cargas-cli-sigla" style="background:${s.color}22;border-color:${s.color}55;color:${s.color}" title="${cl}">${s.sigla}</span>`;
       }).join('');
 
-  // Cargas
-  const cargasHTML = c.cargas.length === 0 ? '—'
-    : c.cargas.map(n => `<span class="cargas-num-carga">${n}</span>`).join('');
+  // Cargas: una por línea
+  const cargasHTML = c.cargas.length === 0 ? '<span style="color:rgba(0,0,0,.3)">—</span>'
+    : c.cargas.map(n => `<div class="cargas-num-carga">${n}</div>`).join('');
 
-  // Tronera
   const tronHTML = c.tronera
     ? `<span class="cargas-tronera-chip">${c.tronera}</span>`
-    : '<button class="cargas-asignar-btn" title="Asignar tronera">⇄ Asignar</button>';
+    : '<button class="cargas-asignar-btn">⇄ Asignar</button>';
 
-  // Box
-  const boxHTML = c.box
-    ? `<span class="cargas-box-chip">${c.box}</span>`
-    : '—';
+  const boxHTML = c.box ? `<span class="cargas-box-chip">${c.box}</span>` : '—';
 
-  // Fechas compactas
-  const fmtT = s => s ? s.replace('2026-03-','').replace(/-/g,'/') : '—';
+  // Fecha en 2 niveles: dd/mm arriba, HH:MM abajo
+  const fmtDT = s => {
+    if (!s) return '<span class="ct-dash">—</span>';
+    const d = s.slice(8,10) + '/' + s.slice(5,7);
+    const t = s.length > 10 ? s.slice(11,16) : '';
+    return `<span class="ct-date-d">${d}</span>${t ? '<span class="ct-date-t">' + t + '</span>' : ''}`;
+  };
+  const fmtDate = s => s ? `<span class="ct-date-d">${s.slice(8,10)+'/'+s.slice(5,7)}</span>` : '<span class="ct-dash">—</span>';
 
-  return `<tr class="cargas-row ${estadoClass}">
+  // Tiempo de operación: calcular si hay llegada y salida
+  let tOp = '—';
+  if (c.llegada && c.salida) {
+    const ms = new Date(c.salida.replace(' ','T')) - new Date(c.llegada.replace(' ','T'));
+    const hh = Math.floor(ms/3600000), mm = Math.floor((ms%3600000)/60000);
+    tOp = hh + 'h ' + String(mm).padStart(2,'0') + 'm';
+  } else if (c.movimiento && c.movimiento !== '—') {
+    tOp = c.movimiento;
+  }
+
+  return `<tr class="cargas-row ${estClass}">
     <td class="ct-tipo">${tipoBadge}</td>
     <td class="ct-num"><span class="cargas-transp-num">${c.id}</span></td>
     <td class="ct-box">${boxHTML}</td>
     <td class="ct-tron">${tronHTML}</td>
-    <td class="ct-cargas">${cargasHTML}</td>
-    <td class="ct-estado"><span class="cargas-estado-chip ${estadoClass}">${c.estado}</span></td>
+    <td class="ct-cargas"><div class="cargas-cargas-col">${cargasHTML}</div></td>
     <td class="ct-cli"><div class="cargas-cli-wrap">${clientesHTML}</div></td>
     <td class="ct-resp"><span class="cargas-resp">${c.responsable||'—'}</span></td>
-    <td class="ct-vehi"><span class="cargas-vehi">${c.vehiculo||'—'}</span></td>
-    <td class="ct-acop"><span class="cargas-vehi">${c.acoplado||'—'}</span></td>
-    <td class="ct-fecha">${fmtT(c.planLlegada)}</td>
-    <td class="ct-fecha">${c.llegada ? c.llegada.slice(8,10)+'/'+c.llegada.slice(5,7)+' '+c.llegada.slice(11,16) : '—'}</td>
-    <td class="ct-fecha">${c.movimiento||'—'}</td>
-    <td class="ct-fecha">${c.salida ? c.salida.slice(8,10)+'/'+c.salida.slice(5,7)+' '+c.salida.slice(11,16) : '—'}</td>
-    <td class="ct-ticket">${c.ticketSalida||'—'}</td>
+    <td class="ct-vehi"><b>${c.vehiculo||'—'}</b></td>
+    <td class="ct-acop">${c.acoplado||'—'}</td>
+    <td class="ct-fecha ct-fecha-2l">${fmtDate(c.planLlegada)}</td>
+    <td class="ct-fecha ct-fecha-2l">${fmtDT(c.llegada)}</td>
+    <td class="ct-mov"><span class="cargas-top-val">${tOp}</span></td>
+    <td class="ct-fecha ct-fecha-2l">${fmtDT(c.salida)}</td>
+    <td class="ct-ticket"><span class="cargas-ticket">${c.ticketSalida||'—'}</span></td>
     <td class="ct-acc">
       <div class="cargas-acc-btns">
         <button class="cargas-acc-btn" data-accion="ver"    data-id="${c.id}" title="Ver">👁</button>
