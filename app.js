@@ -320,6 +320,70 @@ const detailProducts = [
 /* ── DOM REFS ───────────────────────────────────────────────── */
 const historyStack   = [];
 const menuGrid       = document.getElementById('menuGrid');
+
+/* ── API EQUIPOS ─────────────────────────────────────────────
+   URL de la API PHP en el mismo servidor
+   ─────────────────────────────────────────────────────────── */
+const API_EQUIPOS_URL = '/api_equipos.php';  // ajustá si está en otra ruta
+const API_SECRET      = 'cina_secret_2026';  // igual que en api_equipos.php
+
+async function apiEquipos(action, body = {}) {
+  try {
+    const res = await fetch(`${API_EQUIPOS_URL}?action=${action}`, {
+      method : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body   : JSON.stringify({ secret: API_SECRET, ...body })
+    });
+    const data = await res.json();
+    if (!res.ok) { console.warn('API error:', data.error); return null; }
+    return data;
+  } catch(e) {
+    console.warn('API no disponible (modo offline):', e.message);
+    return null;
+  }
+}
+
+/**
+ * Carga la lista de cámaras activas desde MySQL al iniciar la app.
+ * Si falla (offline / error), conserva la lista hardcodeada como fallback.
+ */
+async function cargarCamarasDesdeDB() {
+  try {
+    const res  = await fetch(`${API_EQUIPOS_URL}?action=camaras`);
+    const data = await res.json();
+    if (!Array.isArray(data) || !data.length) return;
+
+    // Actualizar lista global de nombres para chips/selects
+    PR6_CAMARAS = data.map(c => c.nombre_display);
+
+    // Guardar datos completos para uso avanzado (capacidad, tipo, etc.)
+    camarasDB = data;
+
+    // Actualizar también dashboardLogisticaNacionalData con cámaras reales
+    // (preserva estibas/temperatura/clientes del array hardcodeado si el número coincide)
+    const nums = new Set(dashboardLogisticaNacionalData.map(d => String(d.nombre)));
+    data.forEach(c => {
+      const num = String(c.CamaraNumero);
+      if (!nums.has(num)) {
+        dashboardLogisticaNacionalData.push({
+          tipo       : c.nombre_display.startsWith('TÚNEL') ? 'TUNEL' : 'CAMARA',
+          nombre     : num,
+          estibas    : c.CamaraCalles * c.CamaraFilas * (c.CamaraNiveles || 1),
+          capacidad  : c.CamaraCalles * c.CamaraFilas * (c.CamaraNiveles || 1),
+          temperatura: null,
+          clientes   : [],
+          extra      : 0,
+          puerta     : true,
+          ventilador : true,
+        });
+      }
+    });
+
+    console.log(`✓ ${PR6_CAMARAS.length} cámaras cargadas desde DB`);
+  } catch(e) {
+    console.warn('Cámaras: usando lista local (DB no disponible):', e.message);
+  }
+}
 const menuWrap       = document.querySelector('.menu-wrap');
 const screenTitle    = document.getElementById('screenTitle');
 const screenSubtitle = document.getElementById('screenSubtitle');
@@ -3645,6 +3709,9 @@ window.addEventListener('resize', updateAdaptiveLayout);
 
 /* ── INICIO ─────────────────────────────────────────────────── */
 updateAdaptiveLayout();
+// Cargar cámaras desde DB al iniciar (no bloquea el arranque)
+cargarCamarasDesdeDB();
+
 renderNode(menuTree);
 
 /* ═══════════════════════════════════════════════════════════════
@@ -5972,9 +6039,18 @@ function openChecklistEnMarcha(index) {
     modal.querySelector('#chkClose').onclick    = close;
     modal.querySelector('#chkRechazar').onclick = () => { close(); showToast('🚫 Uso rechazado — ' + item.denominacion); };
     modal.querySelector('#chkFalla').onclick    = () => {
+      const motivoChk = (prompt('Descripción de la falla (obligatorio):') || '').trim();
+      if (!motivoChk) { showToast('⚠️ Ingresá una descripción de la falla'); return; }
       dashboardEquipamientoData[index].estado = 'Falla';
       close(); renderDashboardEquipamiento();
       showToast('⚠️ Falla informada — ' + item.denominacion);
+      apiEquipos('cambio_estado', {
+        interno      : item.interno,
+        estado_nuevo : 'Falla',
+        usuario      : perfilData.nombre,
+        horometro    : item.horasActual || item.horasBase,
+        motivo       : motivoChk,
+      });
     };
 
     if (paso === 1) {
@@ -5985,10 +6061,34 @@ function openChecklistEnMarcha(index) {
       ini.onkeydown = e => e.stopPropagation();
       modal.querySelector('#chkRetirar').onclick = () => {
         if (!puedeRetirar) { ini.classList.add('chk-required-err'); ini.focus(); return; }
+        const horasNum = parseInt(horasIniVal) || dashboardEquipamientoData[index].horasActual;
         dashboardEquipamientoData[index].estado = 'En marcha';
-        dashboardEquipamientoData[index].horasActual = parseInt(horasIniVal) || dashboardEquipamientoData[index].horasActual;
+        dashboardEquipamientoData[index].horasActual = horasNum;
+        // Convertir checks a array de 18 ítems (1=si, 0=no, null=sin responder)
+        const itemsArr = CHECKLIST_ITEMS.map((_, i) =>
+          checks[i] === 'si' ? 1 : checks[i] === 'no' ? 0 : null
+        );
         close(); renderDashboardEquipamiento();
         showToast('✅ Equipo en marcha — ' + item.denominacion);
+        // Grabar cambio de estado En marcha
+        apiEquipos('cambio_estado', {
+          interno      : item.interno,
+          estado_nuevo : 'En marcha',
+          usuario      : perfilData.nombre,
+          horometro    : horasNum,
+          motivo       : null,
+        }).then(r => {
+          if (r?.ok) {
+            // Grabar checklist
+            apiEquipos('checklist', {
+              interno          : item.interno,
+              usuario          : perfilData.nombre,
+              horometro_inicio : horasNum,
+              items            : itemsArr,
+              observaciones    : null,
+            }).then(c => { if (c?.ok) console.log('Checklist grabado:', c.resultado); });
+          }
+        });
       };
     }
   };
@@ -6071,11 +6171,28 @@ function openCambioEstadoEquipo(index) {
       btn.onclick = () => {
         horasFinVal = modal.querySelector('#estHorasFin').value.trim();
         if (!horasFinVal) { errMsg = 'Campo obligatorio'; render(); return; }
-        const numFin = parseInt(horasFinVal);
-        dashboardEquipamientoData[index].estado = btn.dataset.val;
+        const numFin     = parseInt(horasFinVal);
+        const estadoNuevo = btn.dataset.val;
+        const motivoFalla = estadoNuevo === 'Falla'
+          ? (prompt('Descripción de la falla (obligatorio):') || '').trim()
+          : null;
+        if (estadoNuevo === 'Falla' && !motivoFalla) {
+          showToast('⚠️ Ingresá una descripción de la falla'); return;
+        }
+        dashboardEquipamientoData[index].estado = estadoNuevo;
         if (!isNaN(numFin)) dashboardEquipamientoData[index].horasActual = numFin;
         close(); renderDashboardEquipamiento();
-        showToast(`✓ ${item.denominacion} → ${btn.dataset.val}`);
+        showToast(`✓ ${item.denominacion} → ${estadoNuevo}`);
+        // Grabar en base de datos (no bloquea la UI)
+        apiEquipos('cambio_estado', {
+          interno      : item.interno,
+          estado_nuevo : estadoNuevo,
+          usuario      : perfilData.nombre,
+          horometro    : !isNaN(numFin) ? numFin : (item.horasActual || item.horasBase),
+          motivo       : motivoFalla,
+        }).then(r => {
+          if (r?.ok) console.log('Estado grabado en DB:', r);
+        });
       };
     });
   };
@@ -6155,11 +6272,14 @@ window.addEventListener('hashchange', handleHashRouting);
 let pr22Registros = [];
 let pr100Registros = [];
 
-const PR6_CAMARAS = [
+// Lista dinámica — se reemplaza al cargar desde MySQL
+let PR6_CAMARAS = [
   'CÁMARA 1','CÁMARA 2','CÁMARA 3','CÁMARA 4',
   'CÁMARA 5','CÁMARA 6','CÁMARA 7','CÁMARA 8',
   'ANTECÁMARA','SALA DE MÁQUINAS','EXTERIOR'
 ];
+// Datos completos de cámaras desde DB (CamaraID, numero, calles, filas, etc.)
+let camarasDB = [];
 
 const PR6_MAQUINISTAS = [
   'Aguirre, Carlos','Aguirre, Guillermo','Barovero, Agustín',
@@ -6214,7 +6334,10 @@ function renderPR6Contraste() {
       <div class="pr6-section">
         <div class="pr6-section-title"><span>❄️</span> Seleccioná las cámaras a contrastar</div>
         <div class="pr6-camara-chips" id="pr6CamaraChips">
-          ${PR6_CAMARAS.map(c => "<button class=\"pr6-chip\" data-camara=\""+c+"\">"+c+"</button>").join('')}
+          ${PR6_CAMARAS.map(c => {
+            const label = c.replace(/^CÁMARA /, 'C').replace('ANTECÁMARA','ANTEC').replace('SALA DE MÁQUINAS','S.MÁQ').replace('EXTERIOR','EXT').replace(/^TÚNEL /, 'TUN ');
+            return '<button class="pr6-chip" data-camara="'+c+'" title="'+c+'">'+label+'</button>';
+          }).join('')}
         </div>
       </div>
 
@@ -6623,7 +6746,10 @@ function renderPR100Descongelado() {
         <div class="pr6-section-title"><span>❄️</span> Cámara a descongelar</div>
 
         <div class="pr6-camara-chips" id="pr100CamaraChips">
-          ${PR6_CAMARAS.map(c => `<button class="pr6-chip" data-camara="${c}">${c.replace('CÁMARA ','C').replace('ANTECÁMARA','AC').replace('SALA DE MÁQUINAS','SM').replace('EXTERIOR','EXT')}</button>`).join('')}
+          ${PR6_CAMARAS.map(c => {
+            const label = c.replace(/^CÁMARA /, 'C').replace('ANTECÁMARA','ANTEC').replace('SALA DE MÁQUINAS','S.MÁQ').replace('EXTERIOR','EXT').replace(/^TÚNEL /, 'TUN ');
+            return `<button class="pr6-chip" data-camara="${c}" title="${c}">${label}</button>`;
+          }).join('')}
         </div>
         <input type="hidden" id="pr100Camara" value="">
       </div>
