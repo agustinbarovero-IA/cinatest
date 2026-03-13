@@ -5429,6 +5429,51 @@ body{
   background: rgba(255,255,255,.03);
 }
 
+/* ── Toggle +/- junto a temperatura ─────────────── */
+.pr6-num-wrap {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.pr6-sign-btn {
+  flex-shrink: 0;
+  width: 22px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.07);
+  color: rgba(255,255,255,.35);
+  font-size: .85rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all .14s;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+.pr6-sign-btn:hover {
+  background: rgba(255,255,255,.15);
+  color: #fff;
+}
+/* Negativo activo → rojo suave */
+.pr6-sign-neg.active {
+  background: rgba(248,113,113,.22);
+  border-color: rgba(248,113,113,.5);
+  color: #fca5a5;
+}
+/* Positivo activo → verde suave */
+.pr6-sign-pos.active {
+  background: rgba(34,197,94,.18);
+  border-color: rgba(34,197,94,.45);
+  color: #86efac;
+}
+/* input numérico dentro del wrap */
+.pr6-num-wrap .pr6-num-inp {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+
 /* ── MOBILE ──────────────────────────────────────── */
 @media(max-width:700px){
   .pr6-tabla-head { display: none; }
@@ -5454,6 +5499,14 @@ body{
     display: flex;
     flex-direction: column;
     gap: 3px;
+  }
+  /* el wrap ocupa todo el ancho disponible en mobile */
+  .pr6-num-wrap {
+    width: 100%;
+  }
+  .pr6-sign-btn {
+    width: 28px;
+    height: 32px;
   }
   .pr6-td-num::before {
     font-size: .6rem;

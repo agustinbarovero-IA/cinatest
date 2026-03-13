@@ -6094,20 +6094,9 @@ function renderPR6Contraste() {
           <input type="hidden" id="pr6Hora" value="${horaStr}">
         </div>
         <div class="pr6-meta-item pr6-meta-grow">
-          <div class="pr6-meta-label">👤 Maquinista <span style="color:#ef4444">*</span></div>
-          <select class="pr6-sel-maq" id="pr6Maquinista">
-            <option value="">— Seleccionar —</option>
-            ${PR6_MAQUINISTAS.map(m => "<option value=\""+m+"\">"+m+"</option>").join('')}
-          </select>
-        </div>
-        <div class="pr6-meta-item">
-          <div class="pr6-meta-label">🔄 Turno <span style="color:#ef4444">*</span></div>
-          <div class="pr6-turno-btns" id="pr6TurnoBtns">
-            <button class="pr6-turno-btn" data-turno="MAÑANA">☀️ Mañana</button>
-            <button class="pr6-turno-btn" data-turno="TARDE">🌤 Tarde</button>
-            <button class="pr6-turno-btn" data-turno="NOCHE">🌙 Noche</button>
-          </div>
-          <input type="hidden" id="pr6Turno" value="">
+          <div class="pr6-meta-label">👤 Maquinista</div>
+          <div class="pr6-meta-val pr6-meta-usuario">${perfilData.nombre}</div>
+          <input type="hidden" id="pr6Maquinista" value="${perfilData.nombre}">
         </div>
       </div>
 
@@ -6145,14 +6134,6 @@ function renderPR6Contraste() {
     </div>
   `;
 
-  document.getElementById('pr6TurnoBtns').addEventListener('click', e => {
-    const btn = e.target.closest('[data-turno]');
-    if (!btn) return;
-    document.querySelectorAll('.pr6-turno-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('pr6Turno').value = btn.dataset.turno;
-  });
-
   document.getElementById('pr6CamaraChips').addEventListener('click', e => {
     const chip = e.target.closest('[data-camara]');
     if (!chip) return;
@@ -6166,9 +6147,26 @@ function renderPR6Contraste() {
   });
 
   document.getElementById('pr6AgregarBtn').addEventListener('click', () => pr6AgregarFila(''));
+
+  // Toggle +/- en celdas numéricas
+  document.getElementById('pr6Filas').addEventListener('click', e => {
+    const btn = e.target.closest('.pr6-sign-btn');
+    if (!btn) return;
+    const wrap = btn.closest('.pr6-num-wrap');
+    wrap.querySelector('.pr6-sign-neg').classList.toggle('active', btn.classList.contains('pr6-sign-neg'));
+    wrap.querySelector('.pr6-sign-pos').classList.toggle('active', btn.classList.contains('pr6-sign-pos'));
+  });
   document.getElementById('pr6GuardarBtn').addEventListener('click', pr6GuardarRegistro);
   document.getElementById('pr6BackBtn').addEventListener('click', () => { historyStack.pop(); renderNode(historyStack.pop() || menuTree); });
   document.getElementById('pr6HistorialBtn').addEventListener('click', pr6MostrarHistorial);
+}
+
+function pr6NumCell() {
+  return `<div class="pr6-num-wrap">
+    <button type="button" class="pr6-sign-btn pr6-sign-neg active" title="Negativo">−</button>
+    <input type="number" class="pr6-num-inp" placeholder="0.0" step="0.1" min="0">
+    <button type="button" class="pr6-sign-btn pr6-sign-pos" title="Positivo">+</button>
+  </div>`;
 }
 
 function pr6AgregarFila(camaraVal) {
@@ -6183,11 +6181,11 @@ function pr6AgregarFila(camaraVal) {
     : `<div class="pr6-td pr6-td-cam"><select class="pr6-sel-inline pr6-sel-camara">${['<option value="">— Cámara —</option>',...PR6_CAMARAS.map(c=>`<option value="${c}">${c}</option>`)].join('')}</select></div>`;
   div.innerHTML = `
     ${camaraCell}
-    <div class="pr6-td pr6-td-num"><input type="number" class="pr6-num-inp" placeholder="—" step="0.1"></div>
-    <div class="pr6-td pr6-td-num"><input type="number" class="pr6-num-inp" placeholder="—" step="0.1"></div>
-    <div class="pr6-td pr6-td-num"><input type="number" class="pr6-num-inp" placeholder="—" step="0.1"></div>
-    <div class="pr6-td pr6-td-num"><input type="number" class="pr6-num-inp" placeholder="—" step="0.1"></div>
-    <div class="pr6-td pr6-td-num"><input type="number" class="pr6-num-inp" placeholder="—" step="0.1"></div>
+    <div class="pr6-td pr6-td-num">${pr6NumCell()}</div>
+    <div class="pr6-td pr6-td-num">${pr6NumCell()}</div>
+    <div class="pr6-td pr6-td-num">${pr6NumCell()}</div>
+    <div class="pr6-td pr6-td-num">${pr6NumCell()}</div>
+    <div class="pr6-td pr6-td-num">${pr6NumCell()}</div>
     <div class="pr6-td pr6-td-obs"><textarea class="pr6-obs-inp" placeholder="—" rows="1"></textarea></div>
     <div class="pr6-td pr6-td-del">
       <button class="pr6-del-btn" onclick="pr6EliminarFila('${id}','${(camaraVal||'').replace(/'/g,"\\'")}')">✕</button>
@@ -6223,18 +6221,22 @@ function pr6GuardarRegistro() {
   const turno      = document.getElementById('pr6Turno').value;
   const fecha      = document.getElementById('pr6Fecha').value;
   const hora       = document.getElementById('pr6Hora').value;
-  if (!maquinista) { pr6MostrarToast('Seleccioná un maquinista', 'error'); return; }
-  if (!turno)      { pr6MostrarToast('Seleccioná el turno', 'error'); return; }
+  if (!maquinista) { pr6MostrarToast('Error: no hay usuario activo', 'error'); return; }
   const filas = [...document.querySelectorAll('#pr6Filas .pr6-row')];
   if (!filas.length) { pr6MostrarToast('Agregá al menos una cámara', 'error'); return; }
   const detalles = filas.map(f => {
     const cam = f.dataset.camara || f.querySelector('.pr6-sel-camara')?.value || '';
-    const nums = [...f.querySelectorAll('.pr6-num-inp')].map(i => i.value);
+    const nums = [...f.querySelectorAll('.pr6-num-wrap')].map(wrap => {
+      const val = wrap.querySelector('.pr6-num-inp').value;
+      if (val === '' || val === null) return '';
+      const isNeg = wrap.querySelector('.pr6-sign-neg').classList.contains('active');
+      return isNeg ? '-' + Math.abs(parseFloat(val)) : '+' + Math.abs(parseFloat(val));
+    });
     const obs  = f.querySelector('textarea')?.value || '';
     return { camara:cam, ptr1:nums[0], ptr2:nums[1], plc:nums[2], puesta:nums[3], alcanzada:nums[4], obs };
   });
   if (detalles.some(d => !d.camara)) { pr6MostrarToast('Hay filas sin cámara seleccionada', 'error'); return; }
-  pr6Registros.push({ maquinista, turno, fecha, hora, detalles, ts: new Date().toLocaleString('es-AR') });
+  pr6Registros.push({ maquinista, fecha, hora, detalles, ts: new Date().toLocaleString('es-AR') });
   pr6MostrarToast('✓ Registro guardado correctamente', 'ok');
   setTimeout(() => renderPR6Contraste(), 1400);
 }
@@ -6254,7 +6256,6 @@ function pr6MostrarHistorial() {
           <div class="pr6-hist-card">
             <div class="pr6-hist-card-header">
               <span class="pr6-hist-maq">${r.maquinista}</span>
-              <span class="pr6-hist-turno pr6-turno-${r.turno.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}">${r.turno}</span>
               <span class="pr6-hist-fecha">${r.fecha} ${r.hora}</span>
             </div>
             <table class="pr6-hist-table"><thead><tr>
