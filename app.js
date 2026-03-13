@@ -529,6 +529,49 @@ function getCustomTileHTML(item) {
         <div class="tile-title one-line tile-label">SALIDAS</div>
       </div>`;
   }
+  // PR 6 CONTRASTE DE TERMÓMETROS: grilla de 20 recuadros con estado por cámara
+  if (item.title === 'PR 6 CONTRASTE DE TERMOMETROS') {
+    const hoy     = new Date();
+    const TOTAL   = 20;
+
+    // Para cada cámara buscar el registro más reciente
+    const estadoCamaras = PR6_CAMARAS.map(cam => {
+      const registrosConCam = pr6Registros.filter(r =>
+        r.detalles && r.detalles.some(d => d.camara === cam)
+      );
+      if (!registrosConCam.length) return { cam, estado: 'sin-dato' };
+      const fechas = registrosConCam.map(r => new Date(r.fecha));
+      const ultima = new Date(Math.max(...fechas));
+      const dias   = Math.floor((hoy - ultima) / (1000 * 60 * 60 * 24));
+      return { cam, estado: dias <= 30 ? 'ok' : 'vencido', dias };
+    });
+
+    // Generar los 20 recuadros: 11 cámaras reales + 9 vacíos
+    const recuadros = [];
+    for (let i = 0; i < TOTAL; i++) {
+      if (i < PR6_CAMARAS.length) {
+        const { cam, estado } = estadoCamaras[i];
+        const label = cam
+          .replace('CÁMARA ', 'C')
+          .replace('ANTECÁMARA', 'AC')
+          .replace('SALA DE MÁQUINAS', 'SM')
+          .replace('EXTERIOR', 'EXT');
+        recuadros.push(`<div class="pr6-tile-cam pr6-cam-${estado}" title="${cam}">${label}</div>`);
+      } else {
+        recuadros.push(`<div class="pr6-tile-cam pr6-cam-empty"></div>`);
+      }
+    }
+
+    return `
+      <div class="pr6-tile-wrap">
+        <div class="pr6-tile-grid">${recuadros.join('')}</div>
+        <div class="pr6-tile-footer">
+          <span class="pr6-tile-badge">PR-06</span>
+          <span class="pr6-tile-name">Contraste de Termómetros</span>
+        </div>
+      </div>`;
+  }
+
   return null; // usar HTML por defecto
 }
 
