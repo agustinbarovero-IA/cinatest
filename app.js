@@ -14,8 +14,8 @@ const menuTree = {
         { title: 'CARGAS' },
         { title: 'PRE ENTRADAS' },
         { title: 'ENTRADAS' },
-        { title: 'PRE SALIDAS',  url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/0/fiscal/0' },
-        { title: 'SALIDAS',      url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/1/fiscal/0' }
+        { title: 'PRE SALIDAS' },
+        { title: 'SALIDAS' }
       ]
     },
     {
@@ -3408,8 +3408,10 @@ function renderNode(node) {
         if (item.title === 'ESTIBAS CONGELADAS')             { historyStack.push(node); renderIndicadorEstibasCongeladas();   return; }
         if (item.title === 'CARGAS' && node.title === 'LOGISTICA NACIONAL') { historyStack.push(node); renderCargas(false); return; }
         if (item.title === 'CARGAS' && node.title === 'LOGISTICA FISCAL')   { historyStack.push(node); renderCargas(true);  return; }
-                if (item.title === 'PRE ENTRADAS') { historyStack.push(node); renderEntradasModule(true, item.fiscal||false);  return; }
-        if (item.title === 'ENTRADAS')      { historyStack.push(node); renderEntradasModule(false, item.fiscal||false); return; }
+                if (item.title === 'PRE ENTRADAS') { historyStack.push(node); renderLogMod('preEntradas', item.fiscal||false); return; }
+        if (item.title === 'ENTRADAS')      { historyStack.push(node); renderLogMod('entradas',    item.fiscal||false); return; }
+        if (item.title === 'PRE SALIDAS')   { historyStack.push(node); renderLogMod('preSalidas',  item.fiscal||false); return; }
+        if (item.title === 'SALIDAS')       { historyStack.push(node); renderLogMod('salidas',     item.fiscal||false); return; }
                 if (item.title === 'FACTURACION' && node.title === 'ADMINISTRACION') { historyStack.push(node); renderFacturacion(); return; }
         if (item.title === 'REMITOS'     && node.title === 'ADMINISTRACION') { historyStack.push(node); renderRemitos();      return; }
         if (item.title === 'COMPRAS'     && node.title === 'ADMINISTRACION') { historyStack.push(node); renderCompras();      return; }
@@ -5440,201 +5442,221 @@ function buildCargaRow(c, estClass) {
   </tr>`;
 }
 
+
+
 /* ═══════════════════════════════════════════════════════════════
-   MÓDULO: PRE-ENTRADAS / ENTRADAS
+   MÓDULO: PRE-ENTRADAS / ENTRADAS / PRE-SALIDAS / SALIDAS
    ═══════════════════════════════════════════════════════════════ */
 
-const entradasData = [
-  { carga:169784, entrada:70007, remito:'0213-00097339', referencia:'136658',
-    cliente:'MINERVA FOOD ( 0013 PLANTA SWIFT )',
-    certificados:['0013-A-050830','0013-A-050831','0013-A-050832','0013-A-050833','0013-A-050829'],
-    calidad:'Pendiente', movimiento:'', devolucion:false, verificado:false, tipo:'pre' },
-  { carga:169789, entrada:70006, remito:'0008-00000983', referencia:'',
-    cliente:'MINERVA FOODS (CTRO. DE DIST.) CONGELADO',
-    certificados:[], calidad:'Pendiente', movimiento:'', devolucion:false, verificado:false, tipo:'pre' },
-  { carga:169788, entrada:70005, remito:'0000-00000000', referencia:'',
-    cliente:'LOGISTICA RR CONGELADOS SA',
-    certificados:['5235-A-035689'], calidad:'Pendiente', movimiento:'13/03/2026', devolucion:false, verificado:false, tipo:'pre' },
-  { carga:169787, entrada:70004, remito:'0001-00022866', referencia:'',
-    cliente:'IPANCO SRL DN',
-    certificados:[], calidad:'Pendiente', movimiento:'', devolucion:false, verificado:false, tipo:'pre' },
-  { carga:169783, entrada:70003, remito:'0292-00004643', referencia:'4002',
-    cliente:'MINERVA FOODS ( 1113 PLANTA VILLA MERCEDES )',
-    certificados:['1113-A-022202','1113-A-022205','1113-A-022206'], calidad:'Pendiente', movimiento:'', devolucion:false, verificado:false, tipo:'pre' },
-  // Entradas (clasificadas)
-  { carga:169760, entrada:69992, remito:'9998-00029264', referencia:'4902425241 / 4902425240 / 4902425129',
-    cliente:'QUICKFOOD S.A. (SAN JORGE)',
-    certificados:['1014-A-017507','1014-A-017508'], calidad:'Pendiente', movimiento:'13/03/2026', devolucion:false, verificado:false, tipo:'ent' },
-  { carga:169762, entrada:69990, remito:'0902-00013924', referencia:'',
-    cliente:'RAFAELA ALIMENTOS S.A. (CASILDA)',
-    certificados:['1399-A-017640'], calidad:'Pendiente', movimiento:'12/03/2026', devolucion:false, verificado:false, tipo:'ent' },
-  { carga:169751, entrada:69989, remito:'3301-00010258', referencia:'4902420019/18/17',
-    cliente:'QUICKFOOD S.A. (SAN JORGE)',
-    certificados:['1014-A-017505','1014-A-017506'], calidad:'Pendiente', movimiento:'12/03/2026', devolucion:false, verificado:false, tipo:'ent' },
-  { carga:169747, entrada:69988, remito:'0001-00022861', referencia:'',
-    cliente:'IPANCO SRL DN',
-    certificados:[], calidad:'Pendiente', movimiento:'12/03/2026', devolucion:false, verificado:false, tipo:'ent' },
-  { carga:169736, entrada:69985, remito:'0000-00000000', referencia:'',
-    cliente:'LOGISTICA RR CONGELADOS SA',
-    certificados:['5235-A-035659'], calidad:'Completo', movimiento:'12/03/2026', devolucion:false, verificado:false, tipo:'ent' },
-];
+const logModData = {
+  preEntradas: [
+    { carga:169784, numero:70007, remito:'0213-00097339', referencia:'136658',
+      clienteGrupo:'MINERVA FOOD ( 0013 PLANTA SWIFT )', contrato:'',
+      certificados:['0013-A-050830','0013-A-050831','0013-A-050832','0013-A-050833','0013-A-050829'],
+      destino:'ARGENTINA', calidad:'Pendiente', modificadoPor:'Romero, Micaela Sabrina', modificadoFecha:'13/03/2026 10:54:19' },
+    { carga:169789, numero:70006, remito:'0008-00000983', referencia:'',
+      clienteGrupo:'MINERVA FOODS (CTRO. DE DIST.) CONGELADO', contrato:'',
+      certificados:[], destino:'ARGENTINA', calidad:'Pendiente', modificadoPor:'Romero, Micaela Sabrina', modificadoFecha:'13/03/2026 08:42:17' },
+    { carga:169788, numero:70005, remito:'0000-00000000', referencia:'',
+      clienteGrupo:'LOGISTICA RR CONGELADOS SA', contrato:'',
+      certificados:['5235-A-035689'], destino:'ARGENTINA', calidad:'Pendiente', modificadoPor:'Romero, Micaela Sabrina', modificadoFecha:'13/03/2026 08:42:08' },
+    { carga:169787, numero:70004, remito:'0001-00022866', referencia:'',
+      clienteGrupo:'IPANCO SRL DN', contrato:'',
+      certificados:[], destino:'ARGENTINA', calidad:'Pendiente', modificadoPor:'Pereyra, Arturo Pablo', modificadoFecha:'12/03/2026 09:11:00' },
+    { carga:169783, numero:70003, remito:'0292-00004643', referencia:'4002',
+      clienteGrupo:'MINERVA FOODS ( 1113 PLANTA VILLA MERCEDES )', contrato:'',
+      certificados:['1113-A-022202','1113-A-022205','1113-A-022206'], destino:'ARGENTINA', calidad:'Pendiente', modificadoPor:'Romero, Micaela Sabrina', modificadoFecha:'12/03/2026 07:30:00' },
+  ],
+  entradas: [
+    { carga:169760, numero:69992, remito:'9998-00029264', referencia:'4902425241 / 4902425240 / 4902425129',
+      clienteGrupo:'QUICKFOOD S.A. (SAN JORGE)', contrato:'',
+      certificados:['1014-A-017507','1014-A-017508'], destino:'ARGENTINA', calidad:'Pendiente', modificadoPor:'Pereyra, Arturo Pablo', modificadoFecha:'13/03/2026 11:50:45' },
+    { carga:169762, numero:69990, remito:'0902-00013924', referencia:'',
+      clienteGrupo:'RAFAELA ALIMENTOS S.A. (CASILDA)', contrato:'',
+      certificados:['1399-A-017640'], destino:'ARGENTINA', calidad:'Pendiente', modificadoPor:'Romero, Micaela Sabrina', modificadoFecha:'12/03/2026 09:00:00' },
+    { carga:169751, numero:69989, remito:'3301-00010258', referencia:'4902420019/18/17',
+      clienteGrupo:'QUICKFOOD S.A. (SAN JORGE)', contrato:'',
+      certificados:['1014-A-017505','1014-A-017506'], destino:'ARGENTINA', calidad:'Pendiente', modificadoPor:'Romero, Micaela Sabrina', modificadoFecha:'12/03/2026 08:00:00' },
+    { carga:169747, numero:69988, remito:'0001-00022861', referencia:'',
+      clienteGrupo:'IPANCO SRL DN', contrato:'',
+      certificados:[], destino:'ARGENTINA', calidad:'Pendiente', modificadoPor:'Pereyra, Arturo Pablo', modificadoFecha:'12/03/2026 07:45:00' },
+    { carga:169736, numero:69985, remito:'0000-00000000', referencia:'',
+      clienteGrupo:'LOGISTICA RR CONGELADOS SA', contrato:'',
+      certificados:['5235-A-035659'], destino:'ARGENTINA', calidad:'Completo', modificadoPor:'Pereyra, Arturo Pablo', modificadoFecha:'12/03/2026 06:30:00' },
+  ],
+  preSalidas: [
+    { carga:169791, numero:119163, remito:'0001-00094547', referencia:'',
+      clienteGrupo:'QUICKFOOD S. A. VEGETALES', contrato:'',
+      certificados:[], destino:'ARGENTINA', calidad:'Pendiente', modificadoPor:'Pereyra, Arturo Pablo', modificadoFecha:'13/03/2026 11:50:45' },
+    { carga:169790, numero:119162, remito:'0000-00000000', referencia:'',
+      clienteGrupo:'ETHICAL NUTRITION S. A.', contrato:'RETIRO LUNES 16/06 NOCHE',
+      certificados:[], destino:'ARGENTINA', calidad:'Pendiente', modificadoPor:'Romero, Micaela Sabrina', modificadoFecha:'13/03/2026 10:54:19' },
+    { carga:169781, numero:119161, remito:'0001-00094544', referencia:'',
+      clienteGrupo:'GLUFREEZ (PAULA SILNIK)', contrato:'AGRUPADOS',
+      certificados:[], destino:'ARGENTINA', calidad:'Pendiente', modificadoPor:'Romero, Micaela Sabrina', modificadoFecha:'13/03/2026 08:42:17' },
+    { carga:169781, numero:119160, remito:'0001-00094544', referencia:'',
+      clienteGrupo:'GLUFREEZ (PAULA SILNIK)', contrato:'ALIMENTOS SALUDABLES-ALBERDI 778 BIS',
+      certificados:[], destino:'ARGENTINA', calidad:'Pendiente', modificadoPor:'Romero, Micaela Sabrina', modificadoFecha:'13/03/2026 08:42:08' },
+    { carga:169778, numero:119158, remito:'0001-00094540', referencia:'',
+      clienteGrupo:'ARCOR S.A.', contrato:'GRUPO ARCOR',
+      certificados:['ARC-2026-001'], destino:'ARGENTINA', calidad:'Pendiente', modificadoPor:'Pereyra, Arturo Pablo', modificadoFecha:'13/03/2026 07:30:00' },
+  ],
+  salidas: [
+    { carga:169765, numero:119141, remito:'0001-00094534', referencia:'22743',
+      clienteGrupo:'MINERVA FOODS BEEF CONGELADO', contrato:'TODO HELADO SRL - 5383',
+      certificados:['3540-A-069819'], destino:'ARGENTINA', calidad:'Pendiente', modificadoPor:'Pereyra, Arturo Pablo', modificadoFecha:'13/03/2026 08:04:58' },
+    { carga:169765, numero:119138, remito:'0001-00094534', referencia:'22743',
+      clienteGrupo:'SWIFT ARGENTINA S.A.', contrato:'PROMO BURGUER SRL - PARANA',
+      certificados:[], destino:'ARGENTINA', calidad:'Pendiente', modificadoPor:'Pereyra, Arturo Pablo', modificadoFecha:'13/03/2026 08:00:56' },
+    { carga:169765, numero:119137, remito:'0001-00094534', referencia:'22743',
+      clienteGrupo:'SWIFT ARGENTINA S.A.', contrato:'LUSSA CRISTIAN ARIEL',
+      certificados:['3540-A-000000'], destino:'ARGENTINA', calidad:'Pendiente', modificadoPor:'Pereyra, Arturo Pablo', modificadoFecha:'13/03/2026 08:00:00' },
+    { carga:169750, numero:119130, remito:'0000-00000000', referencia:'',
+      clienteGrupo:'QUICKFOOD S.A. (MATERIA PRIMA)', contrato:'',
+      certificados:['1014-A-017501'], destino:'BRASIL', calidad:'Completo', modificadoPor:'Gómez, Laura', modificadoFecha:'12/03/2026 14:22:00' },
+  ],
+};
 
-function renderEntradasModule(esPre, fiscal) {
-  const titulo = esPre ? 'PRE-ENTRADAS' : 'ENTRADAS';
-  setHeader(titulo + (fiscal ? ' — FISCAL' : ''));
+function renderLogMod(tipo, fiscal) {
+  // tipo: 'preEntradas' | 'entradas' | 'preSalidas' | 'salidas'
+  const titulos = { preEntradas:'PRE-ENTRADAS', entradas:'ENTRADAS', preSalidas:'PRE-SALIDAS', salidas:'SALIDAS' };
+  const esSalida = tipo === 'preSalidas' || tipo === 'salidas';
+  const esPre    = tipo === 'preEntradas' || tipo === 'preSalidas';
+
+  setHeader(titulos[tipo] + (fiscal ? ' — FISCAL' : ''));
   setExpandedMode(false);
   showMetaPanel(true);
   menuGrid.className = '';
   menuGrid.innerHTML = '';
   syncBackBtn();
 
-  const clientesUnicos = [...new Set(entradasData.map(e => e.cliente))].sort();
-
-  let filtros = {
-    cliente:'', stock:false, estado:'Todos', tratamiento:'Todos',
-    devoluciones:false, verificado:false, nroEntrada:'', busqueda:''
-  };
+  const allData   = logModData[tipo] || [];
+  const clientes  = [...new Set(allData.map(r => r.clienteGrupo))].sort();
+  let filtros = { establecimiento:'', grupo:'', nroSalida:'', busqueda:'', modoGrupo: false };
 
   const wrap = document.createElement('div');
-  wrap.className = 'ent-wrap';
+  wrap.className = 'logmod-wrap';
   menuGrid.appendChild(wrap);
 
+  const nroLabel = esSalida ? 'N° Salida' : 'N° Entrada';
+  const colLabel = esSalida ? 'Salida'    : 'Entrada';
+
   const render = () => {
-    const tipo = esPre ? 'pre' : 'ent';
-    const datos = entradasData.filter(e => {
-      if (e.tipo !== tipo) return false;
-      if (filtros.cliente && !e.cliente.toUpperCase().includes(filtros.cliente.toUpperCase())) return false;
-      if (filtros.devoluciones && !e.devolucion) return false;
-      if (filtros.verificado && !e.verificado) return false;
-      if (filtros.nroEntrada && !String(e.entrada).includes(filtros.nroEntrada)) return false;
-      if (filtros.estado !== 'Todos' && e.calidad !== filtros.estado) return false;
-      if (filtros.busqueda) {
-        const q = filtros.busqueda.toLowerCase();
-        if (!e.remito.toLowerCase().includes(q) &&
-            !e.referencia.toLowerCase().includes(q) &&
-            !e.certificados.some(c => c.toLowerCase().includes(q))) return false;
-      }
+    const datos = allData.filter(r => {
+      const q = filtros.busqueda.toLowerCase();
+      if (filtros.establecimiento && !r.clienteGrupo.toUpperCase().includes(filtros.establecimiento.toUpperCase())) return false;
+      if (filtros.nroSalida && !String(r.numero).includes(filtros.nroSalida)) return false;
+      if (q && ![r.remito, r.referencia, r.contrato, ...r.certificados].join(' ').toLowerCase().includes(q)) return false;
       return true;
     });
 
+    const rows = datos.map((r, i) => `
+      <tr class="logmod-row">
+        <td class="logmod-text-sm">${r.carga}</td>
+        <td><span class="logmod-num-bold">${r.numero}</span></td>
+        <td class="logmod-text-sm">${r.remito}</td>
+        <td class="logmod-text-sm">${r.referencia||''}</td>
+        <td class="logmod-text-sm" style="font-weight:700">${r.clienteGrupo}</td>
+        ${esSalida ? `<td class="logmod-text-sm">${r.contrato||''}</td>` : ''}
+        <td>${r.certificados.length ? r.certificados.map(c => `<span class="logmod-cert-line">${c}</span>`).join('') : '<span class="logmod-text-muted">—</span>'}</td>
+        ${esSalida ? `<td class="logmod-text-sm">${r.destino||''}</td>` : ''}
+        <td style="text-align:center">
+          <span class="logmod-cal-chip ${r.calidad==='Completo'?'completo':'pendiente'}">
+            ${r.calidad==='Completo'?'✅':'❌'} ${r.calidad}
+          </span>
+        </td>
+        ${!esSalida ? `<td class="logmod-text-muted">${r.modificadoFecha ? r.modificadoFecha.split(' ')[0] : ''}</td>` : ''}
+        ${esSalida ? `<td>
+          <span class="logmod-mod-name">${r.modificadoPor||''}</span>
+          <span class="logmod-mod-date">${r.modificadoFecha||''}</span>
+        </td>` : ''}
+        <td>
+          <div class="logmod-acc-row">
+            <button class="logmod-acc-icon" data-idx="${i}" title="Ver">👁</button>
+            ${esPre ? `<button class="logmod-acc-del" data-idx="${i}" title="Eliminar">🗑</button>` : ''}
+          </div>
+        </td>
+      </tr>`).join('');
+
     wrap.innerHTML = `
-      <!-- FILTROS -->
-      <div class="ent-filters-card">
-        <div class="ent-filters-row">
-          <div class="ent-filter-group">
-            <label class="ent-filter-label">Cliente</label>
-            <select class="ent-select ent-select-wide" id="fCliente">
+      <!-- TOOLBAR OSCURO -->
+      <div class="logmod-toolbar">
+        <div class="logmod-filter-group">
+          <span class="logmod-filter-label">Establecimiento</span>
+          <div class="logmod-filter-row-inline">
+            <input type="radio" class="logmod-radio" name="lmMode" ${!filtros.modoGrupo?'checked':''} id="rEstab">
+            <select class="logmod-select" id="fEstab" ${filtros.modoGrupo?'disabled':''}>
               <option value="">Todos los Clientes</option>
-              ${clientesUnicos.map(c => `<option value="${c}" ${filtros.cliente===c?'selected':''}>${c}</option>`).join('')}
+              ${clientes.map(c => `<option value="${c}" ${filtros.establecimiento===c?'selected':''}>${c}</option>`).join('')}
             </select>
           </div>
-          ${!esPre ? `<div class="ent-filter-group ent-filter-check">
-            <label class="ent-filter-label">Stock</label>
-            <input type="checkbox" class="ent-check" id="fStock" ${filtros.stock?'checked':''}>
-          </div>` : ''}
-          <div class="ent-filter-group">
-            <label class="ent-filter-label">Estado</label>
-            <select class="ent-select" id="fEstado">
-              <option value="Todos">Todos</option>
-              <option value="Pendiente" ${filtros.estado==='Pendiente'?'selected':''}>Pendiente</option>
-              <option value="Completo" ${filtros.estado==='Completo'?'selected':''}>Completo</option>
+        </div>
+        <div class="logmod-filter-group">
+          <span class="logmod-filter-label">Grupo</span>
+          <div class="logmod-filter-row-inline">
+            <input type="radio" class="logmod-radio" name="lmMode" ${filtros.modoGrupo?'checked':''} id="rGrupo">
+            <select class="logmod-select" id="fGrupo" ${!filtros.modoGrupo?'disabled':''}>
+              <option value="">Todos los Clientes</option>
+              ${clientes.map(c => `<option value="${c}" ${filtros.grupo===c?'selected':''}>${c}</option>`).join('')}
             </select>
           </div>
-          <div class="ent-filter-group">
-            <label class="ent-filter-label">Tratamiento</label>
-            <select class="ent-select" id="fTratamiento">
-              <option value="Todos">Todos</option>
-              <option value="Congelado">Congelado</option>
-              <option value="Refrigerado">Refrigerado</option>
-            </select>
-          </div>
-          <div class="ent-filter-group ent-filter-check">
-            <label class="ent-filter-label">Devoluciones</label>
-            <input type="checkbox" class="ent-check" id="fDev" ${filtros.devoluciones?'checked':''}>
-          </div>
-          <div class="ent-filter-group ent-filter-check">
-            <label class="ent-filter-label">Verificado</label>
-            <input type="checkbox" class="ent-check" id="fVer" ${filtros.verificado?'checked':''}>
-          </div>
-          <div class="ent-filter-group">
-            <label class="ent-filter-label">N° Entrada</label>
-            <input type="text" class="ent-input-sm" id="fNroEnt" value="${filtros.nroEntrada}" placeholder="">
-          </div>
-          <div class="ent-filter-group ent-filter-search">
-            <label class="ent-filter-label">Buscar por:</label>
-            <div class="ent-search-row">
-              <input type="text" class="ent-input-search" id="fBusqueda" value="${filtros.busqueda}" placeholder="N° Remito / N° Referencia / Certificado">
-              <button class="ent-search-btn" id="fBuscarBtn">🔍</button>
-            </div>
+        </div>
+        <div class="logmod-filter-group">
+          <span class="logmod-filter-label">${nroLabel}</span>
+          <input type="text" class="logmod-input-sm" id="fNro" value="${filtros.nroSalida}" placeholder="">
+        </div>
+        <div class="logmod-filter-group logmod-search-group">
+          <span class="logmod-filter-label">Buscar por:</span>
+          <div class="logmod-search-row">
+            <input type="text" class="logmod-input-search" id="fBusq" value="${filtros.busqueda}" placeholder="Remito / Referencia / Contrato / Certificado">
+            <button class="logmod-search-btn" id="fBuscarBtn">🔍</button>
           </div>
         </div>
       </div>
 
       <!-- TABLA -->
-      <div class="ent-table-wrap">
-        <table class="ent-table">
-          <thead>
-            <tr>
-              <th class="ent-th-carga">Carga</th>
-              <th class="ent-th-ent">Entrada</th>
-              <th class="ent-th-rem">Remito</th>
-              <th class="ent-th-ref">Número Referencia</th>
-              <th class="ent-th-cli">Cliente</th>
-              <th class="ent-th-cert">Certificado</th>
-              <th class="ent-th-cal">Control Calidad</th>
-              <th class="ent-th-mov">Movimiento</th>
-              <th class="ent-th-acc">Acciones</th>
-            </tr>
-          </thead>
+      <div class="logmod-table-wrap">
+        <table class="logmod-table">
+          <thead><tr>
+            <th style="width:68px">Carga</th>
+            <th style="width:70px">${colLabel}</th>
+            <th style="width:115px">Remito</th>
+            <th style="width:160px">Número Referencia</th>
+            <th>Cliente / Grupo</th>
+            ${esSalida ? '<th style="width:180px">Contrato</th>' : ''}
+            <th style="width:140px">Certificado</th>
+            ${esSalida ? '<th style="width:90px">Destino</th>' : ''}
+            <th style="width:118px;text-align:center">Control Calidad</th>
+            ${!esSalida ? '<th style="width:96px">Movimiento</th>' : ''}
+            <th style="width:160px">Modificado</th>
+            <th style="width:70px;text-align:center">Acciones</th>
+          </tr></thead>
           <tbody>
             ${datos.length === 0
-              ? '<tr><td colspan="9" class="ent-empty">No hay registros con los filtros aplicados</td></tr>'
-              : datos.map((e, i) => `
-                <tr class="ent-row ${i%2===0?'even':'odd'}">
-                  <td class="ent-td-carga">${e.carga}</td>
-                  <td class="ent-td-ent"><span class="ent-ent-num">${e.entrada}</span></td>
-                  <td class="ent-td-rem">${e.remito}</td>
-                  <td class="ent-td-ref">${e.referencia||''}</td>
-                  <td class="ent-td-cli">${e.cliente}</td>
-                  <td class="ent-td-cert">${e.certificados.length === 0
-                    ? '<span class="ent-cert-empty">—</span>'
-                    : e.certificados.map(c => `<div class="ent-cert-line">${c}</div>`).join('')}</td>
-                  <td class="ent-td-cal">
-                    ${e.calidad === 'Completo'
-                      ? '<span class="ent-cal-chip completo">✅ Completo</span>'
-                      : '<span class="ent-cal-chip pendiente">❌ Pendiente</span>'}
-                  </td>
-                  <td class="ent-td-mov">${e.movimiento||''}</td>
-                  <td class="ent-td-acc">
-                    <div class="ent-acc-row">
-                      <button class="ent-acc-ver" data-idx="${i}">Ver</button>
-                      ${esPre ? `<button class="ent-acc-del" data-idx="${i}" title="Eliminar">🗑</button>` : ''}
-                    </div>
-                  </td>
-                </tr>`).join('')}
+              ? `<tr><td colspan="12" class="logmod-empty">No hay registros con los filtros aplicados</td></tr>`
+              : rows}
           </tbody>
         </table>
       </div>
-      <div class="ent-footer">${datos.length} registro${datos.length!==1?'s':''}</div>`;
+      <div class="logmod-footer">${datos.length} registro${datos.length!==1?'s':''}</div>`;
 
-    // Eventos filtros
-    wrap.querySelector('#fCliente').onchange  = e => { filtros.cliente = e.target.value; render(); };
-    wrap.querySelector('#fEstado').onchange   = e => { filtros.estado = e.target.value; render(); };
-    wrap.querySelector('#fTratamiento').onchange = e => { filtros.tratamiento = e.target.value; render(); };
-    wrap.querySelector('#fDev').onchange      = e => { filtros.devoluciones = e.target.checked; render(); };
-    wrap.querySelector('#fVer').onchange      = e => { filtros.verificado = e.target.checked; render(); };
-    const nroEnt = wrap.querySelector('#fNroEnt');
-    nroEnt.oninput = e => { filtros.nroEntrada = e.target.value; render(); };
-    nroEnt.onkeydown = e => e.stopPropagation();
-    const busq = wrap.querySelector('#fBusqueda');
-    busq.onkeydown = e => { e.stopPropagation(); if (e.key==='Enter') { filtros.busqueda = busq.value; render(); } };
-    wrap.querySelector('#fBuscarBtn').onclick = () => { filtros.busqueda = busq.value; render(); };
-    if (!esPre) wrap.querySelector('#fStock').onchange = e => { filtros.stock = e.target.checked; render(); };
-    wrap.querySelectorAll('.ent-acc-ver').forEach(btn => {
-      btn.onclick = () => showToast('Abriendo entrada #' + datos[+btn.dataset.idx].entrada);
-    });
-    wrap.querySelectorAll('.ent-acc-del').forEach(btn => {
-      btn.onclick = () => showToast('Eliminar entrada #' + datos[+btn.dataset.idx].entrada);
+    // Eventos
+    wrap.querySelector('#rEstab').onchange = () => { filtros.modoGrupo = false; render(); };
+    wrap.querySelector('#rGrupo').onchange = () => { filtros.modoGrupo = true;  render(); };
+    wrap.querySelector('#fEstab').onchange = e => { filtros.establecimiento = e.target.value; filtros.grupo=''; render(); };
+    wrap.querySelector('#fGrupo').onchange = e => { filtros.grupo = e.target.value; filtros.establecimiento=''; render(); };
+    const nroI = wrap.querySelector('#fNro');
+    nroI.oninput = e => { filtros.nroSalida = e.target.value; render(); };
+    nroI.onkeydown = e => e.stopPropagation();
+    const busqI = wrap.querySelector('#fBusq');
+    busqI.onkeydown = e => { e.stopPropagation(); if(e.key==='Enter'){ filtros.busqueda=busqI.value; render(); } };
+    wrap.querySelector('#fBuscarBtn').onclick = () => { filtros.busqueda = busqI.value; render(); };
+    wrap.querySelectorAll('[data-idx]').forEach(btn => {
+      btn.onclick = () => {
+        const r = datos[+btn.dataset.idx];
+        if (btn.classList.contains('logmod-acc-del')) showToast('Eliminar registro #' + r.numero);
+        else showToast('Abriendo #' + r.numero + ' — ' + r.clienteGrupo);
+      };
     });
   };
 
