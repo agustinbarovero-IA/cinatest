@@ -240,24 +240,60 @@ const dashboardLogisticaNacionalData = [
 /* ── DATOS EQUIPAMIENTO ─────────────────────────────────────── */
 // Array mutable — los cambios del usuario se persisten aquí en memoria
 const dashboardEquipamientoData = [
-  { tipo:'Autoelevador',       icono:'img/autoelevadores.png', denominacion:'AE-01', estado:'En marcha', planta:'Nacional',       horas:'00:45hs', usuario:'jlopez',     isImage:true },
-  { tipo:'Autoelevador',       icono:'img/autoelevadores.png', denominacion:'AE-02', estado:'Cargando',  planta:'Nacional',       horas:'01:20hs', usuario:'mrojas',     isImage:true },
-  { tipo:'Autoelevador',       icono:'img/autoelevadores.png', denominacion:'AE-03', estado:'En marcha', planta:'Deposito Fiscal',horas:'00:15hs', usuario:'agarcia',    isImage:true },
-  { tipo:'Autoelevador',       icono:'img/autoelevadores.png', denominacion:'AE-04', estado:'Falla',     planta:'Mantenimiento',  horas:'03:40hs', usuario:'lperez',     isImage:true },
-  { tipo:'Autoelevador',       icono:'img/autoelevadores.png', denominacion:'AE-05', estado:'En marcha', planta:'Nacional',       horas:'00:05hs', usuario:'jgomez',     isImage:true },
-  { tipo:'Autoelevador',       icono:'img/autoelevadores.png', denominacion:'AE-06', estado:'Cargando',  planta:'Otros',          horas:'02:10hs', usuario:'mbazan',     isImage:true },
-  { tipo:'Autoelevador',       icono:'img/autoelevadores.png', denominacion:'AE-07', estado:'En marcha', planta:'Deposito Fiscal',horas:'00:55hs', usuario:'fvera',      isImage:true },
-  { tipo:'Autoelevador',       icono:'img/autoelevadores.png', denominacion:'AE-08', estado:'Falla',     planta:'Mantenimiento',  horas:'04:25hs', usuario:'acastro',    isImage:true },
-  { tipo:'Zorra electrica',    icono:'img/apilador.png', isImage:true,                   denominacion:'ZE-01', estado:'En marcha', planta:'Nacional',       horas:'00:32hs', usuario:'jmartin' },
-  { tipo:'Zorra electrica',    icono:'img/apilador.png', isImage:true,                   denominacion:'ZE-02', estado:'Cargando',  planta:'Nacional',       horas:'01:05hs', usuario:'rsosa' },
-  { tipo:'Zorra electrica',    icono:'img/apilador.png', isImage:true,                   denominacion:'ZE-03', estado:'En marcha', planta:'Deposito Fiscal',horas:'00:11hs', usuario:'pdominguez' },
-  { tipo:'Zorra electrica',    icono:'img/apilador.png', isImage:true,                   denominacion:'ZE-04', estado:'Falla',     planta:'Mantenimiento',  horas:'05:50hs', usuario:'cmedina' },
-  { tipo:'Zorra electrica',    icono:'img/apilador.png', isImage:true,                   denominacion:'ZE-05', estado:'En marcha', planta:'Otros',          horas:'00:48hs', usuario:'sgimenez' },
-  { tipo:'Autoelevador diesel', icono:'⛽',                  denominacion:'AD-01', estado:'En marcha', planta:'Deposito Fiscal',horas:'02:30hs', usuario:'rbenitez' },
-  { tipo:'Limpiador',           icono:'img/robotlimpieza.png', isImage:true,                  denominacion:'RL-01', estado:'Cargando',  planta:'Mantenimiento',  horas:'00:25hs', usuario:'lortiz' },
-  { tipo:'Camion',              icono:'🚚',                  denominacion:'CM-01', estado:'En marcha', planta:'Nacional',       horas:'06:10hs', usuario:'druiz' }
+  // ── Autoelevadores eléctricos Toyota (Cuádruple) ──
+  { interno:1520, marca:'TOYOTA', modelo:'7FBCU25', tipo:'Autoelevador Cuádruple', icono:'img/autoelevadores.png', isImage:true,
+    denominacion:'SIL-1520', estado:'Cargando',  planta:'Nacional',       horasBase:1111,  horasActual:1111,  usuario:'jlopez',    año:'N/D' },
+  { interno:1523, marca:'TOYOTA', modelo:'7FBCU25', tipo:'Autoelevador Cuádruple', icono:'img/autoelevadores.png', isImage:true,
+    denominacion:'SIL-1523', estado:'En marcha', planta:'Nacional',       horasBase:4208,  horasActual:4208,  usuario:'mrojas',    año:'N/D' },
+  { interno:1556, marca:'TOYOTA', modelo:'7FBCU25', tipo:'Autoelevador Cuádruple', icono:'img/autoelevadores.png', isImage:true,
+    denominacion:'SIL-1556', estado:'Falla',     planta:'Mantenimiento',  horasBase:10074, horasActual:10074, usuario:'agarcia',   año:'N/D' },
+  // ── Autoelevadores eléctricos Toyota (Triple) ──
+  { interno:2496, marca:'TOYOTA', modelo:'7FB25',   tipo:'Autoelevador Triple',    icono:'img/autoelevadores.png', isImage:true,
+    denominacion:'SIL-2496', estado:'En marcha', planta:'Nacional',       horasBase:22985, horasActual:22985, usuario:'acastro',   año:'2011' },
+  { interno:2601, marca:'TOYOTA', modelo:'7FB25',   tipo:'Autoelevador Triple',    icono:'img/autoelevadores.png', isImage:true,
+    denominacion:'SIL-2601', estado:'Cargando',  planta:'Deposito Fiscal',horasBase:21987, horasActual:21987, usuario:'lperez',    año:'2012' },
+  // ── Apiladores BT ──
+  { interno:3285, marca:'BT',     modelo:'SWE140',  tipo:'Apilador',               icono:'img/apilador.png',       isImage:true,
+    denominacion:'SIL-3285', estado:'Cargando',  planta:'Nacional',       horasBase:1111,  horasActual:1111,  usuario:'jmartin',   año:'2013' },
+  { interno:6600, marca:'BT',     modelo:'SWE140BR',tipo:'Apilador',               icono:'img/apilador.png',       isImage:true,
+    denominacion:'SIL-6600', estado:'En marcha', planta:'Nacional',       horasBase:1468,  horasActual:1468,  usuario:'rsosa',     año:'2021' },
+  // ── Zorras Op. Caminando BT / Toyota ──
+  { interno:3825, marca:'BT',     modelo:'LWE 200', tipo:'Zorra Op. Caminando',    icono:'img/apilador.png',       isImage:true,
+    denominacion:'SIL-3825', estado:'En marcha', planta:'Nacional',       horasBase:4613,  horasActual:4613,  usuario:'pdominguez',año:'2014' },
+  { interno:5828, marca:'TOYOTA', modelo:'LWE200',  tipo:'Zorra Op. Caminando',    icono:'img/apilador.png',       isImage:true,
+    denominacion:'SIL-5828', estado:'Cargando',  planta:'Deposito Fiscal',horasBase:1111,  horasActual:1111,  usuario:'sgimenez',  año:'2020' },
+  // ── Zorras op a bordo Toyota ──
+  { interno:5672, marca:'TOYOTA', modelo:'LPE200',  tipo:'Zorra Op. a Bordo',      icono:'img/apilador.png',       isImage:true,
+    denominacion:'SIL-5672', estado:'En marcha', planta:'Nacional',       horasBase:3378,  horasActual:3378,  usuario:'cmedina',   año:'2018' },
+  { interno:6488, marca:'TOYOTA', modelo:'LPE200',  tipo:'Zorra Op. a Bordo',      icono:'img/apilador.png',       isImage:true,
+    denominacion:'SIL-6488', estado:'Falla',     planta:'Mantenimiento',  horasBase:2890,  horasActual:2890,  usuario:'fvera',     año:'2021' },
+  { interno:6886, marca:'TOYOTA', modelo:'LPE200B', tipo:'Zorra Op. a Bordo',      icono:'img/apilador.png',       isImage:true,
+    denominacion:'SIL-6886', estado:'Cargando',  planta:'Nacional',       horasBase:4376,  horasActual:4376,  usuario:'rbenitez',  año:'2022' },
+  { interno:6887, marca:'TOYOTA', modelo:'LPE200B', tipo:'Zorra Op. a Bordo',      icono:'img/apilador.png',       isImage:true,
+    denominacion:'SIL-6887', estado:'En marcha', planta:'Deposito Fiscal',horasBase:4637,  horasActual:4637,  usuario:'mbazan',    año:'2022' },
+  { interno:7502, marca:'TOYOTA', modelo:'LPE200',  tipo:'Zorra Op. a Bordo',      icono:'img/apilador.png',       isImage:true,
+    denominacion:'SIL-7502', estado:'Cargando',  planta:'Nacional',       horasBase:1735,  horasActual:1735,  usuario:'jgomez',    año:'2024' },
+  { interno:7563, marca:'BT',     modelo:'LPE200B', tipo:'Zorra Op. a Bordo',      icono:'img/apilador.png',       isImage:true,
+    denominacion:'SIL-7563', estado:'En marcha', planta:'Nacional',       horasBase:560,   horasActual:560,   usuario:'druiz',     año:'2021' },
+  // ── Autoelevadores Cuádruple Toyota (nuevos) ──
+  { interno:5921, marca:'TOYOTA', modelo:'8FBCU25', tipo:'Autoelevador Cuádruple', icono:'img/autoelevadores.png', isImage:true,
+    denominacion:'SIL-5921', estado:'En marcha', planta:'Nacional',       horasBase:17635, horasActual:17635, usuario:'lortiz',    año:'2020' },
+  { interno:5922, marca:'TOYOTA', modelo:'8FBCU25', tipo:'Autoelevador Cuádruple', icono:'img/autoelevadores.png', isImage:true,
+    denominacion:'SIL-5922', estado:'Falla',     planta:'Mantenimiento',  horasBase:17552, horasActual:17552, usuario:'jlopez',    año:'2020' },
+  { interno:5923, marca:'TOYOTA', modelo:'8FBCU25', tipo:'Autoelevador Cuádruple', icono:'img/autoelevadores.png', isImage:true,
+    denominacion:'SIL-5923', estado:'Cargando',  planta:'Deposito Fiscal',horasBase:15100, horasActual:15100, usuario:'mrojas',    año:'2020' },
+  { interno:6454, marca:'TOYOTA', modelo:'8FB25',   tipo:'Autoelevador Cuádruple', icono:'img/autoelevadores.png', isImage:true,
+    denominacion:'SIL-6454', estado:'En marcha', planta:'Nacional',       horasBase:4782,  horasActual:4782,  usuario:'agarcia',   año:'2021' },
+  // ── Autoelevador Diesel ──
+  { interno:7259, marca:'TOYOTA', modelo:'62-8FD25',tipo:'Autoelevador Diesel',    icono:'img/autoelevadores.png', isImage:true,
+    denominacion:'SIL-7259', estado:'Cargando',  planta:'Deposito Fiscal',horasBase:844,   horasActual:844,   usuario:'acastro',   año:'2023' },
+  // ── Autoelevador Triciclo ──
+  { interno:7439, marca:'TOYOTA', modelo:'8FBE20',  tipo:'Autoelevador Triciclo',  icono:'img/autoelevadores.png', isImage:true,
+    denominacion:'SIL-7439', estado:'En marcha', planta:'Nacional',       horasBase:3245,  horasActual:3245,  usuario:'lperez',    año:'2024' },
+  // ── Autoelevador Triple (nuevo) ──
+  { interno:7730, marca:'TOYOTA', modelo:'8FBN25',  tipo:'Autoelevador Triple',    icono:'img/autoelevadores.png', isImage:true,
+    denominacion:'SIL-7730', estado:'Cargando',  planta:'Nacional',       horasBase:830,   horasActual:830,   usuario:'jmartin',   año:'2025' },
 ];
-
 /* Opciones fijas para selects del editor */
 const ESTADOS_EQUIPO = ['En marcha', 'Cargando', 'Falla'];
 const PLANTAS_EQUIPO = ['Nacional', 'Deposito Fiscal', 'Mantenimiento', 'Otros'];
@@ -878,12 +914,16 @@ function renderDashboardEquipamiento() {
         <div class="equipment-value"><span class="state-badge">${item.estado}</span></div>
       </div>
       <div class="equipment-row">
-        <div class="equipment-label">Planta</div>
-        <div class="equipment-value"><span class="plant-badge">${item.planta}</span></div>
+        <div class="equipment-label">Marca / Modelo</div>
+        <div class="equipment-value" style="font-size:.7rem">${item.marca||''} ${item.modelo||''}</div>
       </div>
       <div class="equipment-row">
-        <div class="equipment-label">Hs. estado</div>
-        <div class="equipment-value">${item.horas}</div>
+        <div class="equipment-label">Horómetro</div>
+        <div class="equipment-value"><strong>${(item.horasActual||item.horasBase||0).toLocaleString('es-AR')}</strong> hs</div>
+      </div>
+      <div class="equipment-row">
+        <div class="equipment-label">Planta</div>
+        <div class="equipment-value"><span class="plant-badge">${item.planta}</span></div>
       </div>
       <div class="equipment-row">
         <div class="equipment-label">Usuario</div>
@@ -5725,7 +5765,7 @@ function openChecklistEnMarcha(index) {
   const checks  = {};
   CHECKLIST_ITEMS.forEach((_, i) => { checks[i] = null; });
   let paso = 1;          // paso 1: ítems 0-8 | paso 2: ítems 9-17 + horas
-  let horasIniVal = '';  // SIN horas finales aquí
+  let horasIniVal = String(item.horasActual || item.horasBase || ''); // pre-cargado con horómetro actual
 
   const modal = document.createElement('div');
   modal.id = 'checklistModal';
@@ -5769,8 +5809,8 @@ function openChecklistEnMarcha(index) {
           <div class="chk-dato"><span class="chk-dato-label">Hora inicio</span><span class="chk-dato-val">${horaStr}</span></div>
           ${paso === 2 ? `
           <div class="chk-dato">
-            <span class="chk-dato-label">Hs. uso iniciales <span style="color:#f87171">*</span></span>
-            <input class="chk-input ${!horasOk&&puedeRetirar===false?'':''}\" type="text" id="chkHorasIni" value="${horasIniVal}" placeholder="Ej: 1250">
+            <span class="chk-dato-label">Horómetro inicio <span style="color:#f87171">*</span></span>
+            <input class="chk-input" type="number" id="chkHorasIni" value="${horasIniVal}" placeholder="${item.horasActual||item.horasBase}">
           </div>` : `<div class="chk-dato"></div>`}
           <div class="chk-dato chk-progress-inline">
             <span class="chk-dato-label">${respondidos}/18 completados</span>
@@ -5831,7 +5871,7 @@ function openChecklistEnMarcha(index) {
       modal.querySelector('#chkRetirar').onclick = () => {
         if (!puedeRetirar) { ini.classList.add('chk-required-err'); ini.focus(); return; }
         dashboardEquipamientoData[index].estado = 'En marcha';
-        dashboardEquipamientoData[index].horas  = horasIniVal;
+        dashboardEquipamientoData[index].horasActual = parseInt(horasIniVal) || dashboardEquipamientoData[index].horasActual;
         close(); renderDashboardEquipamiento();
         showToast('✅ Equipo en marcha — ' + item.denominacion);
       };
@@ -5889,8 +5929,8 @@ function openCambioEstadoEquipo(index) {
             <span style="font-size:.72rem;color:rgba(255,255,255,.45);margin-left:4px">· ${item.usuario}</span>
           </div>
           <div class="chk-dato">
-            <span class="chk-dato-label">Horas de uso finales <span style="color:#f87171">*</span></span>
-            <input class="chk-input ${errMsg?'chk-required-err':''}" type="text" id="estHorasFin" value="${horasFinVal}" placeholder="Ej: 1258 hs" />
+            <span class="chk-dato-label">Horómetro final <span style="color:#f87171">*</span></span>
+            <input class="chk-input ${errMsg?'chk-required-err':''}" type="number" id="estHorasFin" value="${horasFinVal}" placeholder="${item.horasActual||item.horasBase}" />
             ${errMsg ? `<span style="font-size:.6rem;color:#f87171;font-weight:800;margin-top:2px">${errMsg}</span>` : ''}
           </div>
           <p style="font-size:.72rem;color:rgba(255,255,255,.42);margin:0;line-height:1.45">
@@ -5916,8 +5956,9 @@ function openCambioEstadoEquipo(index) {
       btn.onclick = () => {
         horasFinVal = modal.querySelector('#estHorasFin').value.trim();
         if (!horasFinVal) { errMsg = 'Campo obligatorio'; render(); return; }
+        const numFin = parseInt(horasFinVal);
         dashboardEquipamientoData[index].estado = btn.dataset.val;
-        dashboardEquipamientoData[index].horas  = horasFinVal;
+        if (!isNaN(numFin)) dashboardEquipamientoData[index].horasActual = numFin;
         close(); renderDashboardEquipamiento();
         showToast(`✓ ${item.denominacion} → ${btn.dataset.val}`);
       };
@@ -5928,3 +5969,65 @@ function openCambioEstadoEquipo(index) {
   requestAnimationFrame(() => modal.classList.add('chk-visible'));
   function close() { modal.classList.remove('chk-visible'); setTimeout(() => modal.remove(), 220); }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   URL ROUTING — hash-based: #equipo/SIL-1520
+   ═══════════════════════════════════════════════════════════════ */
+
+function navigateToEquipoByUrl(denominacion) {
+  const idx = dashboardEquipamientoData.findIndex(e => e.denominacion === denominacion);
+  if (idx === -1) { showToast('Equipo no encontrado: ' + denominacion); return; }
+  const item = dashboardEquipamientoData[idx];
+  // Navegar al dashboard primero (para que el back funcione bien)
+  historyStack.push({ title: 'INICIO', children: [] });
+  renderDashboardEquipamiento();
+  // Abrir el modal correspondiente según estado
+  setTimeout(() => {
+    if (item.estado === 'Cargando')    openChecklistEnMarcha(idx);
+    else if (item.estado === 'Falla' || item.estado === 'En marcha') openCambioEstadoEquipo(idx);
+  }, 80);
+}
+
+function setEquipoHash(denominacion) {
+  history.replaceState(null, '', '#equipo/' + encodeURIComponent(denominacion));
+}
+
+function clearEquipoHash() {
+  history.replaceState(null, '', window.location.pathname + window.location.search);
+}
+
+function handleHashRouting() {
+  const hash = window.location.hash;
+  if (hash && hash.startsWith('#equipo/')) {
+    const denominacion = decodeURIComponent(hash.slice(8));
+    navigateToEquipoByUrl(denominacion);
+  }
+}
+
+// Hook into existing card click to set hash
+(function patchCardClicks() {
+  // Called after renderDashboardEquipamiento — we override via event delegation on menuGrid
+  document.addEventListener('click', function(e) {
+    const card = e.target.closest('.equipment-card');
+    if (!card) return;
+    const editBtn = e.target.closest('.equipment-edit-btn');
+    if (editBtn) return; // handled separately
+    const idx = Array.from(card.parentElement.children).indexOf(card);
+    if (idx >= 0 && dashboardEquipamientoData[idx]) {
+      setEquipoHash(dashboardEquipamientoData[idx].denominacion);
+    }
+  });
+  // Clear hash when modal closes (overlay click or close btn)
+  document.addEventListener('click', function(e) {
+    if (e.target.id === 'checklistModal' || e.target.id === 'estadoEquipModal') {
+      clearEquipoHash();
+    }
+    if (e.target.id === 'chkClose' || e.target.id === 'estClose') {
+      clearEquipoHash();
+    }
+  });
+})();
+
+// On load: check hash
+window.addEventListener('DOMContentLoaded', handleHashRouting);
+window.addEventListener('hashchange', handleHashRouting);
