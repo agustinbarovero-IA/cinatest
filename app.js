@@ -6064,8 +6064,7 @@ const PR6_MAQUINISTAS = [
 let pr6Registros = [];
 
 function renderPR6Contraste() {
-  const app = document.getElementById('app');
-  app.innerHTML = `
+  menuGrid.innerHTML = `
     <div class="pr6-wrap">
 
       <!-- HEADER -->
