@@ -11,7 +11,7 @@ const menuTree = {
     {
       title: 'LOGISTICA NACIONAL',
       children: [
-        { title: 'CARGAS',       url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_carga/index/fiscal/0' },
+        { title: 'CARGAS' },
         { title: 'PRE ENTRADAS', url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/0/fiscal/0' },
         { title: 'ENTRADAS',     url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/1/fiscal/0' },
         { title: 'PRE SALIDAS',  url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/0/fiscal/0' },
@@ -21,7 +21,7 @@ const menuTree = {
     {
       title: 'LOGISTICA FISCAL',
       children: [
-        { title: 'CARGAS',                    url: 'https://sistema.cinafrio.com/intranet/index.php/transporte_carga/index/fiscal/1' },
+        { title: 'CARGAS', fiscal: true },
         { title: 'PRE ENTRADAS',              url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/0/fiscal/1' },
         { title: 'ENTRADAS',                  url: 'https://sistema.cinafrio.com/intranet/index.php/entradacarga/list/clasificada/1/fiscal/1' },
         { title: 'PRE SALIDAS',               url: 'https://sistema.cinafrio.com/intranet/index.php/presalidas/list/salida/0/fiscal/1' },
@@ -3116,7 +3116,9 @@ function renderNode(node) {
         if (item.title === 'ESTADISTICAS DE PERSONAL')       { historyStack.push(node); renderIndicadorPersonal();             return; }
         if (item.title === 'USO DE EQUIPOS')                 { historyStack.push(node); renderIndicadorUsoEquipos();           return; }
         if (item.title === 'ESTIBAS CONGELADAS')             { historyStack.push(node); renderIndicadorEstibasCongeladas();   return; }
-        if (item.title === 'FACTURACION' && node.title === 'ADMINISTRACION') { historyStack.push(node); renderFacturacion(); return; }
+        if (item.title === 'CARGAS' && node.title === 'LOGISTICA NACIONAL') { historyStack.push(node); renderCargas(false); return; }
+        if (item.title === 'CARGAS' && node.title === 'LOGISTICA FISCAL')   { historyStack.push(node); renderCargas(true);  return; }
+                if (item.title === 'FACTURACION' && node.title === 'ADMINISTRACION') { historyStack.push(node); renderFacturacion(); return; }
         if (item.title === 'REMITOS'     && node.title === 'ADMINISTRACION') { historyStack.push(node); renderRemitos();      return; }
         if (item.title === 'COMPRAS'     && node.title === 'ADMINISTRACION') { historyStack.push(node); renderCompras();      return; }
         if (item.children)                                   { historyStack.push(node); renderNode(item);                    return; }
@@ -4862,4 +4864,249 @@ function docRow(label, estado) {
     <span class="perfil-row-label"><span class="perfil-doc-icon">${ok ? '📄' : '📋'}</span> ${label}</span>
     <span class="perfil-row-val ${ok ? 'perfil-doc-ok' : 'perfil-doc-none'}">${estado}</span>
   </div>`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MÓDULO: CARGAS — tabla diaria de movimientos
+   ═══════════════════════════════════════════════════════════════ */
+
+// Mapa de siglas y colores por cliente
+const clienteSiglas = {
+  'MINERVA FOODS':              { sigla: 'MF',  color: '#36B0C9' },
+  'MINERVA ARGENTINA':          { sigla: 'MA',  color: '#5BA3C9' },
+  'MINERVA BEEF':               { sigla: 'MB',  color: '#4A9CC0' },
+  'QUICKFOOD':                  { sigla: 'QF',  color: '#F97316' },
+  'ARCOR':                      { sigla: 'ARC', color: '#A78BFA' },
+  'MCCAIN':                     { sigla: 'MC',  color: '#FACC15' },
+  'HELACOR':                    { sigla: 'HEL', color: '#34D399' },
+  'RAFAELA ALIMENTOS':          { sigla: 'RA',  color: '#60A5FA' },
+  'SAVAZ':                      { sigla: 'SAV', color: '#FB923C' },
+  'TERRAGENE':                  { sigla: 'TG',  color: '#C084FC' },
+  'IPANCO':                     { sigla: 'IPA', color: '#2DD4BF' },
+  'SUDAMERICANA':               { sigla: 'SL',  color: '#F472B6' },
+  'LOGISTICA RR':               { sigla: 'LRR', color: '#94A3B8' },
+  'ULTRACONGELADOS':            { sigla: 'UCR', color: '#38BDF8' },
+  'ETHICAL':                    { sigla: 'EN',  color: '#86EFAC' },
+  'GLUFREEZ':                   { sigla: 'GLU', color: '#FDE68A' },
+  'HELADOS ESTHER':             { sigla: 'HE',  color: '#6EE7B7' },
+  'KECLON':                     { sigla: 'KEC', color: '#FCA5A5' },
+  'CINA':                       { sigla: 'CNA', color: '#00A887' },
+  'CONGELADOS DEL SUR':         { sigla: 'CS',  color: '#818CF8' },
+  'DROGUERIA':                  { sigla: 'DK',  color: '#E879F9' },
+  'SEJAS':                      { sigla: 'SBF', color: '#D4A27F' },
+  'LA SIBILA':                  { sigla: 'SIB', color: '#A3E635' },
+  'FROILAN':                    { sigla: 'FRO', color: '#FBB6CE' },
+};
+
+function getClienteSigla(nombre) {
+  if (!nombre) return null;
+  const upper = nombre.toUpperCase();
+  for (const [key, val] of Object.entries(clienteSiglas)) {
+    if (upper.includes(key.toUpperCase())) return val;
+  }
+  // Fallback: primeras letras
+  const words = nombre.trim().split(/\s+/).filter(w => w.length > 2);
+  const sigla = words.slice(0, 3).map(w => w[0]).join('').toUpperCase();
+  const hue   = [...nombre].reduce((acc, c) => acc + c.charCodeAt(0), 0) % 360;
+  return { sigla: sigla || '?', color: 'hsl(' + hue + ',60%,65%)' };
+}
+
+// Datos de ejemplo (hoy: 13/03/2026) — en producción vendrían de la API
+const cargasData = [
+  { id:169772, tipo:'Entrada', box:'Box 13', tronera:null,           cargas:['69996','69997','69998'], estado:'En Planta',
+    clientes:['MINERVA FOODS (CTRO. DE DIST.) AMBIENTE','MINERVA FOODS (CTRO. DE DIST.) ENFRIADO','MINERVA FOODS (CTRO. DE DIST.) CONGELADO'],
+    responsable:'Santa Cruz', vehiculo:'MRI 414', acoplado:'PPX 621', planLlegada:'2026-03-13', llegada:'2026-03-13 01:37', movimiento:'', salida:'', ticketSalida:'', contenedor:'' },
+  { id:169682, tipo:'Salida',  box:'Box 7 lib.', tronera:'Sur 2 lib.', cargas:['119016'], estado:'En Planta',
+    clientes:['QUICKFOOD S.A. VEGETALES'],
+    responsable:'Santa Cruz', vehiculo:'AC 646 PO', acoplado:'PFC 060', planLlegada:'2026-03-13', llegada:'2026-03-13 08:50', movimiento:'00:00 00:00', salida:'', ticketSalida:'', contenedor:'' },
+  { id:169785, tipo:'Salida',  box:'Box 5',    tronera:null,           cargas:[], estado:'En Planta',
+    clientes:[],
+    responsable:'Santa Cruz', vehiculo:'AC 646 PO', acoplado:'PFC 060', planLlegada:'2026-03-13', llegada:'2026-03-13 08:38', movimiento:'', salida:'', ticketSalida:'', contenedor:'' },
+  { id:169783, tipo:'Entrada', box:'Box 3',    tronera:null,           cargas:['70003'], estado:'En Planta',
+    clientes:['MINERVA FOODS ( 1113 PLANTA VILLA MERCEDES )'],
+    responsable:'Santa Cruz', vehiculo:'HVH 151', acoplado:'OMT 066', planLlegada:'2026-03-13', llegada:'2026-03-13 08:27', movimiento:'', salida:'', ticketSalida:'', contenedor:'' },
+  { id:169750, tipo:'Entrada', box:'Box 2',    tronera:'Norte 1',      cargas:['68901'], estado:'Salida',
+    clientes:['QUICKFOOD S.A. (MATERIA PRIMA)'],
+    responsable:'Pérez', vehiculo:'KLM 872', acoplado:'ZZP 311', planLlegada:'2026-03-13', llegada:'2026-03-13 06:15', movimiento:'03:20 00:00', salida:'2026-03-13 09:35', ticketSalida:'T-4821', contenedor:'' },
+  { id:169710, tipo:'Salida',  box:'Box 9',    tronera:'Sur 1',        cargas:['55200'], estado:'Salida',
+    clientes:['ARCOR S.A.'],
+    responsable:'Gómez', vehiculo:'FGA 100', acoplado:'LPO 555', planLlegada:'2026-03-13', llegada:'2026-03-13 04:00', movimiento:'04:10 00:00', salida:'2026-03-13 08:10', ticketSalida:'T-4810', contenedor:'' },
+];
+
+function renderCargas(fiscal) {
+  const titulo = fiscal ? 'LOGÍSTICA FISCAL' : 'LOGÍSTICA NACIONAL';
+  setHeader(titulo);
+  setExpandedMode(false);
+  showMetaPanel(true);
+  menuGrid.className = '';
+  menuGrid.innerHTML = '';
+  syncBackBtn();
+
+  let fechaActual = new Date();
+  let busqueda    = '';
+  let filtroTipo  = 'Todos';
+
+  const fmt = d => d.toISOString().split('T')[0];
+  const fmtDisplay = d => d.toLocaleDateString('es-AR', { day:'2-digit', month:'2-digit', year:'numeric' });
+
+  const wrap = document.createElement('div');
+  wrap.className = 'cargas-wrap';
+  menuGrid.appendChild(wrap);
+
+  const render = () => {
+    const fechaStr = fmt(fechaActual);
+    const datos = cargasData.filter(c => {
+      const matchFecha = c.planLlegada === fechaStr || c.llegada?.startsWith(fechaStr);
+      const matchBusq  = !busqueda || 
+        String(c.id).includes(busqueda) ||
+        c.vehiculo?.toLowerCase().includes(busqueda) ||
+        c.acoplado?.toLowerCase().includes(busqueda) ||
+        c.cargas?.some(x => x.includes(busqueda));
+      const matchTipo  = filtroTipo === 'Todos' || c.tipo === filtroTipo;
+      return matchBusq && matchTipo;
+    });
+
+    wrap.innerHTML = `
+      <!-- TOOLBAR -->
+      <div class="cargas-toolbar">
+        <div class="cargas-nav-group">
+          <button class="cargas-nav-btn" id="cNavFirst">«</button>
+          <button class="cargas-nav-btn" id="cNavPrev">‹</button>
+          <div class="cargas-fecha-display">${fmtDisplay(fechaActual)}</div>
+          <button class="cargas-nav-btn" id="cNavNext">›</button>
+          <button class="cargas-nav-btn" id="cNavLast">»</button>
+        </div>
+        <div class="cargas-filter-group">
+          <button class="cargas-filter-btn ${filtroTipo==='Todos'?'active':''}" data-tipo="Todos">Todos</button>
+          <button class="cargas-filter-btn ${filtroTipo==='Entrada'?'active':''}" data-tipo="Entrada">Entrada</button>
+          <button class="cargas-filter-btn ${filtroTipo==='Salida'?'active':''}" data-tipo="Salida">Salida</button>
+        </div>
+        <button class="cargas-nueva-btn" id="cNueva">＋ Nueva</button>
+        <div class="cargas-search-wrap">
+          <input class="cargas-search" id="cSearch" placeholder="🔍 N° Carga / Vehículo / Acoplado..." value="${busqueda}" />
+        </div>
+      </div>
+
+      <!-- TABLA -->
+      <div class="cargas-table-wrap">
+        <table class="cargas-table">
+          <thead>
+            <tr>
+              <th class="ct-tipo">Tipo</th>
+              <th class="ct-num">N° Transp.</th>
+              <th class="ct-box">Box</th>
+              <th class="ct-tron">Tronera</th>
+              <th class="ct-cargas">Cargas</th>
+              <th class="ct-estado">Estado</th>
+              <th class="ct-cli">Cliente</th>
+              <th class="ct-resp">Resp.</th>
+              <th class="ct-vehi">Vehículo</th>
+              <th class="ct-acop">Acoplado</th>
+              <th class="ct-fecha">Plan Llegada</th>
+              <th class="ct-fecha">Llegada</th>
+              <th class="ct-fecha">Movimiento</th>
+              <th class="ct-fecha">Salida</th>
+              <th class="ct-ticket">Tck. Báscula</th>
+              <th class="ct-acc">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${datos.length === 0
+              ? '<tr><td colspan="16" class="cargas-empty">No hay registros para esta fecha</td></tr>'
+              : datos.map(c => buildCargaRow(c)).join('')}
+          </tbody>
+        </table>
+      </div>
+      <div class="cargas-footer">
+        <span>${datos.length} registro${datos.length!==1?'s':''} · ${fmtDisplay(fechaActual)}</span>
+        <span class="cargas-legend">
+          <span class="cargas-estado-chip en-planta">En Planta</span>
+          <span class="cargas-estado-chip salida">Salida</span>
+          <span class="cargas-estado-chip pendiente">Pendiente</span>
+        </span>
+      </div>`;
+
+    // Eventos toolbar
+    wrap.querySelector('#cNavFirst').onclick = () => { fechaActual = new Date(2026,2,1);    render(); };
+    wrap.querySelector('#cNavPrev').onclick  = () => { fechaActual.setDate(fechaActual.getDate()-1); render(); };
+    wrap.querySelector('#cNavNext').onclick  = () => { fechaActual.setDate(fechaActual.getDate()+1); render(); };
+    wrap.querySelector('#cNavLast').onclick  = () => { fechaActual = new Date(); render(); };
+    wrap.querySelectorAll('.cargas-filter-btn').forEach(btn => {
+      btn.onclick = () => { filtroTipo = btn.dataset.tipo; render(); };
+    });
+    wrap.querySelector('#cSearch').oninput  = e => { busqueda = e.target.value.toLowerCase().trim(); render(); };
+    wrap.querySelector('#cSearch').onkeydown = e => e.stopPropagation();
+    wrap.querySelector('#cNueva').onclick = () => showToast('Abriendo nueva carga...');
+    // Acciones fila
+    wrap.querySelectorAll('[data-accion]').forEach(btn => {
+      btn.onclick = () => {
+        const accion = btn.dataset.accion;
+        const id     = btn.dataset.id;
+        if (accion === 'ver')    showToast('Abriendo carga #' + id);
+        if (accion === 'editar') showToast('Editando carga #' + id);
+        if (accion === 'horas')  showToast('Registrando horas carga #' + id);
+      };
+    });
+  };
+
+  render();
+}
+
+function buildCargaRow(c) {
+  // Tipo: badge coloreado
+  const tipoBadge = c.tipo === 'Entrada'
+    ? '<span class="cargas-tipo-badge entrada">↓ ENT</span>'
+    : '<span class="cargas-tipo-badge salida">↑ SAL</span>';
+
+  // Estado
+  const estadoClass = c.estado === 'En Planta' ? 'en-planta' : c.estado === 'Salida' ? 'salida' : 'pendiente';
+
+  // Clientes como siglas coloreadas con tooltip
+  const clientesHTML = c.clientes.length === 0 ? '<span class="cargas-cli-empty">—</span>'
+    : c.clientes.map(cl => {
+        const s = getClienteSigla(cl);
+        return `<span class="cargas-cli-sigla" style="background:${s.color}22;border-color:${s.color}55;color:${s.color}" title="${cl}">${s.sigla}</span>`;
+      }).join('');
+
+  // Cargas
+  const cargasHTML = c.cargas.length === 0 ? '—'
+    : c.cargas.map(n => `<span class="cargas-num-carga">${n}</span>`).join('');
+
+  // Tronera
+  const tronHTML = c.tronera
+    ? `<span class="cargas-tronera-chip">${c.tronera}</span>`
+    : '<button class="cargas-asignar-btn" title="Asignar tronera">⇄ Asignar</button>';
+
+  // Box
+  const boxHTML = c.box
+    ? `<span class="cargas-box-chip">${c.box}</span>`
+    : '—';
+
+  // Fechas compactas
+  const fmtT = s => s ? s.replace('2026-03-','').replace(/-/g,'/') : '—';
+
+  return `<tr class="cargas-row ${estadoClass}">
+    <td class="ct-tipo">${tipoBadge}</td>
+    <td class="ct-num"><span class="cargas-transp-num">${c.id}</span></td>
+    <td class="ct-box">${boxHTML}</td>
+    <td class="ct-tron">${tronHTML}</td>
+    <td class="ct-cargas">${cargasHTML}</td>
+    <td class="ct-estado"><span class="cargas-estado-chip ${estadoClass}">${c.estado}</span></td>
+    <td class="ct-cli"><div class="cargas-cli-wrap">${clientesHTML}</div></td>
+    <td class="ct-resp"><span class="cargas-resp">${c.responsable||'—'}</span></td>
+    <td class="ct-vehi"><span class="cargas-vehi">${c.vehiculo||'—'}</span></td>
+    <td class="ct-acop"><span class="cargas-vehi">${c.acoplado||'—'}</span></td>
+    <td class="ct-fecha">${fmtT(c.planLlegada)}</td>
+    <td class="ct-fecha">${c.llegada ? c.llegada.slice(8,10)+'/'+c.llegada.slice(5,7)+' '+c.llegada.slice(11,16) : '—'}</td>
+    <td class="ct-fecha">${c.movimiento||'—'}</td>
+    <td class="ct-fecha">${c.salida ? c.salida.slice(8,10)+'/'+c.salida.slice(5,7)+' '+c.salida.slice(11,16) : '—'}</td>
+    <td class="ct-ticket">${c.ticketSalida||'—'}</td>
+    <td class="ct-acc">
+      <div class="cargas-acc-btns">
+        <button class="cargas-acc-btn" data-accion="ver"    data-id="${c.id}" title="Ver">👁</button>
+        <button class="cargas-acc-btn" data-accion="editar" data-id="${c.id}" title="Editar">✏</button>
+        <button class="cargas-acc-btn" data-accion="horas"  data-id="${c.id}" title="Horas">🕐</button>
+      </div>
+    </td>
+  </tr>`;
 }

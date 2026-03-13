@@ -3778,3 +3778,296 @@ body{
   .perfil-hero { gap: 14px; }
   .perfil-nombre { font-size: 1.2rem; }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   MÓDULO: CARGAS — tabla de movimientos diarios
+   ═══════════════════════════════════════════════════════════════ */
+.cargas-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* ── Toolbar ── */
+.cargas-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  background: rgba(0,15,48,.7);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 14px;
+  flex-shrink: 0;
+}
+.cargas-nav-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.cargas-nav-btn {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.08);
+  color: rgba(255,255,255,.7);
+  font-size: .9rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.cargas-nav-btn:hover { background: rgba(54,176,201,.25); border-color: rgba(54,176,201,.5); color:#fff; }
+.cargas-fecha-display {
+  padding: 5px 14px;
+  border-radius: 8px;
+  background: rgba(54,176,201,.2);
+  border: 1px solid rgba(54,176,201,.4);
+  color: #36B0C9;
+  font-size: .82rem;
+  font-weight: 900;
+  min-width: 90px;
+  text-align: center;
+}
+.cargas-filter-group { display: flex; gap: 4px; }
+.cargas-filter-btn {
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.55);
+  font-size: .72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .15s;
+}
+.cargas-filter-btn.active,
+.cargas-filter-btn:hover { background: rgba(54,176,201,.2); border-color: rgba(54,176,201,.45); color: #fff; }
+.cargas-nueva-btn {
+  padding: 6px 16px;
+  border-radius: 9px;
+  border: none;
+  background: linear-gradient(135deg,#00A887,#007A62);
+  color: #fff;
+  font-size: .78rem;
+  font-weight: 900;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.cargas-nueva-btn:hover { filter: brightness(1.1); }
+.cargas-search-wrap { flex: 1; min-width: 180px; }
+.cargas-search {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 7px 12px;
+  border-radius: 9px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.07);
+  color: #fff;
+  font-size: .78rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color .2s;
+}
+.cargas-search::placeholder { color: rgba(255,255,255,.3); }
+.cargas-search:focus { border-color: rgba(54,176,201,.5); }
+
+/* ── Tabla ── */
+.cargas-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  background: rgba(0,10,36,.6);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 14px;
+  flex: 1;
+}
+.cargas-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .73rem;
+  white-space: nowrap;
+}
+.cargas-table thead th {
+  background: rgba(255,255,255,.07);
+  color: rgba(255,255,255,.5);
+  font-size: .63rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  padding: 8px 7px;
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  white-space: nowrap;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+/* Column widths */
+.ct-tipo   { width: 54px; }
+.ct-num    { width: 72px; }
+.ct-box    { width: 72px; }
+.ct-tron   { width: 90px; }
+.ct-cargas { width: 90px; }
+.ct-estado { width: 78px; }
+.ct-cli    { width: 100px; }
+.ct-resp   { width: 70px; }
+.ct-vehi   { width: 68px; }
+.ct-acop   { width: 64px; }
+.ct-fecha  { width: 80px; }
+.ct-ticket { width: 64px; }
+.ct-acc    { width: 70px; }
+
+.cargas-row td {
+  padding: 7px 7px;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  color: rgba(255,255,255,.8);
+  vertical-align: middle;
+}
+.cargas-row:last-child td { border-bottom: none; }
+.cargas-row:hover td { background: rgba(255,255,255,.03); }
+
+/* Row color by estado */
+.cargas-row.en-planta td:first-child { border-left: 3px solid #F97316; }
+.cargas-row.salida    td:first-child  { border-left: 3px solid #00A887; }
+.cargas-row.pendiente td:first-child  { border-left: 3px solid #6B7280; }
+
+/* Tipo badge */
+.cargas-tipo-badge {
+  display: inline-block;
+  padding: 3px 7px;
+  border-radius: 6px;
+  font-size: .62rem;
+  font-weight: 900;
+  letter-spacing: .3px;
+}
+.cargas-tipo-badge.entrada { background: rgba(54,176,201,.2); color: #36B0C9; border: 1px solid rgba(54,176,201,.4); }
+.cargas-tipo-badge.salida  { background: rgba(0,168,135,.2);  color: #00A887; border: 1px solid rgba(0,168,135,.4); }
+
+/* Número transporte */
+.cargas-transp-num { font-weight: 900; color: #FACC15; }
+
+/* Box + tronera */
+.cargas-box-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.2);
+  font-weight: 800;
+  font-size: .7rem;
+  color: #fff;
+}
+.cargas-tronera-chip {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(167,139,250,.15);
+  border: 1px solid rgba(167,139,250,.3);
+  font-size: .68rem;
+  font-weight: 800;
+  color: #A78BFA;
+}
+.cargas-asignar-btn {
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(54,176,201,.4);
+  background: rgba(54,176,201,.12);
+  color: #36B0C9;
+  font-size: .65rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all .15s;
+}
+.cargas-asignar-btn:hover { background: rgba(54,176,201,.25); }
+
+/* Números de carga */
+.cargas-num-carga {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: rgba(250,204,21,.12);
+  border: 1px solid rgba(250,204,21,.25);
+  color: #FACC15;
+  font-weight: 800;
+  font-size: .66rem;
+  margin-bottom: 2px;
+}
+
+/* Estado chips */
+.cargas-estado-chip {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 99px;
+  font-size: .63rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.cargas-estado-chip.en-planta { background: rgba(249,115,22,.18); color: #F97316; border: 1px solid rgba(249,115,22,.35); }
+.cargas-estado-chip.salida    { background: rgba(0,168,135,.18);  color: #00A887; border: 1px solid rgba(0,168,135,.35); }
+.cargas-estado-chip.pendiente { background: rgba(107,114,128,.18);color: #9CA3AF; border: 1px solid rgba(107,114,128,.3); }
+
+/* Clientes siglas */
+.cargas-cli-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  max-width: 100px;
+}
+.cargas-cli-sigla {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 5px;
+  border: 1px solid;
+  font-size: .63rem;
+  font-weight: 900;
+  letter-spacing: .2px;
+  cursor: default;
+  white-space: nowrap;
+}
+.cargas-cli-empty { color: rgba(255,255,255,.25); font-style: italic; }
+
+/* Vehículo / resp */
+.cargas-vehi { font-weight: 800; font-size: .72rem; }
+.cargas-resp { font-size: .7rem; color: rgba(255,255,255,.6); }
+
+/* Acciones */
+.cargas-acc-btns { display: flex; gap: 4px; }
+.cargas-acc-btn {
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+  font-size: .75rem;
+  cursor: pointer;
+  transition: all .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.cargas-acc-btn:hover { background: rgba(54,176,201,.2); border-color: rgba(54,176,201,.4); }
+
+.cargas-empty {
+  text-align: center;
+  padding: 32px !important;
+  color: rgba(255,255,255,.3) !important;
+  font-style: italic;
+}
+
+/* Footer */
+.cargas-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: .72rem;
+  color: rgba(255,255,255,.4);
+  font-weight: 700;
+  padding: 4px 2px;
+}
+.cargas-legend { display: flex; gap: 8px; align-items: center; }
