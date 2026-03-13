@@ -95,7 +95,7 @@ const menuTree = {
         { title: 'PR 24 DIARIO',                  url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmegcdiario/' },
         { title: 'PR 30 LIBRO DE GUARDIA',        url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmcontrol/' },
         { title: 'PR 80 PARADA DE CAMARAS',       url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmcamara/' },
-        { title: 'PR 100 DESCONGELADO',           url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmdescongelado/' }
+        { title: 'PR 100 DESCONGELADO' }
       ]
     },
     {
@@ -605,6 +605,31 @@ function getCustomTileHTML(item) {
         <div class="pr22-tile-footer">
           <span class="pr22-tile-badge">PR-22</span>
           <span class="pr22-tile-name">Limpieza de Tanques</span>
+        </div>
+      </div>`;
+  }
+
+  // PR 100 DESCONGELADO
+  if (item.title === 'PR 100 DESCONGELADO') {
+    const hoy = new Date();
+    const camaras = PR6_CAMARAS;
+    const recuadros = camaras.map(cam => {
+      const regs = pr100Registros.filter(r => r.camara === cam);
+      let estado = 'sin';
+      if (regs.length) {
+        const ultima = new Date(Math.max(...regs.map(r => new Date(r.fecha))));
+        const dias = Math.floor((hoy - ultima) / (1000*60*60*24));
+        estado = dias <= 30 ? 'ok' : 'vencido';
+      }
+      const label = cam.replace('CÁMARA ','C').replace('ANTECÁMARA','AC').replace('SALA DE MÁQUINAS','SM').replace('EXTERIOR','EXT');
+      return `<div class="pr100-tile-cam pr100-cam-${estado}" title="${cam}">${label}</div>`;
+    });
+    return `
+      <div class="pr100-tile-wrap">
+        <div class="pr100-tile-camaras">${recuadros.join('')}</div>
+        <div class="pr100-tile-footer">
+          <span class="pr100-tile-badge">PR-100</span>
+          <span class="pr100-tile-name">Descongelado de Cámaras</span>
         </div>
       </div>`;
   }
@@ -3562,6 +3587,7 @@ function renderNode(node) {
         if (item.title === 'COMPRAS'     && node.title === 'ADMINISTRACION') { historyStack.push(node); renderCompras();      return; }
         if (item.title === 'PR 6 CONTRASTE DE TERMOMETROS')                 { historyStack.push(node); renderPR6Contraste(); return; }
         if (item.title === 'PR 22 LIMPIEZA TANQUES')                          { historyStack.push(node); renderPR22Limpieza(); return; }
+        if (item.title === 'PR 100 DESCONGELADO')                             { historyStack.push(node); renderPR100Descongelado(); return; }
         if (item.children)                                   { historyStack.push(node); renderNode(item);                    return; }
         if (item.url)                                        { openModule(item.url);                                         return; }
         historyStack.push(node);
@@ -6127,6 +6153,7 @@ window.addEventListener('hashchange', handleHashRouting);
 
 /* ── PR-22 LIMPIEZA DE TANQUES ─────────────────────── */
 let pr22Registros = [];
+let pr100Registros = [];
 
 const PR6_CAMARAS = [
   'CÁMARA 1','CÁMARA 2','CÁMARA 3','CÁMARA 4',
@@ -6424,7 +6451,7 @@ function renderPR22Limpieza() {
               </div>
               <span class="pr22-tanque-badge" id="pr22BadgeNorte">Pendiente</span>
             </div>
-            <div class="pr22-tanque-body" id="pr22BodyNorte" style="display:none">
+            <div class="pr22-tanque-body">
               <div class="pr22-field">
                 <label class="pr22-label">Nº de Precinto</label>
                 <input type="text" class="pr22-input" id="pr22PrecintoNorte" placeholder="Ingresá el número...">
@@ -6440,7 +6467,7 @@ function renderPR22Limpieza() {
               </div>
               <span class="pr22-tanque-badge" id="pr22BadgeSur">Pendiente</span>
             </div>
-            <div class="pr22-tanque-body" id="pr22BodySur" style="display:none">
+            <div class="pr22-tanque-body">
               <div class="pr22-field">
                 <label class="pr22-label">Nº de Precinto</label>
                 <input type="text" class="pr22-input" id="pr22PrecintoSur" placeholder="Ingresá el número...">
@@ -6476,14 +6503,12 @@ function renderPR22Limpieza() {
 }
 
 function pr22ToggleTanque(cual) {
-  const cb     = document.getElementById('pr22Cb'    + cual);
-  const body   = document.getElementById('pr22Body'  + cual);
-  const badge  = document.getElementById('pr22Badge' + cual);
-  const card   = document.getElementById('pr22Card'  + cual);
+  const cb    = document.getElementById('pr22Cb'    + cual);
+  const badge = document.getElementById('pr22Badge' + cual);
+  const card  = document.getElementById('pr22Card'  + cual);
   const activo = cb.classList.toggle('checked');
-  body.style.display  = activo ? 'block' : 'none';
-  badge.textContent   = activo ? 'Realizado' : 'Pendiente';
-  badge.className     = 'pr22-tanque-badge' + (activo ? ' pr22-badge-ok' : '');
+  badge.textContent = activo ? 'Realizado' : 'Pendiente';
+  badge.className   = 'pr22-tanque-badge' + (activo ? ' pr22-badge-ok' : '');
   card.classList.toggle('pr22-card-active', activo);
 }
 
@@ -6555,4 +6580,170 @@ function pr22MostrarHistorial() {
   document.body.appendChild(overlay);
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
   document.getElementById('pr22HClose').addEventListener('click', () => overlay.remove());
+}
+
+/* ═══════════════════════════════════════════════════════
+   PR-100 DESCONGELADO DE CÁMARAS
+   ═══════════════════════════════════════════════════════ */
+
+function renderPR100Descongelado() {
+  const now      = new Date();
+  const fechaStr = now.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const isoFecha = now.toISOString().split('T')[0];
+
+  menuGrid.className = 'menu-grid';
+  menuGrid.innerHTML = `
+    <div class="pr6-wrap">
+
+      <div class="pr6-topbar">
+        <button class="mod-back-btn" id="pr100BackBtn">← Volver</button>
+        <div class="pr6-topbar-center">
+          <span class="pr6-badge-sm">PR-100</span>
+          <span class="pr6-topbar-title">Descongelado de Cámaras</span>
+        </div>
+        <button class="pr6-hist-trigger" id="pr100HistorialBtn">📋 Historial</button>
+      </div>
+
+      <!-- META -->
+      <div class="pr6-meta-row">
+        <div class="pr6-meta-item pr6-meta-grow">
+          <div class="pr6-meta-label">👤 Responsable</div>
+          <div class="pr6-meta-val">${perfilData.nombre}</div>
+          <input type="hidden" id="pr100Maquinista" value="${perfilData.nombre}">
+        </div>
+        <div class="pr6-meta-item">
+          <div class="pr6-meta-label">📅 Fecha</div>
+          <div class="pr6-meta-val">${fechaStr}</div>
+          <input type="hidden" id="pr100Fecha" value="${isoFecha}">
+        </div>
+      </div>
+
+      <!-- SELECTOR DE CÁMARA + DATOS -->
+      <div class="pr6-section">
+        <div class="pr6-section-title"><span>❄️</span> Cámara a descongelar</div>
+
+        <div class="pr6-camara-chips" id="pr100CamaraChips">
+          ${PR6_CAMARAS.map(c => `<button class="pr6-chip" data-camara="${c}">${c.replace('CÁMARA ','C').replace('ANTECÁMARA','AC').replace('SALA DE MÁQUINAS','SM').replace('EXTERIOR','EXT')}</button>`).join('')}
+        </div>
+        <input type="hidden" id="pr100Camara" value="">
+      </div>
+
+      <!-- DATOS DEL DESCONGELADO -->
+      <div class="pr6-section">
+        <div class="pr6-section-title"><span>🕐</span> Tiempos y presiones</div>
+        <div class="pr100-grid">
+
+          <div class="pr100-field">
+            <label class="pr22-label">Hora inicio</label>
+            <input type="time" class="pr22-input" id="pr100HoraInicio">
+          </div>
+          <div class="pr100-field">
+            <label class="pr22-label">Hora fin</label>
+            <input type="time" class="pr22-input" id="pr100HoraFin">
+          </div>
+          <div class="pr100-field">
+            <label class="pr22-label">Frecuencia</label>
+            <select class="pr22-input" id="pr100Frecuencia">
+              <option value="">— Seleccionar —</option>
+              ${[0,1,2,3,4,5,6,7,8,9,10].map(n=>`<option value="${n}">${n}</option>`).join('')}
+            </select>
+          </div>
+          <div class="pr100-field">
+            <label class="pr22-label">Presión descarga</label>
+            <input type="number" step="0.01" class="pr22-input" id="pr100PresDesc" placeholder="—">
+          </div>
+          <div class="pr100-field">
+            <label class="pr22-label">Presión aspiración</label>
+            <input type="number" step="0.01" class="pr22-input" id="pr100PresAsp" placeholder="—">
+          </div>
+          <div class="pr100-field pr100-field-wide">
+            <label class="pr22-label">Observaciones</label>
+            <input type="text" class="pr22-input" id="pr100Obs" placeholder="—">
+          </div>
+
+        </div>
+      </div>
+
+      <!-- GUARDAR -->
+      <div class="pr6-actions">
+        <button class="pr6-guardar-btn" id="pr100GuardarBtn">💾 Guardar Registro</button>
+      </div>
+
+    </div>
+  `;
+
+  // Chips cámara — solo uno activo a la vez
+  document.getElementById('pr100CamaraChips').addEventListener('click', e => {
+    const chip = e.target.closest('[data-camara]');
+    if (!chip) return;
+    document.querySelectorAll('#pr100CamaraChips .pr6-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    document.getElementById('pr100Camara').value = chip.dataset.camara;
+  });
+
+  document.getElementById('pr100GuardarBtn').addEventListener('click', pr100Guardar);
+  document.getElementById('pr100BackBtn').addEventListener('click', () => { historyStack.pop(); renderNode(historyStack.pop() || menuTree); });
+  document.getElementById('pr100HistorialBtn').addEventListener('click', pr100MostrarHistorial);
+}
+
+function pr100Guardar() {
+  const maquinista = document.getElementById('pr100Maquinista').value;
+  const fecha      = document.getElementById('pr100Fecha').value;
+  const camara     = document.getElementById('pr100Camara').value;
+  const horaInicio = document.getElementById('pr100HoraInicio').value;
+  const horaFin    = document.getElementById('pr100HoraFin').value;
+  const frecuencia = document.getElementById('pr100Frecuencia').value;
+  const presDesc   = document.getElementById('pr100PresDesc').value;
+  const presAsp    = document.getElementById('pr100PresAsp').value;
+  const obs        = document.getElementById('pr100Obs').value.trim();
+
+  if (!camara)     { pr6MostrarToast('Seleccioná una cámara', 'error'); return; }
+  if (!horaInicio) { pr6MostrarToast('Ingresá la hora de inicio', 'error'); return; }
+  if (!horaFin)    { pr6MostrarToast('Ingresá la hora de fin', 'error'); return; }
+
+  pr100Registros.push({ maquinista, fecha, camara, horaInicio, horaFin, frecuencia, presDesc, presAsp, obs, ts: new Date().toLocaleString('es-AR') });
+  pr6MostrarToast('✓ Registro guardado correctamente', 'ok');
+  setTimeout(() => renderPR100Descongelado(), 1400);
+}
+
+function pr100MostrarHistorial() {
+  if (!pr100Registros.length) { pr6MostrarToast('No hay registros guardados aún', 'info'); return; }
+  const overlay = document.createElement('div');
+  overlay.className = 'pr6-hist-overlay';
+  overlay.innerHTML = `
+    <div class="pr6-hist-modal">
+      <div class="pr6-hist-header">
+        <span>📋 Historial — PR-100 Descongelado</span>
+        <button class="pr6-hist-close" id="pr100HClose">✕</button>
+      </div>
+      <div class="pr6-hist-body">
+        ${pr100Registros.slice().reverse().map(r => `
+          <div class="pr6-hist-card">
+            <div class="pr6-hist-card-header">
+              <span class="pr6-hist-maq">${r.maquinista}</span>
+              <span class="pr22-hist-tag pr22-hist-norte">${r.camara}</span>
+              <span class="pr6-hist-fecha">${r.fecha}</span>
+            </div>
+            <div style="padding:12px 14px;">
+              <table class="pr6-hist-table">
+                <thead><tr>
+                  <th>H. Inicio</th><th>H. Fin</th><th>Frec.</th><th>Pres. Desc.</th><th>Pres. Asp.</th><th style="text-align:left">Observaciones</th>
+                </tr></thead>
+                <tbody><tr>
+                  <td>${r.horaInicio||'—'}</td>
+                  <td>${r.horaFin||'—'}</td>
+                  <td>${r.frecuencia||'—'}</td>
+                  <td>${r.presDesc||'—'}</td>
+                  <td>${r.presAsp||'—'}</td>
+                  <td style="text-align:left">${r.obs||'—'}</td>
+                </tr></tbody>
+              </table>
+            </div>
+            <div class="pr6-hist-footer">Guardado: ${r.ts}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  document.getElementById('pr100HClose').addEventListener('click', () => overlay.remove());
 }
