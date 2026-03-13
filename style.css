@@ -4514,3 +4514,30 @@ body{
   opacity: .4; cursor: not-allowed !important;
 }
 .chk-disabled:hover { filter: none !important; }
+
+/* ── Tile imagen personalizada ── */
+.tile-custom-img {
+  width: 44px; height: 44px; object-fit: contain;
+  margin: 2px 0;
+}
+
+/* ── Badges estado equipo en modal ── */
+.estado-equip-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 99px;
+  font-size: .72rem; font-weight: 900;
+}
+.estado-equip-badge.state-running  { background: rgba(0,168,135,.2);  color: #00A887; border: 1px solid rgba(0,168,135,.4); }
+.estado-equip-badge.state-falla    { background: rgba(239,68,68,.2);   color: #f87171; border: 1px solid rgba(239,68,68,.4); }
+.estado-equip-badge.state-cargando { background: rgba(250,204,21,.15); color: #fbbf24; border: 1px solid rgba(250,204,21,.3); }
+
+/* ── Botones de cambio de estado ── */
+.estado-btn-cargando {
+  background: rgba(250,204,21,.18) !important; border-color: rgba(250,204,21,.4) !important;
+  color: #fbbf24 !important;
+}
+.estado-btn-cargando:hover { background: rgba(250,204,21,.3) !important; }
+.estado-btn-falla {
+  background: rgba(239,68,68,.18) !important; border-color: rgba(239,68,68,.4) !important;
+  color: #f87171 !important;
+}
+.estado-btn-falla:hover { background: rgba(239,68,68,.3) !important; }

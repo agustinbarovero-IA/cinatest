@@ -476,6 +476,20 @@ function getCustomTileHTML(item) {
         <div class="tile-title one-line tile-label">COMPRAS</div>
       </div>`;
   }
+
+  // SALIDAS: imagen personalizada + cantidad del mes
+  if (item.title === 'SALIDAS') {
+    const totalMes = logModData.salidas.length; // en producción vendría del server
+    return `
+      <div class="tile-kpi-wrap">
+        <div class="tile-kpi-top"><span class="tile-kpi-badge" style="background:rgba(0,168,135,.18);color:#00A887;border-color:rgba(0,168,135,.4)">SAL</span></div>
+        <img src="img/salidassimbolo.png" class="tile-custom-img" alt="Salidas" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div style="font-size:1.6rem;display:none">📤</div>
+        <div class="tile-kpi-value tile-kpi-value--lg" style="color:#00A887">${totalMes}</div>
+        <div class="tile-kpi-sublabel">SALIDAS DEL MES</div>
+        <div class="tile-title one-line tile-label">SALIDAS</div>
+      </div>`;
+  }
   return null; // usar HTML por defecto
 }
 
@@ -882,10 +896,11 @@ function renderDashboardEquipamiento() {
       openEquipmentModal(index);
     });
 
-    // Click en la card: En marcha → checklist | otros → modal edición
+    // Click en la card según estado
     card.addEventListener('click', () => {
-      if (item.estado === 'En marcha') openChecklistEnMarcha(index);
-      else openEquipmentModal(index);
+      if (item.estado === 'Cargando')    openChecklistEnMarcha(index);   // lista para poner en marcha
+      else if (item.estado === 'Falla')  openCambioEstadoEquipo(index);  // solo pasar a Cargando
+      else if (item.estado === 'En marcha') openCambioEstadoEquipo(index); // pasar a Falla o Cargando
     });
     card.style.cursor = 'pointer';
 
@@ -5824,4 +5839,78 @@ function openChecklistEnMarcha(index) {
     setTimeout(() => modal.remove(), 220);
   }
   modal.addEventListener('click', e => { if (e.target === modal) close(); });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MODAL: CAMBIO DE ESTADO DE EQUIPO (En marcha ↔ Falla / Cargando)
+   ═══════════════════════════════════════════════════════════════ */
+function openCambioEstadoEquipo(index) {
+  document.getElementById('estadoEquipModal')?.remove();
+
+  const item    = dashboardEquipamientoData[index];
+  const esFalla = item.estado === 'Falla';
+  const esMarcha= item.estado === 'En marcha';
+
+  const modal = document.createElement('div');
+  modal.id    = 'estadoEquipModal';
+  modal.className = 'chk-overlay';
+  document.body.appendChild(modal);
+
+  // Opciones disponibles según estado actual
+  const opciones = esFalla
+    ? [{ val:'Cargando', label:'🔋 Pasar a Cargando', cls:'btn-cargando' }]
+    : esMarcha
+    ? [
+        { val:'Falla',    label:'⚠️ Informar falla',    cls:'btn-falla'    },
+        { val:'Cargando', label:'🔋 Pasar a Cargando', cls:'btn-cargando' },
+      ]
+    : [];
+
+  const estadoBadgeCls = item.estado === 'En marcha' ? 'state-running' : item.estado === 'Falla' ? 'state-falla' : 'state-cargando';
+
+  modal.innerHTML = `
+    <div class="chk-modal" style="max-width:420px">
+      <div class="chk-header">
+        <div class="chk-header-info">
+          <span class="chk-equip-badge">${item.tipo}</span>
+          <span class="chk-equip-denom">${item.denominacion}</span>
+        </div>
+        <button class="chk-close" id="estClose">✕</button>
+      </div>
+      <div style="padding:18px 20px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:.72rem;font-weight:800;color:rgba(255,255,255,.45);text-transform:uppercase">Estado actual</span>
+          <span class="estado-equip-badge ${estadoBadgeCls}">${item.estado}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:.72rem;font-weight:800;color:rgba(255,255,255,.45);text-transform:uppercase">Usuario</span>
+          <span style="color:#fff;font-weight:800;font-size:.82rem">${item.usuario}</span>
+        </div>
+        <p style="font-size:.75rem;color:rgba(255,255,255,.5);margin:0">
+          ${esFalla ? 'El equipo está en falla. Solo podés pasarlo a Cargando para revisión.' :
+            'El equipo está En marcha. Podés informar una falla o pasarlo a Cargando.'}
+        </p>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+          ${opciones.map(o => `<button class="chk-btn estado-btn-${o.val.toLowerCase()}" data-val="${o.val}">${o.label}</button>`).join('')}
+          <button class="chk-btn" style="background:rgba(107,114,128,.18);border-color:rgba(107,114,128,.3);color:rgba(255,255,255,.6)" id="estCancelar">Cancelar</button>
+        </div>
+      </div>
+    </div>`;
+
+  const close = () => { modal.classList.remove('chk-visible'); setTimeout(() => modal.remove(), 220); };
+
+  modal.querySelector('#estClose').onclick    = close;
+  modal.querySelector('#estCancelar').onclick = close;
+  modal.addEventListener('click', e => { if (e.target === modal) close(); });
+
+  modal.querySelectorAll('[data-val]').forEach(btn => {
+    btn.onclick = () => {
+      dashboardEquipamientoData[index].estado = btn.dataset.val;
+      close();
+      renderDashboardEquipamiento();
+      showToast(`✓ ${item.denominacion} → ${btn.dataset.val}`);
+    };
+  });
+
+  requestAnimationFrame(() => modal.classList.add('chk-visible'));
 }
