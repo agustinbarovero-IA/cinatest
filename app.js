@@ -4,7 +4,6 @@
 
 const USER_NAME = 'agustin.barovero';
 
-/* ── ÁRBOL DE MENÚ ──────────────────────────────────────────── */
 const menuTree = {
   title: 'INICIO',
   children: [
@@ -240,60 +239,64 @@ const dashboardLogisticaNacionalData = [
 /* ── DATOS EQUIPAMIENTO ─────────────────────────────────────── */
 // Array mutable — los cambios del usuario se persisten aquí en memoria
 const dashboardEquipamientoData = [
-  // ── Autoelevadores eléctricos Toyota (Cuádruple) ──
-  { interno:1520, marca:'TOYOTA', modelo:'7FBCU25', tipo:'Autoelevador Cuádruple', icono:'img/autoelevadores.png', isImage:true,
-    denominacion:'SIL-1520', estado:'Cargando',  planta:'Nacional',       horasBase:1111,  horasActual:1111,  usuario:'jlopez',    año:'N/D' },
-  { interno:1523, marca:'TOYOTA', modelo:'7FBCU25', tipo:'Autoelevador Cuádruple', icono:'img/autoelevadores.png', isImage:true,
-    denominacion:'SIL-1523', estado:'En marcha', planta:'Nacional',       horasBase:4208,  horasActual:4208,  usuario:'mrojas',    año:'N/D' },
-  { interno:1556, marca:'TOYOTA', modelo:'7FBCU25', tipo:'Autoelevador Cuádruple', icono:'img/autoelevadores.png', isImage:true,
-    denominacion:'SIL-1556', estado:'Falla',     planta:'Mantenimiento',  horasBase:10074, horasActual:10074, usuario:'agarcia',   año:'N/D' },
-  // ── Autoelevadores eléctricos Toyota (Triple) ──
-  { interno:2496, marca:'TOYOTA', modelo:'7FB25',   tipo:'Autoelevador Triple',    icono:'img/autoelevadores.png', isImage:true,
-    denominacion:'SIL-2496', estado:'En marcha', planta:'Nacional',       horasBase:22985, horasActual:22985, usuario:'acastro',   año:'2011' },
-  { interno:2601, marca:'TOYOTA', modelo:'7FB25',   tipo:'Autoelevador Triple',    icono:'img/autoelevadores.png', isImage:true,
-    denominacion:'SIL-2601', estado:'Cargando',  planta:'Deposito Fiscal',horasBase:21987, horasActual:21987, usuario:'lperez',    año:'2012' },
-  // ── Apiladores BT ──
-  { interno:3285, marca:'BT',     modelo:'SWE140',  tipo:'Apilador',               icono:'img/apilador.png',       isImage:true,
-    denominacion:'SIL-3285', estado:'Cargando',  planta:'Nacional',       horasBase:1111,  horasActual:1111,  usuario:'jmartin',   año:'2013' },
-  { interno:6600, marca:'BT',     modelo:'SWE140BR',tipo:'Apilador',               icono:'img/apilador.png',       isImage:true,
-    denominacion:'SIL-6600', estado:'En marcha', planta:'Nacional',       horasBase:1468,  horasActual:1468,  usuario:'rsosa',     año:'2021' },
-  // ── Zorras Op. Caminando BT / Toyota ──
-  { interno:3825, marca:'BT',     modelo:'LWE 200', tipo:'Zorra Op. Caminando',    icono:'img/apilador.png',       isImage:true,
-    denominacion:'SIL-3825', estado:'En marcha', planta:'Nacional',       horasBase:4613,  horasActual:4613,  usuario:'pdominguez',año:'2014' },
-  { interno:5828, marca:'TOYOTA', modelo:'LWE200',  tipo:'Zorra Op. Caminando',    icono:'img/apilador.png',       isImage:true,
-    denominacion:'SIL-5828', estado:'Cargando',  planta:'Deposito Fiscal',horasBase:1111,  horasActual:1111,  usuario:'sgimenez',  año:'2020' },
-  // ── Zorras op a bordo Toyota ──
-  { interno:5672, marca:'TOYOTA', modelo:'LPE200',  tipo:'Zorra Op. a Bordo',      icono:'img/apilador.png',       isImage:true,
-    denominacion:'SIL-5672', estado:'En marcha', planta:'Nacional',       horasBase:3378,  horasActual:3378,  usuario:'cmedina',   año:'2018' },
-  { interno:6488, marca:'TOYOTA', modelo:'LPE200',  tipo:'Zorra Op. a Bordo',      icono:'img/apilador.png',       isImage:true,
-    denominacion:'SIL-6488', estado:'Falla',     planta:'Mantenimiento',  horasBase:2890,  horasActual:2890,  usuario:'fvera',     año:'2021' },
-  { interno:6886, marca:'TOYOTA', modelo:'LPE200B', tipo:'Zorra Op. a Bordo',      icono:'img/apilador.png',       isImage:true,
-    denominacion:'SIL-6886', estado:'Cargando',  planta:'Nacional',       horasBase:4376,  horasActual:4376,  usuario:'rbenitez',  año:'2022' },
-  { interno:6887, marca:'TOYOTA', modelo:'LPE200B', tipo:'Zorra Op. a Bordo',      icono:'img/apilador.png',       isImage:true,
-    denominacion:'SIL-6887', estado:'En marcha', planta:'Deposito Fiscal',horasBase:4637,  horasActual:4637,  usuario:'mbazan',    año:'2022' },
-  { interno:7502, marca:'TOYOTA', modelo:'LPE200',  tipo:'Zorra Op. a Bordo',      icono:'img/apilador.png',       isImage:true,
-    denominacion:'SIL-7502', estado:'Cargando',  planta:'Nacional',       horasBase:1735,  horasActual:1735,  usuario:'jgomez',    año:'2024' },
-  { interno:7563, marca:'BT',     modelo:'LPE200B', tipo:'Zorra Op. a Bordo',      icono:'img/apilador.png',       isImage:true,
-    denominacion:'SIL-7563', estado:'En marcha', planta:'Nacional',       horasBase:560,   horasActual:560,   usuario:'druiz',     año:'2021' },
-  // ── Autoelevadores Cuádruple Toyota (nuevos) ──
-  { interno:5921, marca:'TOYOTA', modelo:'8FBCU25', tipo:'Autoelevador Cuádruple', icono:'img/autoelevadores.png', isImage:true,
-    denominacion:'SIL-5921', estado:'En marcha', planta:'Nacional',       horasBase:17635, horasActual:17635, usuario:'lortiz',    año:'2020' },
-  { interno:5922, marca:'TOYOTA', modelo:'8FBCU25', tipo:'Autoelevador Cuádruple', icono:'img/autoelevadores.png', isImage:true,
-    denominacion:'SIL-5922', estado:'Falla',     planta:'Mantenimiento',  horasBase:17552, horasActual:17552, usuario:'jlopez',    año:'2020' },
-  { interno:5923, marca:'TOYOTA', modelo:'8FBCU25', tipo:'Autoelevador Cuádruple', icono:'img/autoelevadores.png', isImage:true,
-    denominacion:'SIL-5923', estado:'Cargando',  planta:'Deposito Fiscal',horasBase:15100, horasActual:15100, usuario:'mrojas',    año:'2020' },
-  { interno:6454, marca:'TOYOTA', modelo:'8FB25',   tipo:'Autoelevador Cuádruple', icono:'img/autoelevadores.png', isImage:true,
-    denominacion:'SIL-6454', estado:'En marcha', planta:'Nacional',       horasBase:4782,  horasActual:4782,  usuario:'agarcia',   año:'2021' },
-  // ── Autoelevador Diesel ──
-  { interno:7259, marca:'TOYOTA', modelo:'62-8FD25',tipo:'Autoelevador Diesel',    icono:'img/autoelevadores.png', isImage:true,
-    denominacion:'SIL-7259', estado:'Cargando',  planta:'Deposito Fiscal',horasBase:844,   horasActual:844,   usuario:'acastro',   año:'2023' },
-  // ── Autoelevador Triciclo ──
-  { interno:7439, marca:'TOYOTA', modelo:'8FBE20',  tipo:'Autoelevador Triciclo',  icono:'img/autoelevadores.png', isImage:true,
-    denominacion:'SIL-7439', estado:'En marcha', planta:'Nacional',       horasBase:3245,  horasActual:3245,  usuario:'lperez',    año:'2024' },
-  // ── Autoelevador Triple (nuevo) ──
-  { interno:7730, marca:'TOYOTA', modelo:'8FBN25',  tipo:'Autoelevador Triple',    icono:'img/autoelevadores.png', isImage:true,
-    denominacion:'SIL-7730', estado:'Cargando',  planta:'Nacional',       horasBase:830,   horasActual:830,   usuario:'jmartin',   año:'2025' },
-];
+  // Autoelevadores Cuádruple
+  { interno:1520, marca:'TOYOTA', modelo:'7FBCU25',  tipo:'Autoelevador Cuádruple', icono:'img/autoelevador.png', isImage:true,
+    denominacion:'SIL-1520', estado:'Cargando',  planta:'Nacional',        horasBase:1111,  horasActual:1111,  usuario:'jlopez',    año:'N/D' },
+  { interno:1523, marca:'TOYOTA', modelo:'7FBCU25',  tipo:'Autoelevador Cuádruple', icono:'img/autoelevador.png', isImage:true,
+    denominacion:'SIL-1523', estado:'En marcha', planta:'Nacional',        horasBase:4208,  horasActual:4208,  usuario:'mrojas',    año:'N/D' },
+  { interno:1556, marca:'TOYOTA', modelo:'7FBCU25',  tipo:'Autoelevador Cuádruple', icono:'img/autoelevador.png', isImage:true,
+    denominacion:'SIL-1556', estado:'Falla',     planta:'Mantenimiento',   horasBase:10074, horasActual:10074, usuario:'agarcia',   año:'N/D' },
+  { interno:5921, marca:'TOYOTA', modelo:'8FBCU25',  tipo:'Autoelevador Cuádruple', icono:'img/autoelevador.png', isImage:true,
+    denominacion:'SIL-5921', estado:'En marcha', planta:'Nacional',        horasBase:17635, horasActual:17635, usuario:'lortiz',    año:'2020' },
+  { interno:5922, marca:'TOYOTA', modelo:'8FBCU25',  tipo:'Autoelevador Cuádruple', icono:'img/autoelevador.png', isImage:true,
+    denominacion:'SIL-5922', estado:'Falla',     planta:'Mantenimiento',   horasBase:17552, horasActual:17552, usuario:'jlopez',    año:'2020' },
+  { interno:5923, marca:'TOYOTA', modelo:'8FBCU25',  tipo:'Autoelevador Cuádruple', icono:'img/autoelevador.png', isImage:true,
+    denominacion:'SIL-5923', estado:'Cargando',  planta:'Deposito Fiscal', horasBase:15100, horasActual:15100, usuario:'mrojas',    año:'2020' },
+  { interno:6454, marca:'TOYOTA', modelo:'8FB25',    tipo:'Autoelevador Cuádruple', icono:'img/autoelevador.png', isImage:true,
+    denominacion:'SIL-6454', estado:'En marcha', planta:'Nacional',        horasBase:4782,  horasActual:4782,  usuario:'agarcia',   año:'2021' },
+  // Autoelevadores Triple
+  { interno:2496, marca:'TOYOTA', modelo:'7FB25',    tipo:'Autoelevador Triple',    icono:'img/autoelevador.png', isImage:true,
+    denominacion:'SIL-2496', estado:'En marcha', planta:'Nacional',        horasBase:22985, horasActual:22985, usuario:'acastro',   año:'2011' },
+  { interno:2601, marca:'TOYOTA', modelo:'7FB25',    tipo:'Autoelevador Triple',    icono:'img/autoelevador.png', isImage:true,
+    denominacion:'SIL-2601', estado:'Cargando',  planta:'Deposito Fiscal', horasBase:21987, horasActual:21987, usuario:'lperez',    año:'2012' },
+  { interno:7730, marca:'TOYOTA', modelo:'8FBN25',   tipo:'Autoelevador Triple',    icono:'img/autoelevador.png', isImage:true,
+    denominacion:'SIL-7730', estado:'Cargando',  planta:'Nacional',        horasBase:830,   horasActual:830,   usuario:'jmartin',   año:'2025' },
+  // Autoelevador Triciclo
+  { interno:7439, marca:'TOYOTA', modelo:'8FBE20',   tipo:'Autoelevador Triciclo',  icono:'img/autoelevador.png', isImage:true,
+    denominacion:'SIL-7439', estado:'En marcha', planta:'Nacional',        horasBase:3245,  horasActual:3245,  usuario:'lperez',    año:'2024' },
+  // Autoelevador Diesel
+  { interno:7259, marca:'TOYOTA', modelo:'62-8FD25', tipo:'Autoelevador Diesel',    icono:'img/autoelevador.png', isImage:true,
+    denominacion:'SIL-7259', estado:'Cargando',  planta:'Deposito Fiscal', horasBase:844,   horasActual:844,   usuario:'acastro',   año:'2023' },
+  // Apiladores
+  { interno:3285, marca:'BT',     modelo:'SWE140',   tipo:'Apilador',               icono:'img/apilador.png',     isImage:true,
+    denominacion:'SIL-3285', estado:'Cargando',  planta:'Nacional',        horasBase:1111,  horasActual:1111,  usuario:'jmartin',   año:'2013' },
+  { interno:6600, marca:'BT',     modelo:'SWE140BR', tipo:'Apilador',               icono:'img/apilador.png',     isImage:true,
+    denominacion:'SIL-6600', estado:'En marcha', planta:'Nacional',        horasBase:1468,  horasActual:1468,  usuario:'rsosa',     año:'2021' },
+  // Zorras Op. Caminando
+  { interno:3825, marca:'BT',     modelo:'LWE 200',  tipo:'Zorra Op. Caminando',    icono:'img/apilador.png',     isImage:true,
+    denominacion:'SIL-3825', estado:'En marcha', planta:'Nacional',        horasBase:4613,  horasActual:4613,  usuario:'pdominguez',año:'2014' },
+  { interno:5828, marca:'TOYOTA', modelo:'LWE200',   tipo:'Zorra Op. Caminando',    icono:'img/apilador.png',     isImage:true,
+    denominacion:'SIL-5828', estado:'Cargando',  planta:'Deposito Fiscal', horasBase:1111,  horasActual:1111,  usuario:'sgimenez',  año:'2020' },
+  // Zorras Op. a Bordo
+  { interno:5672, marca:'TOYOTA', modelo:'LPE200',   tipo:'Zorra Op. a Bordo',      icono:'img/apilador.png',     isImage:true,
+    denominacion:'SIL-5672', estado:'En marcha', planta:'Nacional',        horasBase:3378,  horasActual:3378,  usuario:'cmedina',   año:'2018' },
+  { interno:6488, marca:'TOYOTA', modelo:'LPE200',   tipo:'Zorra Op. a Bordo',      icono:'img/apilador.png',     isImage:true,
+    denominacion:'SIL-6488', estado:'Falla',     planta:'Mantenimiento',   horasBase:2890,  horasActual:2890,  usuario:'fvera',     año:'2021' },
+  { interno:6886, marca:'TOYOTA', modelo:'LPE200B',  tipo:'Zorra Op. a Bordo',      icono:'img/apilador.png',     isImage:true,
+    denominacion:'SIL-6886', estado:'Cargando',  planta:'Nacional',        horasBase:4376,  horasActual:4376,  usuario:'rbenitez',  año:'2022' },
+  { interno:6887, marca:'TOYOTA', modelo:'LPE200B',  tipo:'Zorra Op. a Bordo',      icono:'img/apilador.png',     isImage:true,
+    denominacion:'SIL-6887', estado:'En marcha', planta:'Deposito Fiscal', horasBase:4637,  horasActual:4637,  usuario:'mbazan',    año:'2022' },
+  { interno:7502, marca:'TOYOTA', modelo:'LPE200',   tipo:'Zorra Op. a Bordo',      icono:'img/apilador.png',     isImage:true,
+    denominacion:'SIL-7502', estado:'Cargando',  planta:'Nacional',        horasBase:1735,  horasActual:1735,  usuario:'jgomez',    año:'2024' },
+  { interno:7563, marca:'BT',     modelo:'LPE200B',  tipo:'Zorra Op. a Bordo',      icono:'img/apilador.png',     isImage:true,
+    denominacion:'SIL-7563', estado:'En marcha', planta:'Nacional',        horasBase:560,   horasActual:560,   usuario:'druiz',     año:'2021' },
+  // Robot de limpieza
+  { interno:9001, marca:'Nilfisk',  modelo:'SC6000', tipo:'Robot de Limpieza',      icono:'img/robotlimpieza.png',isImage:true,
+    denominacion:'SIL-9001', estado:'Cargando',  planta:'Nacional',        horasBase:340,   horasActual:340,   usuario:'lortiz',    año:'2022' },
+  // Camión
+  { interno:9010, marca:'Mercedes', modelo:'Atego',  tipo:'Camión',                 icono:'🚚',                   isImage:false,
+    denominacion:'SIL-9010', estado:'En marcha', planta:'Nacional',        horasBase:6200,  horasActual:6200,  usuario:'druiz',     año:'2019' },
+]
 /* Opciones fijas para selects del editor */
 const ESTADOS_EQUIPO = ['En marcha', 'Cargando', 'Falla'];
 const PLANTAS_EQUIPO = ['Nacional', 'Deposito Fiscal', 'Mantenimiento', 'Otros'];

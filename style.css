@@ -613,23 +613,23 @@ body{
 
 .equipment-grid{
   width:100%;
-  max-width:1500px;
+  max-width:1700px;
   display:grid;
-  grid-template-columns:repeat(4,minmax(240px,1fr));
-  gap:10px;
+  grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
+  gap:14px;
   align-content:start;
 }
 
 .equipment-card{
-  min-height:142px;
-  height:142px;
+  min-height:0;
+  height:auto;
   border-radius:16px;
-  padding:10px 11px;
+  padding:14px 16px;
   box-shadow:var(--shadow-main);
   border:1px solid rgba(255,255,255,.16);
   display:flex;
   flex-direction:column;
-  gap:6px;
+  gap:7px;
   color:#fff;
   overflow:hidden;
 }
@@ -653,21 +653,21 @@ body{
 }
 
 .equipment-icon{
-  width:36px;
-  height:36px;
-  border-radius:10px;
+  width:48px;
+  height:48px;
+  border-radius:12px;
   background:rgba(255,255,255,.14);
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:1.05rem;
+  font-size:1.4rem;
   flex-shrink:0;
   overflow:hidden;
 }
 
 .equipment-icon img{
-  width:24px;
-  height:24px;
+  width:34px;
+  height:34px;
   object-fit:contain;
 }
 
@@ -676,25 +676,27 @@ body{
 }
 
 .equipment-type{
-  font-size:.74rem;
+  font-size:.76rem;
   font-weight:800;
   text-transform:uppercase;
-  line-height:1.02;
+  line-height:1.1;
+  opacity:.82;
 }
 
 .equipment-name{
-  font-size:.64rem;
-  color:rgba(255,255,255,.88);
-  margin-top:2px;
-  line-height:1.02;
+  font-size:.95rem;
+  font-weight:900;
+  color:#fff;
+  margin-top:1px;
+  line-height:1.1;
 }
 
 .equipment-row{
   display:grid;
-  grid-template-columns:74px 1fr;
+  grid-template-columns:86px 1fr;
   gap:6px;
-  align-items:start;
-  font-size:.64rem;
+  align-items:center;
+  font-size:.7rem;
 }
 
 .equipment-label{
@@ -1117,7 +1119,7 @@ body{
   }
 
   .equipment-grid{
-    grid-template-columns:repeat(3,minmax(220px,1fr));
+    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
   }
 
   .boxes-grid{
@@ -1133,7 +1135,7 @@ body{
 @media (max-width:900px){
   .dashboard-grid,
   .equipment-grid{
-    grid-template-columns:repeat(2,minmax(220px,1fr));
+    grid-template-columns:repeat(2,minmax(250px,1fr));
   }
 
   .boxes-grid{
