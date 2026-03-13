@@ -882,8 +882,11 @@ function renderDashboardEquipamiento() {
       openEquipmentModal(index);
     });
 
-    // Click en la card también abre el editor
-    card.addEventListener('click', () => openEquipmentModal(index));
+    // Click en la card: En marcha → checklist | otros → modal edición
+    card.addEventListener('click', () => {
+      if (item.estado === 'En marcha') openChecklistEnMarcha(index);
+      else openEquipmentModal(index);
+    });
     card.style.cursor = 'pointer';
 
     grid.appendChild(card);
@@ -5661,4 +5664,164 @@ function renderLogMod(tipo, fiscal) {
   };
 
   render();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CHECKLIST: EQUIPO EN MARCHA
+   ═══════════════════════════════════════════════════════════════ */
+const CHECKLIST_ITEMS = [
+  'Extinguidores 1 Kg.',
+  'Espejos retrovisores',
+  'Cinturón de seguridad',
+  'Luz delantera',
+  'Bocina',
+  'Luz trasera – baliza',
+  'Alarma acústica de retroceso',
+  'Luz electroboscópica de retroceso',
+  'Frenos en condiciones',
+  'Dirección',
+  'Mástil movimiento vertical',
+  'Mástil movimiento en ángulo',
+  'Apertura de uñas',
+  'Desplazamiento lateral de horquilla',
+  'Cadena del mástil',
+  'Mangueras hidráulicas',
+  'Asiento en condiciones',
+  'Jaula y mallas de protección',
+];
+
+function openChecklistEnMarcha(index) {
+  document.getElementById('checklistModal')?.remove();
+
+  const item    = dashboardEquipamientoData[index];
+  const now     = new Date();
+  const horaStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+  const checks  = {}; // id → 'si' | 'no' | null
+
+  CHECKLIST_ITEMS.forEach((_,i) => { checks[i] = null; });
+
+  const modal = document.createElement('div');
+  modal.id = 'checklistModal';
+  modal.className = 'chk-overlay';
+  document.body.appendChild(modal);
+
+  const render = () => {
+    const respondidos = Object.values(checks).filter(v => v !== null).length;
+    const total       = CHECKLIST_ITEMS.length;
+    const pct         = Math.round(respondidos / total * 100);
+    const hayFalla    = Object.values(checks).some(v => v === 'no');
+    const completo    = respondidos === total;
+
+    modal.innerHTML = `
+      <div class="chk-modal">
+        <!-- Header -->
+        <div class="chk-header">
+          <div class="chk-header-info">
+            <span class="chk-equip-badge">${item.tipo}</span>
+            <span class="chk-equip-denom">${item.denominacion}</span>
+          </div>
+          <button class="chk-close" id="chkClose">✕</button>
+        </div>
+
+        <!-- Datos del equipo -->
+        <div class="chk-datos-grid">
+          <div class="chk-dato"><span class="chk-dato-label">Equipo</span><span class="chk-dato-val">${item.denominacion}</span></div>
+          <div class="chk-dato"><span class="chk-dato-label">Usuario</span><span class="chk-dato-val">${item.usuario}</span></div>
+          <div class="chk-dato"><span class="chk-dato-label">Hora de inicio</span><span class="chk-dato-val">${horaStr}</span></div>
+          <div class="chk-dato">
+            <span class="chk-dato-label">Horas de uso iniciales</span>
+            <input class="chk-input" type="text" id="chkHorasIni" placeholder="Ej: 1250" />
+          </div>
+          <div class="chk-dato">
+            <span class="chk-dato-label">Horas de uso finales</span>
+            <input class="chk-input" type="text" id="chkHorasFin" placeholder="Ej: 1258" />
+          </div>
+        </div>
+
+        <!-- Progreso -->
+        <div class="chk-progress-wrap">
+          <div class="chk-progress-bar-bg">
+            <div class="chk-progress-bar-fill" style="width:${pct}%"></div>
+          </div>
+          <span class="chk-progress-label">${respondidos} / ${total} completados</span>
+        </div>
+
+        <!-- Checklist -->
+        <div class="chk-list-wrap">
+          <table class="chk-table">
+            <thead>
+              <tr>
+                <th class="chk-th-elem">Elementos</th>
+                <th class="chk-th-si">SI</th>
+                <th class="chk-th-no">NO</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${CHECKLIST_ITEMS.map((elem, i) => `
+                <tr class="chk-row ${checks[i] !== null ? 'chk-row-done' : ''} ${checks[i]==='no' ? 'chk-row-falla' : ''}">
+                  <td class="chk-td-elem">${elem}</td>
+                  <td class="chk-td-opt">
+                    <button class="chk-opt-btn chk-si ${checks[i]==='si'?'chk-sel-si':''}" data-idx="${i}" data-val="si">✓</button>
+                  </td>
+                  <td class="chk-td-opt">
+                    <button class="chk-opt-btn chk-no ${checks[i]==='no'?'chk-sel-no':''}" data-idx="${i}" data-val="no">✗</button>
+                  </td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        ${hayFalla ? `<div class="chk-alerta-falla">⚠️ Hay elementos con falla detectada</div>` : ''}
+
+        <!-- Acciones -->
+        <div class="chk-footer">
+          <button class="chk-btn chk-btn-rechazar" id="chkRechazar">🚫 Rechazar uso</button>
+          <button class="chk-btn chk-btn-falla"    id="chkFalla">⚠️ Informar falla</button>
+          <button class="chk-btn chk-btn-retirar   ${!completo?'chk-disabled':''}" id="chkRetirar" ${!completo?'disabled':''}>✅ Retirar equipo</button>
+        </div>
+      </div>`;
+
+    // Opts
+    modal.querySelectorAll('.chk-opt-btn').forEach(btn => {
+      btn.onclick = e => {
+        e.stopPropagation();
+        const i = +btn.dataset.idx, v = btn.dataset.val;
+        checks[i] = checks[i] === v ? null : v;
+        render();
+      };
+    });
+    modal.querySelector('#chkClose').onclick   = close;
+    modal.querySelector('#chkRechazar').onclick = () => {
+      close();
+      showToast('🚫 Uso rechazado — ' + item.denominacion);
+    };
+    modal.querySelector('#chkFalla').onclick = () => {
+      dashboardEquipamientoData[index].estado = 'Falla';
+      close();
+      renderDashboardEquipamiento();
+      showToast('⚠️ Falla informada — ' + item.denominacion);
+    };
+    modal.querySelector('#chkRetirar').onclick = () => {
+      if (!completo) return;
+      const horasFin = modal.querySelector('#chkHorasFin').value.trim();
+      dashboardEquipamientoData[index].estado = 'Cargando';
+      dashboardEquipamientoData[index].horas  = horasFin || item.horas;
+      close();
+      renderDashboardEquipamiento();
+      showToast('✅ Equipo retirado — ' + item.denominacion);
+    };
+    // preserve input values after re-render
+    const ini = modal.querySelector('#chkHorasIni');
+    const fin = modal.querySelector('#chkHorasFin');
+    ini.onkeydown = fin.onkeydown = e => e.stopPropagation();
+  };
+
+  render();
+  requestAnimationFrame(() => modal.classList.add('chk-visible'));
+
+  function close() {
+    modal.classList.remove('chk-visible');
+    setTimeout(() => modal.remove(), 220);
+  }
+  modal.addEventListener('click', e => { if (e.target === modal) close(); });
 }
