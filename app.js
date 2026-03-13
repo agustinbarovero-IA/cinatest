@@ -2676,36 +2676,283 @@ function renderMapaBoxes() {
   menuGrid.className = '';
   menuGrid.innerHTML = '';
 
+  const ST = { libre:'#22c55e', entrada:'#ef4444', salida:'#8b5cf6' };
+  const BG = { libre:'#dcfce7', entrada:'#fee2e2', salida:'#ede9fe' };
+
+  // Estado inicial — en producción vendría de la API
+  const state = {
+    planta: 'Nacional',
+    boxes: {
+      B1:{ e:'salida',  v:'AE 798 UY' }, B2:{ e:'entrada', v:'AH 912 EH' },
+      B3:{ e:'salida',  v:'OMT 066'   }, B4:{ e:'entrada', v:'AA 615 SK' },
+      B5:{ e:'libre',   v:'PFC 060'   }, B6:{ e:'entrada', v:'MNP 682'   },
+      B7:{ e:'libre',   v:'GSX 848'   }, B8:{ e:'libre',   v:''          },
+      B9:{ e:'entrada', v:'AA 147 KS' }, B10:{e:'entrada', v:'AF 462 LG' },
+      B11:{e:'salida',  v:'AC 564 SS' }, B12:{e:'salida',  v:'JDX 640'   },
+      B13:{e:'libre',   v:''          }, B14:{e:'libre',   v:''          },
+      FB1:{e:'libre', v:''}, FB2:{e:'libre', v:''}, FB3:{e:'libre', v:''},
+      FB4:{e:'libre', v:''}, FB5:{e:'entrada',v:''}, FB6:{e:'salida',v:''},
+      FB8:{e:'libre',v:''}, FB9:{e:'libre',v:''}, FB10:{e:'libre',v:''}, FB11:{e:'libre',v:''},
+    },
+    troneras: {
+      T1:{e:'libre',t:''}, T2:{e:'entrada',t:'5:24'}, T3:{e:'libre',t:''},
+      T4:{e:'libre',t:'0:00'}, T5:{e:'libre',t:''}, T6:{e:'libre',t:''},
+      T7:{e:'libre',t:'0:00'}, T8:{e:'libre',t:''},
+    }
+  };
+
   const wrap = document.createElement('div');
-  wrap.className = 'boxes-wrap';
-  wrap.innerHTML = `
-    <div class="boxes-header">
-      <h2>Mapa interno de contenedores</h2>
-      <p>Presione el contenedor que desea consultar. El contenedor 6 abre el detalle solicitado.</p>
-    </div>
-    <div class="boxes-grid" id="boxesGrid"></div>`;
+  wrap.className = 'mapa-wrap';
 
-  const boxesGrid = wrap.querySelector('#boxesGrid');
+  const draw = () => {
+    const esN = state.planta === 'Nacional';
+    wrap.innerHTML = `
+      <div class="mapa-toolbar">
+        <div class="mapa-toolbar-left">
+          <span class="mapa-title-label">Planta</span>
+          <div class="mapa-planta-toggle">
+            <button class="mapa-plant-btn ${esN?'active':''}" data-p="Nacional">Nacional</button>
+            <button class="mapa-plant-btn ${!esN?'active':''}" data-p="Fiscal">Fiscal</button>
+          </div>
+        </div>
+        <div class="mapa-legend">
+          <span class="mapa-leg-item" style="background:#22c55e;color:#fff">Libre</span>
+          <span class="mapa-leg-item" style="background:#ef4444;color:#fff">Ocupado Entrada</span>
+          <span class="mapa-leg-item" style="background:#8b5cf6;color:#fff">Ocupado Salida</span>
+        </div>
+        <button class="mapa-refresh-btn" id="mRefresh">↻ Actualizar</button>
+      </div>
+      <div class="mapa-canvas-wrap">
+        <svg class="mapa-svg" viewBox="0 0 1100 640" xmlns="http://www.w3.org/2000/svg" id="mSVG">
+          ${esN ? _nacional(state, ST, BG) : _fiscal(state, ST, BG)}
+        </svg>
+      </div>`;
 
-  boxesData.forEach(box => {
-    const btn = document.createElement('button');
-    btn.className = 'box-card';
-    btn.type = 'button';
-    btn.innerHTML = `
-      <div class="box-card-number">${box.numero}</div>
-      <div class="box-card-title">${box.titulo}</div>
-      <div class="box-card-meta">Estiba: ${box.estiba}<br>Ubicación: ${box.ubicacion}</div>`;
-    btn.addEventListener('click', () => {
-      historyStack.push({ title: 'MAPA DE BOXES', custom: 'mapa_boxes' });
-      if (box.numero === 6) { renderContenedor6Detail(); }
-      else                  { alert(`Contenedor ${box.numero} seleccionado`); }
+    wrap.querySelectorAll('.mapa-plant-btn').forEach(b => {
+      b.onclick = () => { state.planta = b.dataset.p; draw(); };
     });
-    boxesGrid.appendChild(btn);
-  });
+    wrap.querySelector('#mRefresh').onclick = () => { showToast('↻ Mapa actualizado'); draw(); };
+    wrap.querySelector('#mSVG').addEventListener('click', e => {
+      const g = e.target.closest('[data-box]');
+      if (!g) return;
+      const id = g.dataset.box;
+      historyStack.push({ title:'MAPA DE BOXES', custom:'mapa_boxes' });
+      if (id === 'B6') renderContenedor6Detail();
+      else showToast('Box ' + id + ' — Click para ver detalle');
+    });
+  };
 
+  draw();
   menuGrid.appendChild(wrap);
   syncBackBtn();
 }
+
+/* ── Helper SVG generadores ────────────────────────────────── */
+function _svgTruck(id, x, y, angle, st, ST, BG) {
+  const c = ST[st.e]||'#94a3b8', b = BG[st.e]||'#f1f5f9';
+  // "camión" = rectángulo chico gris + rectángulo de carga coloreado
+  const cx = x + 50, cy = y + 12;
+  return `<g data-box="${id}" class="mapa-box-g" transform="rotate(${angle},${cx},${cy})">
+    <rect x="${x}" y="${y}" width="16" height="24" rx="3" fill="#94a3b8"/>
+    <rect x="${x+18}" y="${y}" width="64" height="24" rx="3" fill="${b}" stroke="${c}" stroke-width="2"/>
+    <text x="${x+50}" y="${y+15}" text-anchor="middle" font-size="8.5" fill="${c}" font-weight="800">${id} ${st.v||''}</text>
+  </g>`;
+}
+
+function _svgBoxH(id, x, y, label, st, ST, BG) {
+  const c = ST[st.e]||'#94a3b8', b = BG[st.e]||'#f1f5f9';
+  return `<g data-box="${id}" class="mapa-box-g">
+    <rect x="${x}" y="${y}" width="105" height="28" rx="5" fill="${b}" stroke="${c}" stroke-width="2"/>
+    <text x="${x+52}" y="${y+18}" text-anchor="middle" font-size="10.5" fill="${c}" font-weight="900">${label}</text>
+  </g>`;
+}
+
+function _svgBoxHW(id, x, y, w, label, st, ST, BG) {
+  const c = ST[st.e]||'#22c55e', b = BG[st.e]||'#dcfce7';
+  return `<g data-box="${id}" class="mapa-box-g">
+    <rect x="${x}" y="${y}" width="${w}" height="28" rx="5" fill="${b}" stroke="${c}" stroke-width="2"/>
+    <text x="${x+w/2}" y="${y+18}" text-anchor="middle" font-size="10.5" fill="${c}" font-weight="900">${label}</text>
+  </g>`;
+}
+
+function _svgBoxV(id, x, y, h, label, st, ST, BG) {
+  const c = ST[st.e]||'#22c55e', b = BG[st.e]||'#dcfce7';
+  return `<g data-box="${id}" class="mapa-box-g">
+    <rect x="${x}" y="${y}" width="30" height="${h}" rx="5" fill="${b}" stroke="${c}" stroke-width="2"/>
+    <text x="${x+15}" y="${y+h/2+4}" text-anchor="middle" font-size="9" fill="${c}" font-weight="800" transform="rotate(-90,${x+15},${y+h/2})">${label}</text>
+  </g>`;
+}
+
+function _svgTronera(id, x, y, st, ST, BG, tiempo) {
+  const c = ST[st.e]||'#22c55e', b = BG[st.e]||'#dcfce7';
+  const t = tiempo||st.t||'';
+  return `<g>
+    <rect x="${x}" y="${y}" width="28" height="28" rx="6" fill="${b}" stroke="${c}" stroke-width="2"/>
+    <text x="${x+14}" y="${y+18}" text-anchor="middle" font-size="9" fill="${c}" font-weight="900">${id}</text>
+    ${t ? `<text x="${x+14}" y="${y+36}" text-anchor="middle" font-size="7.5" fill="${c}" font-weight="700">${t}</text>` : ''}
+  </g>`;
+}
+
+function _nacional(s, ST, BG) {
+  const bx = id => s.boxes[id] || {e:'libre',v:''};
+  const tr = id => s.troneras[id] || {e:'libre',t:''};
+
+  // Camiones izquierda diagonal -45°, apilados
+  const trucks = ['B1','B2','B3','B4','B5'].map((id,i) => {
+    return _svgTruck(id, 30 + i*18, 620 - i*50, '', bx(id), ST, BG);
+  }).join('');
+  // Apply rotation after: render them in-line at -45
+  const trucksGroup = `<g transform="rotate(-45,155,530)">${['B1','B2','B3','B4','B5'].map((id,i) =>
+    `<g data-box="${id}" class="mapa-box-g">
+      <rect x="30" y="${510 - i*32}" width="16" height="24" rx="3" fill="#94a3b8"/>
+      <rect x="48" y="${510 - i*32}" width="70" height="24" rx="3" fill="${BG[bx(id).e]}" stroke="${ST[bx(id).e]}" stroke-width="2"/>
+      <text x="83" y="${522 - i*32}" text-anchor="middle" font-size="8" fill="${ST[bx(id).e]}" font-weight="800">${id} ${bx(id).v}</text>
+    </g>`
+  ).join('')}</g>`;
+
+  // B6 diagonal top-left, B7 top diagonal
+  const b6 = `<g transform="rotate(-30,250,350)">
+    <g data-box="B6" class="mapa-box-g">
+      <rect x="200" y="336" width="16" height="24" rx="3" fill="#94a3b8"/>
+      <rect x="218" y="336" width="70" height="24" rx="3" fill="${BG[bx('B6').e]}" stroke="${ST[bx('B6').e]}" stroke-width="2"/>
+      <text x="253" y="351" text-anchor="middle" font-size="8.5" fill="${ST[bx('B6').e]}" font-weight="800">B6 ${bx('B6').v}</text>
+    </g>
+  </g>`;
+  const b7 = `<g transform="rotate(30,370,200)">
+    <g data-box="B7" class="mapa-box-g">
+      <rect x="310" y="186" width="16" height="24" rx="3" fill="#94a3b8"/>
+      <rect x="328" y="186" width="70" height="24" rx="3" fill="${BG[bx('B7').e]}" stroke="${ST[bx('B7').e]}" stroke-width="2"/>
+      <text x="363" y="201" text-anchor="middle" font-size="8.5" fill="${ST[bx('B7').e]}" font-weight="800">B7 ${bx('B7').v}</text>
+    </g>
+  </g>`;
+
+  return `
+    <!-- Fondo playa maniobras -->
+    <circle cx="380" cy="390" r="130" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
+    <text x="380" y="385" text-anchor="middle" font-size="13" fill="#94a3b8" font-weight="700">PLAYA DE</text>
+    <text x="380" y="402" text-anchor="middle" font-size="13" fill="#94a3b8" font-weight="700">MANIOBRAS</text>
+
+    <!-- Planta Nacional -->
+    <rect x="720" y="50" width="310" height="520" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2.5"/>
+    <text x="875" y="318" text-anchor="middle" font-size="19" fill="#1d4ed8" font-weight="900" letter-spacing="1.5">PLANTA</text>
+    <text x="875" y="342" text-anchor="middle" font-size="19" fill="#1d4ed8" font-weight="900" letter-spacing="1.5">NACIONAL</text>
+
+    <!-- Depósito secos -->
+    <rect x="1030" y="350" width="52" height="220" rx="6" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1.5"/>
+    <text x="1056" y="462" text-anchor="middle" font-size="9" fill="#1d4ed8" font-weight="800" transform="rotate(-90,1056,462)">DEPÓSITO SECOS</text>
+
+    <!-- Camiones B1-B5 diagonal inferior izquierda -->
+    ${trucksGroup}
+
+    <!-- B6 diagonal -->
+    ${b6}
+    <!-- B7 diagonal -->
+    ${b7}
+
+    <!-- ROW: truck fila central con troneras (B8-B12) -->
+    <!-- Header Box 8 -->
+    ${_svgBoxHW('B8', 570, 95, 105, 'Box 8', {e:'libre'}, ST, BG)}
+
+    <!-- Truck+tronera B4 grupo -->
+    <rect x="555" y="127" width="16" height="26" rx="3" fill="#94a3b8"/>
+    <g data-box="B9" class="mapa-box-g">
+      <rect x="573" y="127" width="88" height="26" rx="3" fill="${BG[bx('B9').e]}" stroke="${ST[bx('B9').e]}" stroke-width="2"/>
+      <text x="617" y="144" text-anchor="middle" font-size="9" fill="${ST[bx('B9').e]}" font-weight="800">B9 ${bx('B9').v}</text>
+    </g>
+    ${_svgTronera('T4', 668, 120, tr('T4'), ST, BG, '')}
+    <text x="682" y="160" text-anchor="middle" font-size="7.5" fill="${ST[tr('T4').e]}" font-weight="700">${tr('T4').t||'0:00'}</text>
+
+    <rect x="555" y="162" width="16" height="26" rx="3" fill="#94a3b8"/>
+    <g data-box="B10" class="mapa-box-g">
+      <rect x="573" y="162" width="88" height="26" rx="3" fill="${BG[bx('B10').e]}" stroke="${ST[bx('B10').e]}" stroke-width="2"/>
+      <text x="617" y="179" text-anchor="middle" font-size="9" fill="${ST[bx('B10').e]}" font-weight="800">B10 ${bx('B10').v}</text>
+    </g>
+    ${_svgTronera('T3', 668, 165, tr('T3'), ST, BG, '')}
+
+    <rect x="555" y="300" width="16" height="26" rx="3" fill="#94a3b8"/>
+    <g data-box="B11" class="mapa-box-g">
+      <rect x="573" y="300" width="88" height="26" rx="3" fill="${BG[bx('B11').e]}" stroke="${ST[bx('B11').e]}" stroke-width="2"/>
+      <text x="617" y="317" text-anchor="middle" font-size="9" fill="${ST[bx('B11').e]}" font-weight="800">B11 ${bx('B11').v}</text>
+    </g>
+    ${_svgTronera('T2', 668, 290, tr('T2'), ST, BG, '5:24')}
+
+    <rect x="555" y="335" width="16" height="26" rx="3" fill="#94a3b8"/>
+    <g data-box="B12" class="mapa-box-g">
+      <rect x="573" y="335" width="88" height="26" rx="3" fill="${BG[bx('B12').e]}" stroke="${ST[bx('B12').e]}" stroke-width="2"/>
+      <text x="617" y="352" text-anchor="middle" font-size="9" fill="${ST[bx('B12').e]}" font-weight="800">B12 ${bx('B12').v}</text>
+    </g>
+    ${_svgTronera('T1', 668, 335, tr('T1'), ST, BG, '0:00')}
+
+    <!-- Box 13, 14 -->
+    ${_svgBoxHW('B13', 570, 400, 105, 'Box 13', bx('B13'), ST, BG)}
+    ${_svgBoxHW('B14', 570, 438, 105, 'Box 14', bx('B14'), ST, BG)}
+
+    <!-- Troneras T5 T6 T7 abajo derecha planta -->
+    ${_svgTronera('T5', 898, 462, tr('T5'), ST, BG, '')}
+    ${_svgTronera('T6', 932, 462, tr('T6'), ST, BG, '')}
+    ${_svgTronera('T7', 966, 462, tr('T7'), ST, BG, '0:00')}
+
+    <!-- T7 acoplado vertical (PFC 060) -->
+    <rect x="985" y="330" width="18" height="105" rx="3" fill="#ddd6fe" stroke="#8b5cf6" stroke-width="1.5"/>
+    <text x="994" y="386" text-anchor="middle" font-size="7.5" fill="#5b21b6" font-weight="700" transform="rotate(-90,994,386)">PFC 060</text>
+
+    <!-- T8 suelto -->
+    ${_svgTronera('T8', 1066, 280, tr('T8'), ST, BG, '')}
+  `;
+}
+
+function _fiscal(s, ST, BG) {
+  const bx = id => s.boxes[id] || {e:'libre',v:''};
+  const tr = id => s.troneras[id] || {e:'libre',t:''};
+  const ang = -25;
+
+  // Box angled helper
+  const bDiag = (id, x, y, w, h, lbl, angle) => {
+    const st = bx(id);
+    const c = ST[st.e]||'#22c55e', b = BG[st.e]||'#dcfce7';
+    return `<g data-box="${id}" class="mapa-box-g" transform="rotate(${angle},${x+w/2},${y+h/2})">
+      <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="4" fill="${b}" stroke="${c}" stroke-width="2"/>
+      <text x="${x+w/2}" y="${y+h*0.68}" text-anchor="middle" font-size="9" fill="${c}" font-weight="800">${lbl}</text>
+    </g>`;
+  };
+
+  return `
+    <!-- Playa maniobras -->
+    <circle cx="270" cy="450" r="110" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
+    <text x="270" y="445" text-anchor="middle" font-size="13" fill="#94a3b8" font-weight="700">PLAYA DE</text>
+    <text x="270" y="462" text-anchor="middle" font-size="13" fill="#94a3b8" font-weight="700">MANIOBRAS</text>
+
+    <!-- Planta fiscal rotada -->
+    <g transform="rotate(-25,700,380)">
+      <rect x="530" y="225" width="330" height="260" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2.5"/>
+      <text x="695" y="355" text-anchor="middle" font-size="19" fill="#1d4ed8" font-weight="900" letter-spacing="1.5">PLANTA FISCAL</text>
+    </g>
+
+    <!-- Box 3, Box 4 — arriba -->
+    ${_svgBoxHW('FB3', 205, 60, 105, 'Box 3', bx('FB3'), ST, BG)}
+    ${_svgBoxHW('FB4', 405, 60, 105, 'Box 4', bx('FB4'), ST, BG)}
+
+    <!-- Box 1, Box 2 — izquierda vertical -->
+    ${_svgBoxV('FB1', 62, 115, 90, 'Box 1', bx('FB1'), ST, BG)}
+    ${_svgBoxV('FB2', 62, 280, 90, 'Box 2', bx('FB2'), ST, BG)}
+
+    <!-- Box 5, Box 6 — diagonales centrales -->
+    ${bDiag('FB5', 400, 350, 120, 28, 'Box 5', -35)}
+    ${bDiag('FB6', 445, 415, 120, 28, 'Box 6', -35)}
+
+    <!-- Troneras fiscales -->
+    ${_svgTronera('T3', 519, 345, tr('T3'), ST, BG, '')}
+    ${_svgTronera('T2', 655, 428, tr('T2'), ST, BG, '')}
+    ${_svgTronera('T1', 690, 460, tr('T1'), ST, BG, '')}
+
+    <!-- Boxes angulados pequeños (B8-B11) en diagonal -->
+    ${bDiag('FB8',  490, 355, 80, 26, 'Box 8',  -35)}
+    ${bDiag('FB9',  520, 310, 80, 26, 'Box 9',  -35)}
+    ${bDiag('FB10', 550, 265, 80, 26, 'Box 10', -35)}
+    ${bDiag('FB11', 580, 220, 80, 26, 'Box 11', -35)}
+  `;
+}
+
 
 function renderContenedor6Detail() {
   setHeader('ESTIBA 65984-3');
