@@ -89,7 +89,7 @@ const menuTree = {
       title: 'MANTENIMIENTO',
       children: [
         { title: 'MANTENIMIENTO GENERAL',        url: 'https://sistema.cinafrio.com/intranet2/app.php/mantenimiento/' },
-        { title: 'PR 6 CONTRASTE DE TERMOMETROS',url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmregcontraste/' },
+        { title: 'PR 6 CONTRASTE DE TERMOMETROS' },
         { title: 'PR 9 SEMANAL',                 url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmegcsemanal/' },
         { title: 'PR 22 LIMPIEZA TANQUES',        url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmreglimpiezatanque/' },
         { title: 'PR 24 DIARIO',                  url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmegcdiario/' },
