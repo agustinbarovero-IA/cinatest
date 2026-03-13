@@ -5627,3 +5627,229 @@ body{
   .pr6-meta-row { flex-direction: column; }
   .pr6-meta-item { width: 100%; }
 }
+
+/* ═══════════════════════════════════════════════════════
+   PR-22 LIMPIEZA DE TANQUES
+   ═══════════════════════════════════════════════════════ */
+
+.pr22-tanques-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.pr22-tanque-card {
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color .2s, box-shadow .2s;
+}
+.pr22-card-active {
+  border-color: rgba(34,197,94,.5);
+  box-shadow: 0 0 18px rgba(34,197,94,.12);
+}
+.pr22-tanque-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 16px;
+  background: rgba(255,255,255,.07);
+  cursor: pointer;
+  user-select: none;
+}
+.pr22-tanque-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: .88rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+}
+.pr22-checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 2px solid rgba(255,255,255,.3);
+  background: rgba(255,255,255,.07);
+  transition: all .15s;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.pr22-checkbox.checked {
+  background: linear-gradient(135deg,#15803d,#22c55e);
+  border-color: #22c55e;
+}
+.pr22-checkbox.checked::after {
+  content: '✓';
+  color: #fff;
+  font-size: .75rem;
+  font-weight: 900;
+}
+.pr22-tanque-badge {
+  font-size: .68rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: rgba(255,255,255,.1);
+  color: rgba(255,255,255,.45);
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  transition: all .2s;
+}
+.pr22-badge-ok {
+  background: rgba(34,197,94,.2);
+  color: #86efac;
+}
+.pr22-tanque-body {
+  padding: 12px 16px;
+  border-top: 1px solid rgba(255,255,255,.1);
+}
+.pr22-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.pr22-label {
+  font-size: .68rem;
+  font-weight: 800;
+  color: rgba(255,255,255,.45);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.pr22-input {
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: .88rem;
+  font-weight: 700;
+  color: #fff;
+  width: 100%;
+  transition: border-color .14s, background .14s;
+}
+.pr22-input:focus {
+  outline: none;
+  border-color: #36B0C9;
+  background: rgba(255,255,255,.16);
+}
+.pr22-input::placeholder { color: rgba(255,255,255,.25); }
+.pr22-textarea {
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: .84rem;
+  color: #fff;
+  width: 100%;
+  resize: vertical;
+  font-family: inherit;
+  min-height: 80px;
+  transition: border-color .14s, background .14s;
+}
+.pr22-textarea:focus {
+  outline: none;
+  border-color: #36B0C9;
+  background: rgba(255,255,255,.16);
+}
+.pr22-textarea::placeholder { color: rgba(255,255,255,.25); }
+
+/* Historial */
+.pr22-hist-tanque {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: .82rem;
+  color: rgba(255,255,255,.8);
+}
+.pr22-hist-tag {
+  font-size: .68rem;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  white-space: nowrap;
+}
+.pr22-hist-norte { background: rgba(54,176,201,.2); color: #7dd3fc; }
+.pr22-hist-sur   { background: rgba(168,85,247,.2); color: #d8b4fe; }
+
+/* Tile botón PR-22 en menú */
+.pr22-tile-wrap {
+  display: flex;
+  flex-direction: column;
+  width: 100%; height: 100%;
+  padding: 10px 10px 8px;
+  box-sizing: border-box;
+  gap: 8px;
+  justify-content: space-between;
+}
+.pr22-tile-tanques {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+}
+.pr22-tile-tanque {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+}
+.pr22-tile-drum {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+.pr22-tile-label {
+  font-size: .6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  color: rgba(255,255,255,.6);
+}
+.pr22-tile-estado {
+  font-size: .58rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 5px;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+}
+.pr22-estado-ok      { background: rgba(34,197,94,.25); border: 1px solid rgba(34,197,94,.5); color: #86efac; }
+.pr22-estado-vencido { background: rgba(248,113,113,.25); border: 1px solid rgba(248,113,113,.5); color: #fca5a5; }
+.pr22-estado-sin     { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); color: rgba(255,255,255,.35); }
+.pr22-tile-sep {
+  width: 1px;
+  height: 60%;
+  background: rgba(255,255,255,.15);
+  align-self: center;
+}
+.pr22-tile-footer {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+}
+.pr22-tile-badge {
+  background: rgba(255,255,255,.18);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 5px;
+  font-size: .6rem;
+  font-weight: 900;
+  padding: 2px 6px;
+  color: rgba(255,255,255,.85);
+  white-space: nowrap;
+  letter-spacing: .4px;
+  flex-shrink: 0;
+}
+.pr22-tile-name {
+  font-size: .68rem;
+  font-weight: 800;
+  color: rgba(255,255,255,.9);
+  line-height: 1.2;
+}
+
+@media(max-width:600px){
+  .pr22-tanques-row { grid-template-columns: 1fr; }
+}

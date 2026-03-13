@@ -91,7 +91,7 @@ const menuTree = {
         { title: 'MANTENIMIENTO GENERAL',        url: 'https://sistema.cinafrio.com/intranet2/app.php/mantenimiento/' },
         { title: 'PR 6 CONTRASTE DE TERMOMETROS' },
         { title: 'PR 9 SEMANAL',                 url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmegcsemanal/' },
-        { title: 'PR 22 LIMPIEZA TANQUES',        url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmreglimpiezatanque/' },
+        { title: 'PR 22 LIMPIEZA TANQUES' },
         { title: 'PR 24 DIARIO',                  url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmegcdiario/' },
         { title: 'PR 30 LIBRO DE GUARDIA',        url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmcontrol/' },
         { title: 'PR 80 PARADA DE CAMARAS',       url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmcamara/' },
@@ -568,6 +568,43 @@ function getCustomTileHTML(item) {
         <div class="pr6-tile-footer">
           <span class="pr6-tile-badge">PR-06</span>
           <span class="pr6-tile-name">Contraste de Termómetros</span>
+        </div>
+      </div>`;
+  }
+
+  // PR 22 LIMPIEZA DE TANQUES
+  if (item.title === 'PR 22 LIMPIEZA TANQUES') {
+    const hoy = new Date();
+    const getEstado = (tanque) => {
+      const regs = pr22Registros.filter(r => r.tanques && r.tanques[tanque]);
+      if (!regs.length) return 'sin';
+      const fechas = regs.map(r => new Date(r.fecha));
+      const ultima = new Date(Math.max(...fechas));
+      const dias   = Math.floor((hoy - ultima) / (1000 * 60 * 60 * 24));
+      return dias <= 30 ? 'ok' : 'vencido';
+    };
+    const estNorte = getEstado('norte');
+    const estSur   = getEstado('sur');
+    const labelNorte = estNorte === 'ok' ? '≤30 días' : estNorte === 'vencido' ? '>30 días' : 'Sin dato';
+    const labelSur   = estSur   === 'ok' ? '≤30 días' : estSur   === 'vencido' ? '>30 días' : 'Sin dato';
+    return `
+      <div class="pr22-tile-wrap">
+        <div class="pr22-tile-tanques">
+          <div class="pr22-tile-tanque">
+            <div class="pr22-tile-drum">🛢️</div>
+            <div class="pr22-tile-label">Norte</div>
+            <div class="pr22-tile-estado pr22-estado-${estNorte}">${labelNorte}</div>
+          </div>
+          <div class="pr22-tile-sep"></div>
+          <div class="pr22-tile-tanque">
+            <div class="pr22-tile-drum">🛢️</div>
+            <div class="pr22-tile-label">Sur</div>
+            <div class="pr22-tile-estado pr22-estado-${estSur}">${labelSur}</div>
+          </div>
+        </div>
+        <div class="pr22-tile-footer">
+          <span class="pr22-tile-badge">PR-22</span>
+          <span class="pr22-tile-name">Limpieza de Tanques</span>
         </div>
       </div>`;
   }
@@ -3524,6 +3561,7 @@ function renderNode(node) {
         if (item.title === 'REMITOS'     && node.title === 'ADMINISTRACION') { historyStack.push(node); renderRemitos();      return; }
         if (item.title === 'COMPRAS'     && node.title === 'ADMINISTRACION') { historyStack.push(node); renderCompras();      return; }
         if (item.title === 'PR 6 CONTRASTE DE TERMOMETROS')                 { historyStack.push(node); renderPR6Contraste(); return; }
+        if (item.title === 'PR 22 LIMPIEZA TANQUES')                          { historyStack.push(node); renderPR22Limpieza(); return; }
         if (item.children)                                   { historyStack.push(node); renderNode(item);                    return; }
         if (item.url)                                        { openModule(item.url);                                         return; }
         historyStack.push(node);
@@ -6087,6 +6125,9 @@ window.addEventListener('hashchange', handleHashRouting);
    PR-6 CONTRASTE DE TERMÓMETROS
    ═══════════════════════════════════════════════════════════ */
 
+/* ── PR-22 LIMPIEZA DE TANQUES ─────────────────────── */
+let pr22Registros = [];
+
 const PR6_CAMARAS = [
   'CÁMARA 1','CÁMARA 2','CÁMARA 3','CÁMARA 4',
   'CÁMARA 5','CÁMARA 6','CÁMARA 7','CÁMARA 8',
@@ -6326,4 +6367,192 @@ function pr6MostrarToast(msg, tipo='ok') {
   t.className = 'pr6-toast pr6-toast-'+tipo+' pr6-toast-show';
   clearTimeout(t._timer);
   t._timer = setTimeout(() => t.classList.remove('pr6-toast-show'), 2800);
+}
+
+/* ═══════════════════════════════════════════════════════
+   PR-22 LIMPIEZA DE TANQUES
+   ═══════════════════════════════════════════════════════ */
+
+function renderPR22Limpieza() {
+  const now      = new Date();
+  const fechaStr = now.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const horaStr  = now.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+  const isoFecha = now.toISOString().split('T')[0];
+
+  menuGrid.className = 'menu-grid';
+  menuGrid.innerHTML = `
+    <div class="pr6-wrap">
+
+      <div class="pr6-topbar">
+        <button class="mod-back-btn" id="pr22BackBtn">← Volver</button>
+        <div class="pr6-topbar-center">
+          <span class="pr6-badge-sm">PR-22</span>
+          <span class="pr6-topbar-title">Limpieza y Desinfección de Tanques</span>
+        </div>
+        <button class="pr6-hist-trigger" id="pr22HistorialBtn">📋 Historial</button>
+      </div>
+
+      <!-- META: usuario / fecha / hora automáticos -->
+      <div class="pr6-meta-row">
+        <div class="pr6-meta-item pr6-meta-grow">
+          <div class="pr6-meta-label">👤 Responsable</div>
+          <div class="pr6-meta-val">${perfilData.nombre}</div>
+          <input type="hidden" id="pr22Maquinista" value="${perfilData.nombre}">
+        </div>
+        <div class="pr6-meta-item">
+          <div class="pr6-meta-label">📅 Fecha</div>
+          <div class="pr6-meta-val">${fechaStr}</div>
+          <input type="hidden" id="pr22Fecha" value="${isoFecha}">
+        </div>
+        <div class="pr6-meta-item">
+          <div class="pr6-meta-label">🕐 Hora</div>
+          <div class="pr6-meta-val">${horaStr}</div>
+          <input type="hidden" id="pr22Hora" value="${horaStr}">
+        </div>
+      </div>
+
+      <!-- TANQUES -->
+      <div class="pr6-section">
+        <div class="pr6-section-title"><span>🛢️</span> Tanques</div>
+        <div class="pr22-tanques-row">
+
+          <div class="pr22-tanque-card" id="pr22CardNorte">
+            <div class="pr22-tanque-header">
+              <div class="pr22-tanque-check" id="pr22CheckNorte">
+                <div class="pr22-checkbox" id="pr22CbNorte"></div>
+                <span>Tanque Norte</span>
+              </div>
+              <span class="pr22-tanque-badge" id="pr22BadgeNorte">Pendiente</span>
+            </div>
+            <div class="pr22-tanque-body" id="pr22BodyNorte" style="display:none">
+              <div class="pr22-field">
+                <label class="pr22-label">Nº de Precinto</label>
+                <input type="text" class="pr22-input" id="pr22PrecintoNorte" placeholder="Ingresá el número...">
+              </div>
+            </div>
+          </div>
+
+          <div class="pr22-tanque-card" id="pr22CardSur">
+            <div class="pr22-tanque-header">
+              <div class="pr22-tanque-check" id="pr22CheckSur">
+                <div class="pr22-checkbox" id="pr22CbSur"></div>
+                <span>Tanque Sur</span>
+              </div>
+              <span class="pr22-tanque-badge" id="pr22BadgeSur">Pendiente</span>
+            </div>
+            <div class="pr22-tanque-body" id="pr22BodySur" style="display:none">
+              <div class="pr22-field">
+                <label class="pr22-label">Nº de Precinto</label>
+                <input type="text" class="pr22-input" id="pr22PrecintoSur" placeholder="Ingresá el número...">
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- COMENTARIOS -->
+      <div class="pr6-section">
+        <div class="pr6-section-title"><span>💬</span> Comentarios</div>
+        <textarea class="pr22-textarea" id="pr22Comentarios" placeholder="Observaciones generales del procedimiento..." rows="3"></textarea>
+      </div>
+
+      <!-- GUARDAR -->
+      <div class="pr6-actions">
+        <button class="pr6-guardar-btn" id="pr22GuardarBtn">💾 Guardar Registro</button>
+      </div>
+
+    </div>
+  `;
+
+  // Toggle Tanque Norte
+  document.getElementById('pr22CheckNorte').addEventListener('click', () => pr22ToggleTanque('Norte'));
+  // Toggle Tanque Sur
+  document.getElementById('pr22CheckSur').addEventListener('click', () => pr22ToggleTanque('Sur'));
+
+  document.getElementById('pr22GuardarBtn').addEventListener('click', pr22Guardar);
+  document.getElementById('pr22BackBtn').addEventListener('click', () => { historyStack.pop(); renderNode(historyStack.pop() || menuTree); });
+  document.getElementById('pr22HistorialBtn').addEventListener('click', pr22MostrarHistorial);
+}
+
+function pr22ToggleTanque(cual) {
+  const cb     = document.getElementById('pr22Cb'    + cual);
+  const body   = document.getElementById('pr22Body'  + cual);
+  const badge  = document.getElementById('pr22Badge' + cual);
+  const card   = document.getElementById('pr22Card'  + cual);
+  const activo = cb.classList.toggle('checked');
+  body.style.display  = activo ? 'block' : 'none';
+  badge.textContent   = activo ? 'Realizado' : 'Pendiente';
+  badge.className     = 'pr22-tanque-badge' + (activo ? ' pr22-badge-ok' : '');
+  card.classList.toggle('pr22-card-active', activo);
+}
+
+function pr22Guardar() {
+  const maquinista = document.getElementById('pr22Maquinista').value;
+  const fecha      = document.getElementById('pr22Fecha').value;
+  const hora       = document.getElementById('pr22Hora').value;
+  const norte      = document.getElementById('pr22CbNorte').classList.contains('checked');
+  const sur        = document.getElementById('pr22CbSur').classList.contains('checked');
+  const preNorte   = document.getElementById('pr22PrecintoNorte')?.value.trim() || '';
+  const preSur     = document.getElementById('pr22PrecintoSur')?.value.trim() || '';
+  const comentarios= document.getElementById('pr22Comentarios').value.trim();
+
+  if (!norte && !sur) {
+    pr6MostrarToast('Marcá al menos un tanque', 'error'); return;
+  }
+  if (norte && !preNorte) {
+    pr6MostrarToast('Ingresá el Nº de precinto del Tanque Norte', 'error'); return;
+  }
+  if (sur && !preSur) {
+    pr6MostrarToast('Ingresá el Nº de precinto del Tanque Sur', 'error'); return;
+  }
+
+  pr22Registros.push({
+    maquinista, fecha, hora, comentarios,
+    tanques: {
+      norte: norte ? { precinto: preNorte } : null,
+      sur:   sur   ? { precinto: preSur   } : null,
+    },
+    ts: new Date().toLocaleString('es-AR')
+  });
+
+  pr6MostrarToast('✓ Registro guardado correctamente', 'ok');
+  setTimeout(() => renderPR22Limpieza(), 1400);
+}
+
+function pr22MostrarHistorial() {
+  if (!pr22Registros.length) { pr6MostrarToast('No hay registros guardados aún', 'info'); return; }
+  const overlay = document.createElement('div');
+  overlay.className = 'pr6-hist-overlay';
+  overlay.innerHTML = `
+    <div class="pr6-hist-modal">
+      <div class="pr6-hist-header">
+        <span>📋 Historial — PR-22 Limpieza de Tanques</span>
+        <button class="pr6-hist-close" id="pr22HClose">✕</button>
+      </div>
+      <div class="pr6-hist-body">
+        ${pr22Registros.slice().reverse().map(r => `
+          <div class="pr6-hist-card">
+            <div class="pr6-hist-card-header">
+              <span class="pr6-hist-maq">${r.maquinista}</span>
+              <span class="pr6-hist-fecha">${r.fecha} ${r.hora}</span>
+            </div>
+            <div style="padding:12px 14px;display:flex;flex-direction:column;gap:8px;">
+              ${r.tanques.norte ? `<div class="pr22-hist-tanque">
+                <span class="pr22-hist-tag pr22-hist-norte">Tanque Norte</span>
+                <span>Precinto: <strong>${r.tanques.norte.precinto}</strong></span>
+              </div>` : ''}
+              ${r.tanques.sur ? `<div class="pr22-hist-tanque">
+                <span class="pr22-hist-tag pr22-hist-sur">Tanque Sur</span>
+                <span>Precinto: <strong>${r.tanques.sur.precinto}</strong></span>
+              </div>` : ''}
+              ${r.comentarios ? `<div style="font-size:.78rem;color:rgba(255,255,255,.6);font-style:italic">"${r.comentarios}"</div>` : ''}
+            </div>
+            <div class="pr6-hist-footer">Guardado: ${r.ts}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  document.getElementById('pr22HClose').addEventListener('click', () => overlay.remove());
 }
