@@ -5141,7 +5141,7 @@ function buildCargaRow(c, estClass) {
     <td class="ct-acc">
       <div class="ct-acc-row">
         <button class="ct-acc-btn ct-acc-ver"    data-accion="ver"    data-id="${c.id}">👁 Ver</button>
-        <button class="ct-acc-btn ct-acc-oper"   data-accion="editar" data-id="${c.id}">📦 Operar</button>
+        <button class="ct-acc-btn ct-acc-oper"   data-accion="editar" data-id="${c.id}">✏ Editar</button>
         <button class="ct-acc-btn ct-acc-tiempo" data-accion="horas"  data-id="${c.id}">⏱</button>
       </div>
     </td>

@@ -3871,10 +3871,14 @@ body{
   color: rgba(255,255,255,.78);
   font-size: .6rem; font-weight: 800; text-transform: uppercase; letter-spacing: .25px;
   padding: 6px 5px; text-align: left;
-  border-right: 1px solid rgba(255,255,255,.07);
+  border-right: 1px solid rgba(255,255,255,.18);
   white-space: nowrap;
 }
 .cargas-table thead th:last-child { border-right: none; }
+.cargas-table tbody td {
+  border-right: 1px solid #ccd4e0;
+}
+.cargas-table tbody td:last-child { border-right: none; }
 /* Alineación de cabeceras según tipo */
 .cargas-table thead th.ct-num,
 .cargas-table thead th.ct-top,
@@ -3891,7 +3895,7 @@ body{
 .ct-tron   { width: 82px;  }
 .ct-cargas { width: 72px;  }
 .ct-cli    { width: 90px;  }
-.ct-resp   { width: 68px;  }
+.ct-resp   { width: 90px;  }
 .ct-vehi   { width: 72px;  }
 .ct-acop   { width: 62px;  }
 .ct-f2     { width: 52px;  text-align: right; }
@@ -3930,6 +3934,20 @@ body{
 .cr.cr-planificado td.ct-tipo { border-left: 3px solid #94a3b8; }
 .cr.cr-liberado    td.ct-tipo { border-left: 3px solid #00A887; }
 
+/* Liberado: verde pastel zebra */
+.cr.cr-liberado:nth-child(odd)  td { background: #f0fdf4; }
+.cr.cr-liberado:nth-child(even) td { background: #dcfce7; }
+.cr.cr-liberado:hover td { background: #bbf7d0 !important; }
+.cr.cr-liberado:nth-child(odd)  td.ct-tipo,
+.cr.cr-liberado:nth-child(odd)  td.ct-num,
+.cr.cr-liberado:nth-child(odd)  td.ct-box  { background: #f0fdf4; }
+.cr.cr-liberado:nth-child(even) td.ct-tipo,
+.cr.cr-liberado:nth-child(even) td.ct-num,
+.cr.cr-liberado:nth-child(even) td.ct-box  { background: #dcfce7; }
+.cr.cr-liberado:hover td.ct-tipo,
+.cr.cr-liberado:hover td.ct-num,
+.cr.cr-liberado:hover td.ct-box { background: #bbf7d0 !important; }
+
 /* ── Filas separadoras de grupo ── */
 .cargas-sep-row td {
   background: #dde6f4 !important;
@@ -3957,20 +3975,20 @@ body{
 
 /* ── Box chip ── */
 .ct-box-chip {
-  display: inline-block; padding: 2px 7px; border-radius: 5px;
+  display: inline-flex; align-items: center; padding: 5px 9px; border-radius: 6px;
   background: #e2e8f0; border: 1px solid #cbd5e1;
-  font-weight: 800; font-size: .67rem; color: #334155; white-space: nowrap;
+  font-weight: 800; font-size: .67rem; color: #334155; white-space: nowrap; line-height: 1;
 }
 /* ── Tronera chip ── */
 .ct-tron-chip {
-  display: inline-block; padding: 2px 6px; border-radius: 5px;
+  display: inline-flex; align-items: center; padding: 5px 9px; border-radius: 6px;
   background: #ede9fe; border: 1px solid #c4b5fd;
-  font-size: .64rem; font-weight: 800; color: #5b21b6; white-space: nowrap;
+  font-size: .64rem; font-weight: 800; color: #5b21b6; white-space: nowrap; line-height: 1;
 }
 .ct-asignar-btn {
-  padding: 2px 7px; border-radius: 5px;
+  padding: 5px 9px; border-radius: 6px;
   border: 1px solid #93c5fd; background: #eff6ff;
-  color: #1d4ed8; font-size: .61rem; font-weight: 800; cursor: pointer; white-space: nowrap;
+  color: #1d4ed8; font-size: .62rem; font-weight: 800; cursor: pointer; white-space: nowrap; line-height: 1;
 }
 .ct-asignar-btn:hover { background: #dbeafe; }
 
