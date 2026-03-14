@@ -89,6 +89,7 @@ const menuTree = {
       title: 'MANTENIMIENTO',
       children: [
         { title: 'MANTENIMIENTO GENERAL',        url: 'https://sistema.cinafrio.com/intranet2/app.php/mantenimiento/' },
+        { title: 'GESTION DE EQUIPOS' },
         { title: 'PR 6 CONTRASTE DE TERMOMETROS' },
         { title: 'PR 9 SEMANAL',                 url: 'https://sistema.cinafrio.com/intranet2/app.php/sdmegcsemanal/' },
         { title: 'PR 22 LIMPIEZA TANQUES' },
@@ -160,6 +161,13 @@ const menuTree = {
       children: [
         { title: 'VETERINARIOS', url: 'https://sistema.cinafrio.com/intranet/index.php/veterinario/index' },
         {
+          title: 'MANTENIMIENTO',
+          children: [
+            { title: 'ESPACIOS COMUNES' },
+            { title: 'ALTA EQUIPO MANTENIMIENTO' }
+          ]
+        },
+        {
           title: 'CLIENTES',
           children: [
             { title: 'CLIENTES DEPOSITO NACIONAL', url: 'https://sistema.cinafrio.com/intranet/index.php/clientes/list?fiscal=0&page=1' },
@@ -192,7 +200,8 @@ const menuTree = {
         { title: 'REGISTRO PR 44',          url: 'https://sistema.cinafrio.com/intranet/index.php/registro' },
         { title: 'FORMACION',               url: 'https://manualcinafrio.com.ar/formacion/' }
       ]
-    }
+    },
+    { title: 'ASISTENTE IA' }
   ]
 };
 
@@ -213,7 +222,11 @@ const mainColorMap = {
   'SISTEMA DE GESTION': '#001F60',
   'SENASA':             '#23BAC4',
   'CONFIGURACION':      '#001F60',
-  'OTROS SISTEMAS':     '#001F60'
+  'OTROS SISTEMAS':     '#001F60',
+  'ASISTENTE IA':       '#6366f1',
+  'GESTION DE EQUIPOS': '#0f766e',
+  'ESPACIOS COMUNES':   '#0f766e',
+  'ALTA EQUIPO MANTENIMIENTO': '#0f766e'
 };
 
 /* ── DATOS LOGÍSTICA ────────────────────────────────────────── */
@@ -324,8 +337,10 @@ const menuGrid       = document.getElementById('menuGrid');
 /* ── API EQUIPOS ─────────────────────────────────────────────
    URL de la API PHP en el mismo servidor
    ─────────────────────────────────────────────────────────── */
-const API_EQUIPOS_URL = '/api_equipos.php';  // ajustá si está en otra ruta
+const API_EQUIPOS_URL = '/api_2026ia.php';   // antes: api_equipos.php
 const API_SECRET      = 'cina_secret_2026';  // igual que en api_equipos.php
+const API_IA_URL      = '/api_ia.php';
+const API_IA_SECRET   = 'cina_ia_2026';
 
 async function apiEquipos(action, body = {}) {
   try {
@@ -598,10 +613,19 @@ function getCustomTileHTML(item) {
     const hoy     = new Date();
     const TOTAL   = 20;
 
-    // Para cada cámara buscar el registro más reciente
+    // Para cada cámara buscar el registro más reciente (DB primero, fallback a memoria)
     const estadoCamaras = PR6_CAMARAS.map(cam => {
+      const camaraObj = camarasDB.find(c => c.nombre_display === cam);
+      const camaraNum = camaraObj ? camaraObj.CamaraNumero : null;
+      if (pr6EstadoCamarasDB.length && camaraNum) {
+        const dbRow = pr6EstadoCamarasDB.find(r => parseInt(r.camara) === camaraNum);
+        if (dbRow) {
+          const dias = parseInt(dbRow.dias_desde_ultimo);
+          return { cam, estado: dias <= 30 ? 'ok' : 'vencido', dias };
+        }
+      }
       const registrosConCam = pr6Registros.filter(r =>
-        r.detalles && r.detalles.some(d => d.camara === cam)
+        r.detalles && r.detalles.some(d => d.camara_nombre === cam || d.camara === cam)
       );
       if (!registrosConCam.length) return { cam, estado: 'sin-dato' };
       const fechas = registrosConCam.map(r => new Date(r.fecha));
@@ -3652,6 +3676,10 @@ function renderNode(node) {
         if (item.title === 'PR 6 CONTRASTE DE TERMOMETROS')                 { historyStack.push(node); renderPR6Contraste(); return; }
         if (item.title === 'PR 22 LIMPIEZA TANQUES')                          { historyStack.push(node); renderPR22Limpieza(); return; }
         if (item.title === 'PR 100 DESCONGELADO')                             { historyStack.push(node); renderPR100Descongelado(); return; }
+        if (item.title === 'ASISTENTE IA')                                    { historyStack.push(node); renderAsistenteIA(); return; }
+        if (item.title === 'GESTION DE EQUIPOS')                              { historyStack.push(node); renderGestionEquipos(); return; }
+        if (item.title === 'ESPACIOS COMUNES')                                { historyStack.push(node); renderEspaciosComunes(); return; }
+        if (item.title === 'ALTA EQUIPO MANTENIMIENTO')                       { historyStack.push(node); renderAltaEquipoMant(null); return; }
         if (item.children)                                   { historyStack.push(node); renderNode(item);                    return; }
         if (item.url)                                        { openModule(item.url);                                         return; }
         historyStack.push(node);
@@ -3711,6 +3739,12 @@ window.addEventListener('resize', updateAdaptiveLayout);
 updateAdaptiveLayout();
 // Cargar cámaras desde DB al iniciar (no bloquea el arranque)
 cargarCamarasDesdeDB();
+
+// Cargar estado PR-6 por cámara desde DB
+fetch(`${API_EQUIPOS_URL}?action=pr6_estado_camaras`)
+  .then(r => r.json())
+  .then(data => { if (Array.isArray(data)) pr6EstadoCamarasDB = data; })
+  .catch(() => {});
 
 renderNode(menuTree);
 
@@ -6271,6 +6305,7 @@ window.addEventListener('hashchange', handleHashRouting);
 /* ── PR-22 LIMPIEZA DE TANQUES ─────────────────────── */
 let pr22Registros = [];
 let pr100Registros = [];
+let pr6EstadoCamarasDB = []; // estado por cámara desde DB
 
 // Lista dinámica — se reemplaza al cargar desde MySQL
 let PR6_CAMARAS = [
@@ -6452,62 +6487,277 @@ function pr6EliminarFilaPorCamara(camara) {
 
 function pr6GuardarRegistro() {
   const maquinista = document.getElementById('pr6Maquinista').value;
-  const turno      = document.getElementById('pr6Turno').value;
   const fecha      = document.getElementById('pr6Fecha').value;
   const hora       = document.getElementById('pr6Hora').value;
   if (!maquinista) { pr6MostrarToast('Error: no hay usuario activo', 'error'); return; }
+
   const filas = [...document.querySelectorAll('#pr6Filas .pr6-row')];
   if (!filas.length) { pr6MostrarToast('Agregá al menos una cámara', 'error'); return; }
+
+  // Construir detalles con número de cámara desde camarasDB
   const detalles = filas.map(f => {
-    const cam = f.dataset.camara || f.querySelector('.pr6-sel-camara')?.value || '';
-    const nums = [...f.querySelectorAll('.pr6-num-wrap')].map(wrap => {
+    const camaraNombre = f.dataset.camara || f.querySelector('.pr6-sel-camara')?.value || '';
+    // Buscar número de cámara en camarasDB
+    const camaraObj = camarasDB.find(c => c.nombre_display === camaraNombre);
+    const camaraNum = camaraObj ? camaraObj.CamaraNumero : null;
+
+    const wraps = [...f.querySelectorAll('.pr6-num-wrap')];
+    const leerValor = (wrap) => {
+      if (!wrap) return null;
       const val = wrap.querySelector('.pr6-num-inp').value;
-      if (val === '' || val === null) return '';
+      if (val === '' || val === null) return null;
       const isNeg = wrap.querySelector('.pr6-sign-neg').classList.contains('active');
-      return isNeg ? '-' + Math.abs(parseFloat(val)) : '+' + Math.abs(parseFloat(val));
-    });
-    const obs  = f.querySelector('textarea')?.value || '';
-    return { camara:cam, ptr1:nums[0], ptr2:nums[1], plc:nums[2], puesta:nums[3], alcanzada:nums[4], obs };
+      return isNeg ? -Math.abs(parseFloat(val)) : Math.abs(parseFloat(val));
+    };
+
+    return {
+      camara_nombre: camaraNombre,
+      camara_num   : camaraNum,
+      ptr1         : leerValor(wraps[0]),
+      ptr2         : leerValor(wraps[1]),
+      plc          : leerValor(wraps[2]),
+      puerta       : leerValor(wraps[3]),
+      alcohol      : leerValor(wraps[4]),
+      obs          : f.querySelector('textarea')?.value || '',
+    };
   });
-  if (detalles.some(d => !d.camara)) { pr6MostrarToast('Hay filas sin cámara seleccionada', 'error'); return; }
+
+  if (detalles.some(d => !d.camara_nombre)) {
+    pr6MostrarToast('Hay filas sin cámara seleccionada', 'error'); return;
+  }
+
+  // Guardar en memoria (respaldo local)
   pr6Registros.push({ maquinista, fecha, hora, detalles, ts: new Date().toLocaleString('es-AR') });
-  pr6MostrarToast('✓ Registro guardado correctamente', 'ok');
-  setTimeout(() => renderPR6Contraste(), 1400);
+
+  // Deshabilitar botón mientras guarda
+  const btn = document.getElementById('pr6GuardarBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Guardando...'; }
+
+  // Enviar a la base de datos
+  fetch(`${API_EQUIPOS_URL}?action=pr6_guardar`, {
+    method : 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body   : JSON.stringify({
+      secret    : API_SECRET,
+      fecha, hora, maquinista, detalles
+    })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.ok) {
+      pr6MostrarToast(`✓ Registro #${data.registro_id} guardado en base de datos`, 'ok');
+    } else {
+      pr6MostrarToast('⚠️ Guardado local OK, error en DB: ' + (data.error || ''), 'error');
+    }
+    setTimeout(() => renderPR6Contraste(), 1400);
+  })
+  .catch(() => {
+    pr6MostrarToast('✓ Guardado local. Sin conexión a DB.', 'info');
+    setTimeout(() => renderPR6Contraste(), 1400);
+  });
 }
 
 function pr6MostrarHistorial() {
-  if (!pr6Registros.length) { pr6MostrarToast('No hay registros guardados aún', 'info'); return; }
+  // Mostrar modal con spinner mientras carga
   const overlay = document.createElement('div');
   overlay.className = 'pr6-hist-overlay';
   overlay.innerHTML = `
     <div class="pr6-hist-modal">
       <div class="pr6-hist-header">
-        <span>📋 Historial de registros</span>
+        <span>📋 Historial PR-6 — Contraste de Termómetros</span>
         <button class="pr6-hist-close" id="pr6HClose">✕</button>
       </div>
-      <div class="pr6-hist-body">
-        ${pr6Registros.slice().reverse().map(r => `
-          <div class="pr6-hist-card">
-            <div class="pr6-hist-card-header">
-              <span class="pr6-hist-maq">${r.maquinista}</span>
-              <span class="pr6-hist-fecha">${r.fecha} ${r.hora}</span>
-            </div>
-            <table class="pr6-hist-table"><thead><tr>
-              <th>Cámara</th><th>Ptr 1</th><th>Ptr 2</th><th>PLC</th><th>Puesta</th><th>Alcanz.</th><th>Obs.</th>
-            </tr></thead><tbody>
-              ${r.detalles.map(d=>`<tr>
-                <td>${d.camara}</td><td>${d.ptr1||'—'}</td><td>${d.ptr2||'—'}</td>
-                <td>${d.plc||'—'}</td><td>${d.puesta||'—'}</td><td>${d.alcanzada||'—'}</td>
-                <td class="pr6-td-obs">${d.obs||'—'}</td>
-              </tr>`).join('')}
-            </tbody></table>
-            <div class="pr6-hist-footer">Guardado: ${r.ts}</div>
-          </div>`).join('')}
+      <div class="pr6-hist-body" id="pr6HistBody">
+        <div style="text-align:center;padding:32px;color:rgba(255,255,255,.5)">Cargando registros...</div>
       </div>
     </div>`;
   document.body.appendChild(overlay);
   overlay.addEventListener('click', e => { if (e.target===overlay) overlay.remove(); });
   document.getElementById('pr6HClose').addEventListener('click', () => overlay.remove());
+
+  // Cargar desde DB
+  fetch(`${API_EQUIPOS_URL}?action=pr6_historial&limit=30`)
+  .then(r => r.json())
+  .then(registros => {
+    const body = document.getElementById('pr6HistBody');
+    if (!body) return;
+
+    if (!registros.length) {
+      body.innerHTML = '<div style="text-align:center;padding:32px;color:rgba(255,255,255,.5)">No hay registros en la base de datos aún.</div>';
+      return;
+    }
+
+    body.innerHTML = registros.map(r => `
+      <div class="pr6-hist-card">
+        <div class="pr6-hist-card-header">
+          <span class="pr6-hist-maq">${r.maquinista_nombre || '—'}</span>
+          <span class="pr6-hist-fecha">${r.fecha} ${r.hora?.slice(0,5) || ''}</span>
+          <span style="margin-left:auto;font-size:.7rem;color:rgba(255,255,255,.35)">${r.camaras_registradas} cámaras</span>
+          <button class="pr6-ver-detalle-btn" data-id="${r.id}" style="
+            background:rgba(54,176,201,.15);border:1px solid rgba(54,176,201,.3);
+            color:#7dd3fc;border-radius:6px;padding:3px 10px;font-size:.72rem;
+            font-weight:700;cursor:pointer;white-space:nowrap;margin-left:8px
+          ">Ver detalle</button>
+        </div>
+      </div>`).join('');
+
+    // Botones ver detalle
+    body.querySelectorAll('.pr6-ver-detalle-btn').forEach(btn => {
+      btn.addEventListener('click', () => pr6VerDetalle(btn.dataset.id, body));
+    });
+  })
+  .catch(() => {
+    // Fallback a registros en memoria
+    const body = document.getElementById('pr6HistBody');
+    if (!body) return;
+    if (!pr6Registros.length) {
+      body.innerHTML = '<div style="text-align:center;padding:32px;color:rgba(255,255,255,.5)">Sin conexión a DB y sin registros locales.</div>';
+      return;
+    }
+    body.innerHTML = pr6Registros.slice().reverse().map(r => `
+      <div class="pr6-hist-card">
+        <div class="pr6-hist-card-header">
+          <span class="pr6-hist-maq">${r.maquinista}</span>
+          <span class="pr6-hist-fecha">${r.fecha} ${r.hora}</span>
+        </div>
+        <table class="pr6-hist-table"><thead><tr>
+          <th>Cámara</th><th>Ptr 1</th><th>Ptr 2</th><th>PLC</th><th>Puerta</th><th>Alcohol</th><th>Obs.</th>
+        </tr></thead><tbody>
+          ${r.detalles.map(d=>`<tr>
+            <td>${d.camara_nombre||d.camara||'—'}</td>
+            <td>${d.ptr1??'—'}</td><td>${d.ptr2??'—'}</td><td>${d.plc??'—'}</td>
+            <td>${d.puerta??'—'}</td><td>${d.alcohol??'—'}</td>
+            <td class="pr6-td-obs">${d.obs||'—'}</td>
+          </tr>`).join('')}
+        </tbody></table>
+        <div class="pr6-hist-footer">Guardado localmente: ${r.ts}</div>
+      </div>`).join('');
+  });
+}
+
+async function pr6VerDetalle(id, container) {
+  // Reemplazar contenido con spinner
+  container.innerHTML = `
+    <button style="background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:.8rem;padding:8px 0;margin-bottom:8px"
+      id="pr6VolvHistorial">← Volver al listado</button>
+    <div style="text-align:center;padding:32px;color:rgba(255,255,255,.5)">Cargando detalle...</div>`;
+  document.getElementById('pr6VolvHistorial').addEventListener('click', () => pr6MostrarHistorialEnBody(container));
+
+  try {
+    const res  = await fetch(`${API_EQUIPOS_URL}?action=pr6_detalle&id=${id}`);
+    const data = await res.json();
+    const { cabecera, detalles } = data;
+
+    container.innerHTML = `
+      <button style="background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:.8rem;padding:8px 0;margin-bottom:12px"
+        id="pr6VolvHistorial2">← Volver al listado</button>
+      <div class="pr6-hist-card">
+        <div class="pr6-hist-card-header">
+          <span class="pr6-hist-maq">${cabecera.maquinista_nombre}</span>
+          <span class="pr6-hist-fecha">${cabecera.fecha} ${cabecera.hora?.slice(0,5)}</span>
+        </div>
+        <table class="pr6-hist-table">
+          <thead><tr>
+            <th>Cámara</th><th>Ptr N°1</th><th>Ptr N°2</th><th>Temp PLC</th>
+            <th>T. Puerta</th><th>T. Alcohol</th>
+            <th>Dif PLC</th><th>Dif Puerta</th><th>Dif Alc.</th><th>Dif Máx</th>
+            <th style="text-align:left">Observaciones</th>
+          </tr></thead>
+          <tbody>
+            ${detalles.map(d => {
+              const difColor = (v) => {
+                if (v === null || v === undefined) return '';
+                const n = parseFloat(v);
+                if (Math.abs(n) > 2) return 'color:#fca5a5';
+                if (Math.abs(n) > 1) return 'color:#fde68a';
+                return 'color:#86efac';
+              };
+              return `<tr>
+                <td style="font-weight:800">${d.camara_nombre || 'Cámara ' + d.camara}</td>
+                <td>${d.temp_patron_n1??'—'}</td>
+                <td>${d.temp_patron_n2??'—'}</td>
+                <td>${d.temp_plc??'—'}</td>
+                <td>${d.temp_puerta??'—'}</td>
+                <td>${d.temp_alcohol??'—'}</td>
+                <td style="${difColor(d.dif_temp_plc)}">${d.dif_temp_plc??'—'}</td>
+                <td style="${difColor(d.dif_temp_puerta)}">${d.dif_temp_puerta??'—'}</td>
+                <td style="${difColor(d.dif_temp_alcohol)}">${d.dif_temp_alcohol??'—'}</td>
+                <td style="${difColor(d.dif_temp_max)};font-weight:800">${d.dif_temp_max??'—'}</td>
+                <td class="pr6-td-obs">${d.observaciones||'—'}</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>`;
+    document.getElementById('pr6VolvHistorial2').addEventListener('click', () => pr6MostrarHistorialEnBody(container));
+  } catch(e) {
+    container.innerHTML = '<div style="color:#fca5a5;padding:16px">Error al cargar el detalle.</div>';
+  }
+}
+
+function pr6MostrarHistorialEnBody(container) {
+  // Re-cargar el listado en el body existente sin cerrar el modal
+  fetch(`${API_EQUIPOS_URL}?action=pr6_historial&limit=30`)
+  .then(r => r.json())
+  .then(registros => {
+    container.innerHTML = registros.map(r => `
+      <div class="pr6-hist-card">
+        <div class="pr6-hist-card-header">
+          <span class="pr6-hist-maq">${r.maquinista_nombre||'—'}</span>
+          <span class="pr6-hist-fecha">${r.fecha} ${r.hora?.slice(0,5)||''}</span>
+          <span style="margin-left:auto;font-size:.7rem;color:rgba(255,255,255,.35)">${r.camaras_registradas} cámaras</span>
+          <button class="pr6-ver-detalle-btn" data-id="${r.id}" style="
+            background:rgba(54,176,201,.15);border:1px solid rgba(54,176,201,.3);
+            color:#7dd3fc;border-radius:6px;padding:3px 10px;font-size:.72rem;
+            font-weight:700;cursor:pointer;white-space:nowrap;margin-left:8px
+          ">Ver detalle</button>
+        </div>
+      </div>`).join('');
+    container.querySelectorAll('.pr6-ver-detalle-btn').forEach(btn => {
+      btn.addEventListener('click', () => pr6VerDetalle(btn.dataset.id, container));
+    });
+  });
+}
+
+async function pr6CargarDetalle(regId) {
+  const cont = document.getElementById('pr6HistDet_' + regId);
+  if (!cont) return;
+  cont.innerHTML = '<div style="font-size:.72rem;color:rgba(255,255,255,.4);padding:4px 0">Cargando...</div>';
+  try {
+    const res  = await fetch(`${API_EQUIPOS_URL}?action=pr6_detalle&id=${regId}`);
+    const rows = await res.json();
+    if (!rows.length) { cont.innerHTML = '<div style="font-size:.72rem;color:rgba(255,255,255,.4);">Sin detalles</div>'; return; }
+    cont.innerHTML = `
+      <table class="pr6-hist-table">
+        <thead><tr>
+          <th>Cámara</th><th>Ptr 1</th><th>Ptr 2</th><th>PLC</th><th>Puerta</th><th>Alcohol</th>
+          <th>Δ PLC</th><th>Δ Puerta</th><th>Δ Alcohol</th><th>Δ Max</th><th style="text-align:left">Obs.</th>
+        </tr></thead>
+        <tbody>
+          ${rows.map(d => {
+            const difColor = v => {
+              if (v === null || v === undefined) return '';
+              const n = parseFloat(v);
+              if (Math.abs(n) > 1.5) return 'color:#fca5a5';
+              if (Math.abs(n) > 0.5) return 'color:#fbbf24';
+              return 'color:#86efac';
+            };
+            return `<tr>
+              <td><strong>C${d.camara_num}</strong></td>
+              <td>${d.ptr1??'—'}</td><td>${d.ptr2??'—'}</td>
+              <td>${d.plc??'—'}</td><td>${d.puerta??'—'}</td><td>${d.alcohol??'—'}</td>
+              <td style="${difColor(d.dif_temp_plc)}">${d.dif_temp_plc??'—'}</td>
+              <td style="${difColor(d.dif_temp_puerta)}">${d.dif_temp_puerta??'—'}</td>
+              <td style="${difColor(d.dif_temp_alcohol)}">${d.dif_temp_alcohol??'—'}</td>
+              <td style="${difColor(d.dif_temp_max)};font-weight:800">${d.dif_temp_max??'—'}</td>
+              <td style="text-align:left;font-size:.72rem">${d.observaciones||'—'}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) {
+    cont.innerHTML = '<div style="font-size:.72rem;color:#fca5a5">Error al cargar detalle</div>';
+  }
 }
 
 function pr6MostrarToast(msg, tipo='ok') {
@@ -6655,6 +6905,7 @@ function pr22Guardar() {
     pr6MostrarToast('Ingresá el Nº de precinto del Tanque Sur', 'error'); return;
   }
 
+  // Guardar en memoria (respaldo local)
   pr22Registros.push({
     maquinista, fecha, hora, comentarios,
     tanques: {
@@ -6664,12 +6915,40 @@ function pr22Guardar() {
     ts: new Date().toLocaleString('es-AR')
   });
 
-  pr6MostrarToast('✓ Registro guardado correctamente', 'ok');
-  setTimeout(() => renderPR22Limpieza(), 1400);
+  // Deshabilitar botón mientras guarda
+  const btn22 = document.getElementById('pr22GuardarBtn');
+  if (btn22) { btn22.disabled = true; btn22.textContent = 'Guardando...'; }
+
+  // Enviar a la base de datos
+  fetch(`${API_EQUIPOS_URL}?action=pr22_guardar`, {
+    method : 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body   : JSON.stringify({
+      secret         : API_SECRET,
+      fecha, hora, maquinista,
+      tanque_norte   : norte ? 1 : 0,
+      tanque_sur     : sur   ? 1 : 0,
+      precinto_norte : preNorte,
+      precinto_sur   : preSur,
+      comentarios,
+    })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.ok) {
+      pr6MostrarToast(`✓ Registro #${data.registro_id} guardado en base de datos`, 'ok');
+    } else {
+      pr6MostrarToast('⚠️ Guardado local OK, error en DB: ' + (data.error || ''), 'error');
+    }
+    setTimeout(() => renderPR22Limpieza(), 1400);
+  })
+  .catch(() => {
+    pr6MostrarToast('✓ Guardado local. Sin conexión a DB.', 'info');
+    setTimeout(() => renderPR22Limpieza(), 1400);
+  });
 }
 
 function pr22MostrarHistorial() {
-  if (!pr22Registros.length) { pr6MostrarToast('No hay registros guardados aún', 'info'); return; }
   const overlay = document.createElement('div');
   overlay.className = 'pr6-hist-overlay';
   overlay.innerHTML = `
@@ -6678,30 +6957,70 @@ function pr22MostrarHistorial() {
         <span>📋 Historial — PR-22 Limpieza de Tanques</span>
         <button class="pr6-hist-close" id="pr22HClose">✕</button>
       </div>
-      <div class="pr6-hist-body">
-        ${pr22Registros.slice().reverse().map(r => `
-          <div class="pr6-hist-card">
-            <div class="pr6-hist-card-header">
-              <span class="pr6-hist-maq">${r.maquinista}</span>
-              <span class="pr6-hist-fecha">${r.fecha} ${r.hora}</span>
-            </div>
-            <div style="padding:12px 14px;display:flex;flex-direction:column;gap:8px;">
-              ${r.tanques.norte ? `<div class="pr22-hist-tanque">
-                <span class="pr22-hist-tag pr22-hist-norte">Tanque Norte</span>
-                <span>Precinto: <strong>${r.tanques.norte.precinto}</strong></span>
-              </div>` : ''}
-              ${r.tanques.sur ? `<div class="pr22-hist-tanque">
-                <span class="pr22-hist-tag pr22-hist-sur">Tanque Sur</span>
-                <span>Precinto: <strong>${r.tanques.sur.precinto}</strong></span>
-              </div>` : ''}
-              ${r.comentarios ? `<div style="font-size:.78rem;color:rgba(255,255,255,.6);font-style:italic">"${r.comentarios}"</div>` : ''}
-            </div>
-            <div class="pr6-hist-footer">Guardado: ${r.ts}</div>
-          </div>`).join('')}
+      <div class="pr6-hist-body" id="pr22HistBody">
+        <div style="text-align:center;padding:32px;color:rgba(255,255,255,.5)">Cargando registros...</div>
       </div>
     </div>`;
   document.body.appendChild(overlay);
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  document.getElementById('pr22HClose').addEventListener('click', () => overlay.remove());
+
+  // Cargar desde DB
+  fetch(`${API_EQUIPOS_URL}?action=pr22_historial&limite=20`)
+  .then(r => r.json())
+  .then(rows => {
+    const body = document.getElementById('pr22HistBody');
+    if (!body) return;
+    if (!rows.length) {
+      body.innerHTML = '<div style="text-align:center;padding:32px;color:rgba(255,255,255,.5)">Sin registros aún</div>';
+      return;
+    }
+    body.innerHTML = rows.map(r => {
+      const norte = parseInt(r.tanque_norte) === 1;
+      const sur   = parseInt(r.tanque_sur)   === 1;
+      // Parsear presintos del texto
+      const lineas = (r.presinto || '').split('\n');
+      const txtNorte = lineas.find(l => l.includes('Norte'))?.replace('Tanque Norte:','').trim() || '—';
+      const txtSur   = lineas.find(l => l.includes('Sur'))?.replace('Tanque Sur:','').trim() || '—';
+      const obs      = lineas.find(l => l.startsWith('Obs:'))?.replace('Obs:','').trim() || '';
+      return `
+        <div class="pr6-hist-card">
+          <div class="pr6-hist-card-header">
+            <span class="pr6-hist-maq">${r.maquinista || '—'}</span>
+            <span class="pr6-hist-fecha">${r.fecha} ${r.hora}</span>
+          </div>
+          <div style="padding:12px 14px;display:flex;flex-direction:column;gap:8px;">
+            ${norte ? `<div class="pr22-hist-tanque">
+              <span class="pr22-hist-tag pr22-hist-norte">Tanque Norte</span>
+              <span>Precinto: <strong>${txtNorte}</strong></span>
+            </div>` : ''}
+            ${sur ? `<div class="pr22-hist-tanque">
+              <span class="pr22-hist-tag pr22-hist-sur">Tanque Sur</span>
+              <span>Precinto: <strong>${txtSur}</strong></span>
+            </div>` : ''}
+            ${obs ? `<div style="font-size:.78rem;color:rgba(255,255,255,.6);font-style:italic">"${obs}"</div>` : ''}
+          </div>
+          <div class="pr6-hist-footer">Registro #${r.id}</div>
+        </div>`;
+    }).join('');
+  })
+  .catch(() => {
+    // Fallback a registros locales
+    const body = document.getElementById('pr22HistBody');
+    if (!body) return;
+    if (!pr22Registros.length) {
+      body.innerHTML = '<div style="text-align:center;padding:32px;color:rgba(255,255,255,.5)">Sin conexión a DB y sin registros locales</div>';
+      return;
+    }
+    body.innerHTML = pr22Registros.slice().reverse().map(r => `
+      <div class="pr6-hist-card">
+        <div class="pr6-hist-card-header">
+          <span class="pr6-hist-maq">${r.maquinista}</span>
+          <span class="pr6-hist-fecha">${r.fecha} ${r.hora}</span>
+        </div>
+        <div class="pr6-hist-footer">Local — ${r.ts}</div>
+      </div>`).join('');
+  });
   document.getElementById('pr22HClose').addEventListener('click', () => overlay.remove());
 }
 
@@ -6872,4 +7191,1004 @@ function pr100MostrarHistorial() {
   document.body.appendChild(overlay);
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
   document.getElementById('pr100HClose').addEventListener('click', () => overlay.remove());
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ASISTENTE IA — Módulo principal
+   ═══════════════════════════════════════════════════════════════ */
+
+let iaHistorial = []; // historial de conversación en memoria
+
+function renderAsistenteIA() {
+  menuGrid.className = 'menu-grid';
+  menuGrid.innerHTML = `
+    <div class="ia-wrap">
+
+      <div class="pr6-topbar">
+        <button class="mod-back-btn" id="iaBackBtn">← Volver</button>
+        <div class="pr6-topbar-center">
+          <span class="ia-badge">✦ IA</span>
+          <span class="pr6-topbar-title">Asistente CINA</span>
+        </div>
+        <div class="ia-topbar-actions">
+          <button class="pr6-hist-trigger" id="iaAnomaliasBtn">🌡️ Revisar temperaturas</button>
+          <button class="pr6-hist-trigger" id="iaLimpiarBtn">🗑 Limpiar</button>
+        </div>
+      </div>
+
+      <div class="ia-sugerencias" id="iaSugerencias">
+        <div class="ia-sugerencias-title">Sugerencias rápidas</div>
+        <div class="ia-chips-row">
+          <button class="ia-chip" data-msg="¿Cuántos equipos están en falla ahora?">⚠️ Equipos en falla</button>
+          <button class="ia-chip" data-msg="¿Cuál es la temperatura promedio de todas las cámaras hoy?">🌡️ Temperaturas hoy</button>
+          <button class="ia-chip" data-msg="¿Cuál es la capacidad total del depósito en posiciones?">📦 Capacidad depósito</button>
+          <button class="ia-chip" data-msg="Dame un resumen del estado general del sistema">📊 Estado general</button>
+          <button class="ia-chip" data-msg="¿Qué equipos tienen más horas de uso?">⏱ Horómetros altos</button>
+          <button class="ia-chip" data-msg="¿Hubo alguna temperatura fuera de rango en los últimos días?">🚨 Anomalías recientes</button>
+        </div>
+      </div>
+
+      <div class="ia-chat" id="iaChat">
+        <div class="ia-bienvenida">
+          <div class="ia-bienvenida-icon">✦</div>
+          <div class="ia-bienvenida-texto">
+            <strong>Hola, soy el Asistente IA de CINA</strong>
+            <span>Puedo consultarte datos de la base, analizar temperaturas, revisar equipos y más. ¿En qué te ayudo?</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ia-input-area">
+        <div class="ia-upload-row" id="iaUploadRow">
+          <label class="ia-upload-btn" title="Subir CSV o PDF para analizar">
+            📎
+            <input type="file" id="iaFileInput" accept=".csv,.pdf,.txt" style="display:none">
+          </label>
+        </div>
+        <div class="ia-input-wrap">
+          <textarea class="ia-textarea" id="iaMensaje" placeholder="Preguntame sobre equipos, temperaturas, cámaras..." rows="1"></textarea>
+          <button class="ia-send-btn" id="iaEnviarBtn">↑</button>
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  // Auto-resize textarea
+  const ta = document.getElementById('iaMensaje');
+  ta.addEventListener('input', () => { ta.style.height='auto'; ta.style.height=Math.min(ta.scrollHeight,120)+'px'; });
+  ta.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); iaEnviar(); }
+  });
+
+  document.getElementById('iaEnviarBtn').addEventListener('click', iaEnviar);
+  document.getElementById('iaBackBtn').addEventListener('click', () => { historyStack.pop(); renderNode(historyStack.pop() || menuTree); });
+  document.getElementById('iaLimpiarBtn').addEventListener('click', () => { iaHistorial = []; renderAsistenteIA(); });
+  document.getElementById('iaAnomaliasBtn').addEventListener('click', iaRevisarAnomalias);
+
+  // Chips de sugerencias
+  document.getElementById('iaSugerencias').addEventListener('click', e => {
+    const chip = e.target.closest('[data-msg]');
+    if (!chip) return;
+    ta.value = chip.dataset.msg;
+    iaEnviar();
+  });
+
+  // Upload de archivo
+  document.getElementById('iaFileInput').addEventListener('change', iaAnalizarArchivo);
+}
+
+async function iaEnviar() {
+  const ta      = document.getElementById('iaMensaje');
+  const mensaje = ta.value.trim();
+  if (!mensaje) return;
+
+  ta.value = '';
+  ta.style.height = 'auto';
+
+  // Ocultar sugerencias tras primer mensaje
+  const sug = document.getElementById('iaSugerencias');
+  if (sug) sug.style.display = 'none';
+
+  // Agregar mensaje del usuario al chat
+  iaAgregarMensaje('user', mensaje);
+
+  // Indicador de escritura
+  const typingId = 'iaTyping_' + Date.now();
+  iaAgregarTyping(typingId);
+
+  try {
+    const res = await fetch(`${API_IA_URL}?action=chat`, {
+      method : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body   : JSON.stringify({
+        secret   : API_IA_SECRET,
+        mensaje,
+        historial: iaHistorial,
+      })
+    });
+    const data = await res.json();
+    document.getElementById(typingId)?.remove();
+
+    if (data.error) {
+      iaAgregarMensaje('assistant', '❌ Error: ' + data.error);
+    } else {
+      iaAgregarMensaje('assistant', data.respuesta);
+      // Guardar en historial (máximo 10 turnos)
+      iaHistorial.push({ role: 'user',      content: mensaje });
+      iaHistorial.push({ role: 'assistant', content: data.respuesta });
+      if (iaHistorial.length > 20) iaHistorial = iaHistorial.slice(-20);
+    }
+  } catch(e) {
+    document.getElementById(typingId)?.remove();
+    iaAgregarMensaje('assistant', '⚠️ No se pudo conectar con el asistente. Verificá la conexión.');
+  }
+}
+
+async function iaRevisarAnomalias() {
+  const typingId = 'iaTyping_' + Date.now();
+  // Ocultar sugerencias
+  const sug = document.getElementById('iaSugerencias');
+  if (sug) sug.style.display = 'none';
+  iaAgregarMensaje('user', '🌡️ Revisá las temperaturas de hoy y detectá anomalías');
+  iaAgregarTyping(typingId);
+
+  try {
+    const res  = await fetch(`${API_IA_URL}?action=anomalias`, {
+      method : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body   : JSON.stringify({ secret: API_IA_SECRET })
+    });
+    const data = await res.json();
+    document.getElementById(typingId)?.remove();
+
+    if (data.alertas?.length) {
+      iaAgregarMensaje('assistant', data.respuesta, data.alertas);
+    } else {
+      iaAgregarMensaje('assistant', data.respuesta);
+    }
+  } catch(e) {
+    document.getElementById(typingId)?.remove();
+    iaAgregarMensaje('assistant', '⚠️ Error al revisar temperaturas.');
+  }
+}
+
+async function iaAnalizarArchivo(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = '';
+
+  iaAgregarMensaje('user', `📎 Analizando archivo: **${file.name}**`);
+  const typingId = 'iaTyping_' + Date.now();
+  iaAgregarTyping(typingId);
+
+  try {
+    const texto = await file.text();
+    const tipo  = file.name.endsWith('.pdf') ? 'pdf' : 'csv';
+
+    const res  = await fetch(`${API_IA_URL}?action=analizar`, {
+      method : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body   : JSON.stringify({
+        secret   : API_IA_SECRET,
+        tipo, nombre: file.name,
+        contenido: texto,
+        pregunta : 'Analizá este archivo y dame un resumen detallado con los puntos más importantes y cualquier anomalía que detectes.',
+      })
+    });
+    const data = await res.json();
+    document.getElementById(typingId)?.remove();
+    iaAgregarMensaje('assistant', data.respuesta || data.error);
+  } catch(err) {
+    document.getElementById(typingId)?.remove();
+    iaAgregarMensaje('assistant', '⚠️ Error al leer el archivo.');
+  }
+}
+
+function iaAgregarMensaje(rol, texto, alertas = []) {
+  const chat = document.getElementById('iaChat');
+  if (!chat) return;
+
+  // Quitar bienvenida si existe
+  chat.querySelector('.ia-bienvenida')?.remove();
+
+  const div = document.createElement('div');
+  div.className = `ia-msg ia-msg-${rol}`;
+
+  // Formateo básico: **negrita**, saltos de línea, listas
+  let html = texto
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\r?\n/g, '<br>')
+    .replace(/^- (.+)/gm, '<li>$1</li>');
+
+  if (alertas.length) {
+    html += `<div class="ia-alertas">⚠️ Cámaras con alerta: ${alertas.map(a=>`<span class="ia-alerta-tag">${a}</span>`).join('')}</div>`;
+  }
+
+  div.innerHTML = `
+    ${rol === 'assistant' ? '<div class="ia-avatar">✦</div>' : ''}
+    <div class="ia-bubble">${html}</div>
+  `;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function iaAgregarTyping(id) {
+  const chat = document.getElementById('iaChat');
+  if (!chat) return;
+  const div = document.createElement('div');
+  div.className = 'ia-msg ia-msg-assistant';
+  div.id = id;
+  div.innerHTML = `<div class="ia-avatar">✦</div><div class="ia-bubble ia-typing"><span></span><span></span><span></span></div>`;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GESTIÓN DE EQUIPOS DE MANTENIMIENTO
+   ═══════════════════════════════════════════════════════════════ */
+
+const MANT_CATEGORIAS = [
+  { id:'refrigeracion',      label:'Refrigeración',        icon:'❄️' },
+  { id:'edilicio',           label:'Edilicio',              icon:'🏢' },
+  { id:'puertas',            label:'Puertas',               icon:'🚪' },
+  { id:'electrico_luminico', label:'Eléctrico / Lumínico',  icon:'⚡' },
+  { id:'cctv_sistemas',      label:'CCTV y Sistemas',       icon:'📹' },
+  { id:'estanterias',        label:'Estanterías',           icon:'📦' },
+  { id:'residuos',           label:'Residuos',              icon:'♻️' },
+  { id:'equipamiento_general',label:'Equipamiento General', icon:'🏭' },
+];
+
+// Cache local de equipos cargados desde DB
+let mantEquiposCache = [];
+let mantEspaciosCache = [];
+
+/* ── VISTA PRINCIPAL: sectores con tiles ─────────────────────── */
+function renderGestionEquipos() {
+  menuGrid.className = 'menu-grid';
+  menuGrid.innerHTML = `
+    <div class="pr6-wrap" id="gestEquWrap">
+      <div class="pr6-topbar">
+        <button class="mod-back-btn" id="gestEquBack">← Volver</button>
+        <div class="pr6-topbar-center">
+          <span class="pr6-badge-sm" style="background:linear-gradient(135deg,#0f766e,#14b8a6)">GE</span>
+          <span class="pr6-topbar-title">Gestión de Equipos</span>
+        </div>
+        <button class="pr6-hist-trigger" id="gestEquRefresh">🔄 Actualizar</button>
+      </div>
+      <div class="ge-sectores-grid" id="geSectoresGrid">
+        <div class="ge-loading">Cargando sectores...</div>
+      </div>
+    </div>`;
+
+  document.getElementById('gestEquBack').addEventListener('click', () => {
+    historyStack.pop(); renderNode(historyStack.pop() || menuTree);
+  });
+  document.getElementById('gestEquRefresh').addEventListener('click', () => cargarSectores());
+  cargarSectores();
+}
+
+async function cargarSectores() {
+  const grid = document.getElementById('geSectoresGrid');
+  if (!grid) return;
+  grid.innerHTML = '<div class="ge-loading">Cargando...</div>';
+
+  try {
+    const [equiposResp, espaciosResp] = await Promise.all([
+      fetch(`${API_EQUIPOS_URL}?action=mant_equipos_lista`).then(r=>r.json()),
+      fetch(`${API_EQUIPOS_URL}?action=mant_espacios`).then(r=>r.json()),
+    ]);
+    mantEquiposCache = Array.isArray(equiposResp) ? equiposResp : [];
+    mantEspaciosCache = Array.isArray(espaciosResp) ? espaciosResp : [];
+  } catch(e) {
+    mantEquiposCache = [];
+    mantEspaciosCache = [];
+  }
+
+  // Construir lista de todos los sectores únicos
+  const sectores = new Map();
+
+  // Sectores de cámaras activos
+  const camarasConEquipos = new Set(mantEquiposCache.filter(e=>e.camara_id).map(e=>e.sector));
+  camarasConEquipos.forEach(s => {
+    if (!sectores.has(s)) sectores.set(s, { sector: s, tipo: 'camara', equipos: [] });
+  });
+
+  // Espacios comunes
+  mantEspaciosCache.forEach(ec => {
+    const key = ec.nombre;
+    if (!sectores.has(key)) sectores.set(key, { sector: key, tipo: 'espacio', equipos: [] });
+  });
+
+  // Asignar equipos a sectores
+  mantEquiposCache.forEach(eq => {
+    const key = eq.sector || 'Sin asignar';
+    if (!sectores.has(key)) sectores.set(key, { sector: key, tipo: 'otro', equipos: [] });
+    sectores.get(key).equipos.push(eq);
+  });
+
+  if (sectores.size === 0) {
+    grid.innerHTML = `
+      <div class="ge-empty">
+        <div style="font-size:2rem;margin-bottom:12px">🏭</div>
+        <div>No hay sectores ni equipos registrados aún.</div>
+        <div style="font-size:.78rem;opacity:.6;margin-top:6px">Usá Configuración → Mantenimiento para dar de alta equipos.</div>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = [...sectores.values()].map(s => {
+    const hayFalla = s.equipos.some(e => e.estado === 'En falla');
+    const hayMant  = s.equipos.some(e => e.estado === 'En mantenimiento');
+    const estadoSector = hayFalla ? 'falla' : hayMant ? 'mant' : 'ok';
+    const estadoLabel  = hayFalla ? '⚠️ Con fallas' : hayMant ? '🔧 En mantenimiento' : '✅ Operativo';
+
+    // Categorías presentes en este sector
+    const cats = MANT_CATEGORIAS.filter(c => s.equipos.some(e => e.categoria === c.id));
+
+    return `
+      <button class="ge-sector-tile ge-sector-${estadoSector}" data-sector="${s.sector}">
+        <div class="ge-sector-header">
+          <span class="ge-sector-nombre">${s.sector}</span>
+          <span class="ge-sector-estado-badge ge-badge-${estadoSector}">${estadoLabel}</span>
+        </div>
+        <div class="ge-cats-grid">
+          ${MANT_CATEGORIAS.map(c => {
+            const eqs = s.equipos.filter(e => e.categoria === c.id);
+            const falla = eqs.some(e => e.estado === 'En falla');
+            const cls = eqs.length === 0 ? 'ge-cat-empty' : falla ? 'ge-cat-falla' : 'ge-cat-ok';
+            return `<div class="ge-cat-chip ${cls}" title="${c.label}">
+              <span class="ge-cat-icon">${c.icon}</span>
+              <span class="ge-cat-count">${eqs.length}</span>
+            </div>`;
+          }).join('')}
+        </div>
+        <div class="ge-sector-footer">${s.equipos.length} equipo${s.equipos.length!==1?'s':''}</div>
+      </button>`;
+  }).join('');
+
+  // Click en sector → ver detalle
+  grid.querySelectorAll('[data-sector]').forEach(btn => {
+    btn.addEventListener('click', () => renderDetalleSector(btn.dataset.sector));
+  });
+}
+
+/* ── DETALLE DE SECTOR: categorías ──────────────────────────── */
+function renderDetalleSector(sectorNombre) {
+  const equiposSector = mantEquiposCache.filter(e => e.sector === sectorNombre);
+
+  menuGrid.innerHTML = `
+    <div class="pr6-wrap">
+      <div class="pr6-topbar">
+        <button class="mod-back-btn" id="detSectorBack">← Sectores</button>
+        <div class="pr6-topbar-center">
+          <span class="pr6-badge-sm" style="background:linear-gradient(135deg,#0f766e,#14b8a6)">GE</span>
+          <span class="pr6-topbar-title">${sectorNombre}</span>
+        </div>
+      </div>
+      <div class="ge-cats-detalle" id="geCatsDetalle">
+        ${MANT_CATEGORIAS.map(cat => {
+          const eqs = equiposSector.filter(e => e.categoria === cat.id);
+          if (eqs.length === 0) return '';
+          const hayFalla = eqs.some(e => e.estado === 'En falla');
+          const hayMant  = eqs.some(e => e.estado === 'En mantenimiento');
+          const estadoCls = hayFalla ? 'falla' : hayMant ? 'mant' : 'ok';
+          const estadoLbl = hayFalla ? '⚠️ Con fallas' : hayMant ? '🔧 En mantenimiento' : '✅ Operativo';
+          return `
+            <button class="ge-cat-card ge-cat-card-${estadoCls}" data-cat="${cat.id}" data-sector="${sectorNombre}">
+              <div class="ge-cat-card-icon">${cat.icon}</div>
+              <div class="ge-cat-card-info">
+                <div class="ge-cat-card-nombre">${cat.label}</div>
+                <div class="ge-cat-card-stats">
+                  <span>${eqs.length} equipo${eqs.length!==1?'s':''}</span>
+                  <span class="ge-badge-${estadoCls}">${estadoLbl}</span>
+                </div>
+              </div>
+            </button>`;
+        }).join('')}
+      </div>
+    </div>`;
+
+  document.getElementById('detSectorBack').addEventListener('click', () => renderGestionEquipos());
+  document.querySelectorAll('[data-cat]').forEach(btn => {
+    btn.addEventListener('click', () =>
+      renderListaEquipos(btn.dataset.sector, btn.dataset.cat)
+    );
+  });
+}
+
+/* ── LISTA DE EQUIPOS POR CATEGORÍA ─────────────────────────── */
+function renderListaEquipos(sector, categoriaId) {
+  const cat   = MANT_CATEGORIAS.find(c => c.id === categoriaId);
+  const eqs   = mantEquiposCache.filter(e => e.sector === sector && e.categoria === categoriaId);
+
+  menuGrid.innerHTML = `
+    <div class="pr6-wrap">
+      <div class="pr6-topbar">
+        <button class="mod-back-btn" id="listaEqBack">← ${sector}</button>
+        <div class="pr6-topbar-center">
+          <span style="font-size:1.1rem">${cat?.icon||''}</span>
+          <span class="pr6-topbar-title">${cat?.label||categoriaId}</span>
+        </div>
+      </div>
+      <div class="ge-equip-lista" id="geEquipLista">
+        ${eqs.length === 0
+          ? '<div class="ge-empty">No hay equipos en esta categoría</div>'
+          : eqs.map(eq => {
+            const estadoCls = eq.estado === 'En falla' ? 'falla'
+              : eq.estado === 'En mantenimiento' ? 'mant' : 'ok';
+            const proxMant = eq.proximo_mantenimiento
+              ? `<span class="ge-proxmant ${new Date(eq.proximo_mantenimiento) < new Date() ? 'ge-vencido' : ''}">
+                  🔧 ${new Date(eq.proximo_mantenimiento).toLocaleDateString('es-AR')}
+                 </span>` : '';
+            return `
+              <button class="ge-equip-row" data-id="${eq.id}">
+                <div class="ge-equip-row-left">
+                  <span class="ge-equip-estado-dot ge-dot-${estadoCls}"></span>
+                  <div>
+                    <div class="ge-equip-nombre">${eq.nombre}</div>
+                    <div class="ge-equip-meta">${eq.codigo_interno} · ${eq.marca||'—'} ${eq.modelo||''}</div>
+                  </div>
+                </div>
+                <div class="ge-equip-row-right">
+                  <span class="ge-estado-lbl ge-estado-${estadoCls}">${eq.estado}</span>
+                  ${proxMant}
+                  <span class="ge-crit ge-crit-${eq.criticidad}">${eq.criticidad}</span>
+                </div>
+              </button>`;
+          }).join('')
+        }
+      </div>
+    </div>`;
+
+  document.getElementById('listaEqBack').addEventListener('click', () => renderDetalleSector(sector));
+  document.querySelectorAll('[data-id]').forEach(btn => {
+    btn.addEventListener('click', () => renderFichaEquipo(parseInt(btn.dataset.id), sector, categoriaId));
+  });
+}
+
+/* ── FICHA DETALLE + HISTORIAL DE UN EQUIPO ─────────────────── */
+async function renderFichaEquipo(equipoId, sector, categoriaId) {
+  menuGrid.innerHTML = `
+    <div class="pr6-wrap">
+      <div class="pr6-topbar">
+        <button class="mod-back-btn" id="fichaBack">← Lista</button>
+        <div class="pr6-topbar-center">
+          <span class="pr6-topbar-title" id="fichaTitulo">Cargando...</span>
+        </div>
+        <button class="pr6-hist-trigger" id="fichaEstadoBtn">Cambiar estado</button>
+      </div>
+      <div id="fichaContenido" class="ge-ficha-wrap">
+        <div class="ge-loading">Cargando ficha...</div>
+      </div>
+    </div>`;
+
+  document.getElementById('fichaBack').addEventListener('click', () =>
+    renderListaEquipos(sector, categoriaId)
+  );
+
+  try {
+    const [fichaResp, histResp] = await Promise.all([
+      fetch(`${API_EQUIPOS_URL}?action=mant_equipo_ficha&id=${equipoId}`).then(r=>r.json()),
+      fetch(`${API_EQUIPOS_URL}?action=mant_historial&id=${equipoId}`).then(r=>r.json()),
+    ]);
+
+    const eq   = fichaResp;
+    const hist = Array.isArray(histResp) ? histResp : [];
+    const cat  = MANT_CATEGORIAS.find(c => c.id === eq.categoria);
+
+    document.getElementById('fichaTitulo').textContent = eq.nombre;
+
+    const estadoCls = eq.estado === 'En falla' ? 'falla'
+      : eq.estado === 'En mantenimiento' ? 'mant' : 'ok';
+
+    document.getElementById('fichaContenido').innerHTML = `
+
+      <!-- Estado actual -->
+      <div class="pr6-section">
+        <div class="pr6-section-title"><span>${cat?.icon||'🏭'}</span> Estado actual</div>
+        <div class="ge-ficha-estados">
+          <div class="ge-ficha-dato">
+            <span class="ge-ficha-label">Estado</span>
+            <span class="ge-estado-lbl ge-estado-${estadoCls}">${eq.estado}</span>
+          </div>
+          <div class="ge-ficha-dato">
+            <span class="ge-ficha-label">Criticidad</span>
+            <span class="ge-crit ge-crit-${eq.criticidad}">${eq.criticidad}</span>
+          </div>
+          <div class="ge-ficha-dato">
+            <span class="ge-ficha-label">Sector</span>
+            <span>${eq.sector||'—'}</span>
+          </div>
+          <div class="ge-ficha-dato">
+            <span class="ge-ficha-label">Categoría</span>
+            <span>${cat?.label||eq.categoria}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Datos generales -->
+      <div class="pr6-section">
+        <div class="pr6-section-title"><span>📋</span> Información del equipo</div>
+        <div class="ge-ficha-grid">
+          ${[
+            ['Código interno', eq.codigo_interno],
+            ['Marca', eq.marca],
+            ['Modelo', eq.modelo],
+            ['N° Serie', eq.numero_serie],
+            ['Año fabricación', eq.anio_fabricacion],
+            ['Año instalación', eq.anio_instalacion],
+            ['Proveedor', eq.proveedor],
+            ['Empresa instaladora', eq.empresa_instaladora],
+            ['Fecha alta', eq.fecha_alta],
+            ['Fecha compra', eq.fecha_compra||'—'],
+            ['Responsable', eq.departamento],
+            ['Valor compra', eq.valor_compra ? '$'+parseFloat(eq.valor_compra).toLocaleString('es-AR') : '—'],
+          ].map(([l,v]) => v ? `<div class="ge-ficha-dato"><span class="ge-ficha-label">${l}</span><span>${v}</span></div>` : '').join('')}
+        </div>
+      </div>
+
+      <!-- Mantenimiento -->
+      <div class="pr6-section">
+        <div class="pr6-section-title"><span>🔧</span> Mantenimiento preventivo</div>
+        <div class="ge-ficha-grid">
+          <div class="ge-ficha-dato"><span class="ge-ficha-label">Requiere periódico</span><span>${eq.requiere_periodico ? 'Sí' : 'No'}</span></div>
+          ${eq.requiere_periodico ? `
+          <div class="ge-ficha-dato"><span class="ge-ficha-label">Periodicidad</span><span>${eq.periodicidad_dias} días</span></div>
+          <div class="ge-ficha-dato"><span class="ge-ficha-label">Último</span><span>${eq.ultimo_mantenimiento||'—'}</span></div>
+          <div class="ge-ficha-dato"><span class="ge-ficha-label">Próximo</span>
+            <span class="${eq.proximo_mantenimiento && new Date(eq.proximo_mantenimiento)<new Date() ? 'ge-vencido' : ''}">
+              ${eq.proximo_mantenimiento||'—'}
+            </span>
+          </div>` : ''}
+        </div>
+      </div>
+
+      <!-- Historial -->
+      <div class="pr6-section">
+        <div class="pr6-section-title"><span>📅</span> Historial de estados</div>
+        ${hist.length === 0
+          ? '<div style="font-size:.8rem;color:rgba(255,255,255,.4)">Sin cambios registrados</div>'
+          : `<div class="ge-historial">
+            ${hist.map(h => `
+              <div class="ge-hist-item">
+                <div class="ge-hist-dot ge-dot-${h.estado_nuevo==='En falla'?'falla':h.estado_nuevo==='En mantenimiento'?'mant':'ok'}"></div>
+                <div class="ge-hist-info">
+                  <div class="ge-hist-estados">
+                    ${h.estado_anterior ? `<span class="ge-hist-est-ant">${h.estado_anterior}</span><span style="opacity:.4">→</span>` : ''}
+                    <span class="ge-estado-lbl ge-estado-${h.estado_nuevo==='En falla'?'falla':h.estado_nuevo==='En mantenimiento'?'mant':'ok'}">${h.estado_nuevo}</span>
+                  </div>
+                  <div class="ge-hist-meta">${h.usuario} · ${new Date(h.fecha_hora).toLocaleString('es-AR')}</div>
+                  ${h.motivo ? `<div class="ge-hist-motivo">"${h.motivo}"</div>` : ''}
+                </div>
+              </div>`).join('')}
+          </div>`
+        }
+      </div>`;
+
+    // Botón cambiar estado
+    document.getElementById('fichaEstadoBtn').addEventListener('click', () =>
+      abrirModalCambioEstadoMant(equipoId, eq.estado, eq.nombre, sector, categoriaId)
+    );
+
+  } catch(e) {
+    document.getElementById('fichaContenido').innerHTML =
+      '<div class="ge-empty">Error al cargar la ficha del equipo</div>';
+  }
+}
+
+/* ── MODAL CAMBIO DE ESTADO ──────────────────────────────────── */
+function abrirModalCambioEstadoMant(equipoId, estadoActual, nombre, sector, categoriaId) {
+  const overlay = document.createElement('div');
+  overlay.className = 'pr6-hist-overlay';
+  overlay.innerHTML = `
+    <div class="pr6-hist-modal" style="max-width:420px">
+      <div class="pr6-hist-header">
+        <span>Cambiar estado — ${nombre}</span>
+        <button class="pr6-hist-close" id="mCEClose">✕</button>
+      </div>
+      <div class="pr6-hist-body" style="gap:12px">
+        <div class="pr22-field">
+          <label class="pr22-label">Nuevo estado</label>
+          <select class="pr22-input" id="mCENuevoEstado">
+            <option value="Operativo">✅ Operativo</option>
+            <option value="En falla">⚠️ En falla</option>
+            <option value="En mantenimiento">🔧 En mantenimiento</option>
+            <option value="Dado de baja">🚫 Dado de baja</option>
+          </select>
+        </div>
+        <div class="pr22-field">
+          <label class="pr22-label">Motivo / observación</label>
+          <textarea class="pr22-textarea" id="mCEMotivo" rows="3" placeholder="Descripción del cambio..."></textarea>
+        </div>
+        <button class="pr6-guardar-btn" id="mCEGuardar" style="width:100%">💾 Confirmar cambio</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if(e.target===overlay) overlay.remove(); });
+  document.getElementById('mCEClose').addEventListener('click', () => overlay.remove());
+  document.getElementById('mCEGuardar').addEventListener('click', async () => {
+    const nuevoEstado = document.getElementById('mCENuevoEstado').value;
+    const motivo      = document.getElementById('mCEMotivo').value.trim();
+    overlay.remove();
+    try {
+      const res = await fetch(`${API_EQUIPOS_URL}?action=mant_cambio_estado`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ secret:API_SECRET, equipo_id:equipoId,
+          estado_nuevo:nuevoEstado, motivo, usuario:perfilData.nombre })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        pr6MostrarToast('✓ Estado actualizado', 'ok');
+        // Recargar cache y volver a ficha
+        await cargarSectores();
+        renderFichaEquipo(equipoId, sector, categoriaId);
+      } else {
+        pr6MostrarToast('Error: ' + data.error, 'error');
+      }
+    } catch(e) {
+      pr6MostrarToast('Sin conexión a DB', 'info');
+    }
+  });
+}
+
+/* ── CONFIGURACIÓN: ESPACIOS COMUNES ────────────────────────── */
+function renderEspaciosComunes() {
+  menuGrid.className = 'menu-grid';
+  menuGrid.innerHTML = `
+    <div class="pr6-wrap">
+      <div class="pr6-topbar">
+        <button class="mod-back-btn" id="ecBack">← Volver</button>
+        <div class="pr6-topbar-center">
+          <span class="pr6-badge-sm" style="background:linear-gradient(135deg,#0f766e,#14b8a6)">EC</span>
+          <span class="pr6-topbar-title">Espacios Comunes</span>
+        </div>
+        <button class="pr6-hist-trigger" id="ecNuevoBtn">+ Nuevo espacio</button>
+      </div>
+
+      <!-- Formulario nuevo espacio (oculto por defecto) -->
+      <div class="pr6-section" id="ecFormWrap" style="display:none">
+        <div class="pr6-section-title"><span>➕</span> Nuevo espacio común</div>
+        <div class="ge-form-row">
+          <div class="pr22-field" style="flex:2">
+            <label class="pr22-label">Nombre <span style="color:#ef4444">*</span></label>
+            <input class="pr22-input" id="ecNombre" placeholder="Ej: Dock Norte">
+          </div>
+          <div class="pr22-field">
+            <label class="pr22-label">Tipo</label>
+            <select class="pr22-input" id="ecTipo">
+              <option value="interior">Interior</option>
+              <option value="exterior">Exterior</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="pr6-guardar-btn" id="ecGuardarBtn" style="padding:10px 24px">💾 Guardar</button>
+          <button class="pr6-add-row-btn" id="ecCancelarBtn">Cancelar</button>
+        </div>
+      </div>
+
+      <!-- Lista -->
+      <div class="pr6-section">
+        <div class="pr6-section-title"><span>📍</span> Espacios registrados</div>
+        <div id="ecLista"><div class="ge-loading">Cargando...</div></div>
+      </div>
+    </div>`;
+
+  document.getElementById('ecBack').addEventListener('click', () => {
+    historyStack.pop(); renderNode(historyStack.pop() || menuTree);
+  });
+  document.getElementById('ecNuevoBtn').addEventListener('click', () => {
+    document.getElementById('ecFormWrap').style.display = 'flex';
+    document.getElementById('ecFormWrap').style.flexDirection = 'column';
+  });
+  document.getElementById('ecCancelarBtn').addEventListener('click', () => {
+    document.getElementById('ecFormWrap').style.display = 'none';
+  });
+  document.getElementById('ecGuardarBtn').addEventListener('click', guardarEspacioComun);
+  cargarListaEspacios();
+}
+
+async function cargarListaEspacios() {
+  const lista = document.getElementById('ecLista');
+  if (!lista) return;
+  try {
+    const data = await fetch(`${API_EQUIPOS_URL}?action=mant_espacios`).then(r=>r.json());
+    mantEspaciosCache = Array.isArray(data) ? data : [];
+    lista.innerHTML = mantEspaciosCache.length === 0
+      ? '<div class="ge-empty">No hay espacios registrados</div>'
+      : `<div class="ge-espacios-tabla">
+          <div class="ge-etab-head"><span>ID</span><span>Nombre</span><span>Tipo</span></div>
+          ${mantEspaciosCache.map(ec => `
+            <div class="ge-etab-row">
+              <span class="ge-etab-id">#${ec.id}</span>
+              <span>${ec.nombre}</span>
+              <span class="ge-tipo-badge ge-tipo-${ec.tipo}">${ec.tipo}</span>
+            </div>`).join('')}
+        </div>`;
+  } catch(e) {
+    lista.innerHTML = '<div class="ge-empty">Error al cargar espacios</div>';
+  }
+}
+
+async function guardarEspacioComun() {
+  const nombre = document.getElementById('ecNombre').value.trim();
+  const tipo   = document.getElementById('ecTipo').value;
+  if (!nombre) { pr6MostrarToast('Ingresá un nombre', 'error'); return; }
+  try {
+    const res  = await fetch(`${API_EQUIPOS_URL}?action=mant_espacio_nuevo`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ secret:API_SECRET, nombre, tipo })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      pr6MostrarToast('✓ Espacio guardado', 'ok');
+      document.getElementById('ecNombre').value = '';
+      document.getElementById('ecFormWrap').style.display = 'none';
+      cargarListaEspacios();
+    } else {
+      pr6MostrarToast('Error: ' + data.error, 'error');
+    }
+  } catch(e) {
+    pr6MostrarToast('Sin conexión a DB', 'info');
+  }
+}
+
+/* ── ALTA EQUIPO MANTENIMIENTO ───────────────────────────────── */
+function renderAltaEquipoMant(equipoEditar) {
+  menuGrid.className = 'menu-grid';
+
+  // Opciones de sectores
+  const opsCamaras    = mantEspaciosCache.length + (window.__camarasOpts||'').length > 0 ? '' : '';
+  const opsEspacios   = mantEspaciosCache.map(ec =>
+    `<option value="ec_${ec.id}">${ec.nombre}</option>`).join('');
+
+  menuGrid.innerHTML = `
+    <div class="pr6-wrap">
+      <div class="pr6-topbar">
+        <button class="mod-back-btn" id="altaBack">← Volver</button>
+        <div class="pr6-topbar-center">
+          <span class="pr6-badge-sm" style="background:linear-gradient(135deg,#0f766e,#14b8a6)">+</span>
+          <span class="pr6-topbar-title">${equipoEditar ? 'Editar equipo' : 'Nuevo equipo'}</span>
+        </div>
+      </div>
+
+      <div class="pr6-section">
+        <div class="pr6-section-title"><span>📋</span> Datos generales</div>
+        <div class="ge-form-grid">
+          <div class="pr22-field ge-fw2">
+            <label class="pr22-label">Nombre del equipo <span style="color:#ef4444">*</span></label>
+            <input class="pr22-input" id="altaNombre" placeholder="Ej: Compresor Principal #1">
+          </div>
+          <div class="pr22-field">
+            <label class="pr22-label">Código interno / Tag <span style="color:#ef4444">*</span></label>
+            <input class="pr22-input" id="altaCodigo" placeholder="Ej: REF-C001">
+          </div>
+          <div class="pr22-field">
+            <label class="pr22-label">Categoría <span style="color:#ef4444">*</span></label>
+            <select class="pr22-input" id="altaCategoria">
+              <option value="">— Seleccionar —</option>
+              ${MANT_CATEGORIAS.map(c=>`<option value="${c.id}">${c.icon} ${c.label}</option>`).join('')}
+            </select>
+          </div>
+          <div class="pr22-field">
+            <label class="pr22-label">Subcategoría</label>
+            <input class="pr22-input" id="altaSubcat" placeholder="Ej: Compresor tornillo">
+          </div>
+          <div class="pr22-field">
+            <label class="pr22-label">Marca</label>
+            <input class="pr22-input" id="altaMarca" placeholder="Ej: Bitzer">
+          </div>
+          <div class="pr22-field">
+            <label class="pr22-label">Modelo</label>
+            <input class="pr22-input" id="altaModelo" placeholder="Ej: CSH7593-90Y">
+          </div>
+          <div class="pr22-field">
+            <label class="pr22-label">N° de serie</label>
+            <input class="pr22-input" id="altaSerie">
+          </div>
+          <div class="pr22-field">
+            <label class="pr22-label">Año fabricación</label>
+            <input class="pr22-input" type="number" id="altaAnioFab" min="1950" max="2030">
+          </div>
+          <div class="pr22-field">
+            <label class="pr22-label">Año instalación</label>
+            <input class="pr22-input" type="number" id="altaAnioInst" min="1950" max="2030">
+          </div>
+          <div class="pr22-field">
+            <label class="pr22-label">Proveedor</label>
+            <input class="pr22-input" id="altaProveedor">
+          </div>
+          <div class="pr22-field">
+            <label class="pr22-label">Empresa instaladora</label>
+            <input class="pr22-input" id="altaInstaladora">
+          </div>
+          <div class="pr22-field">
+            <label class="pr22-label">Valor de compra ($)</label>
+            <input class="pr22-input" type="number" id="altaValor" min="0" step="0.01">
+          </div>
+          <div class="pr22-field">
+            <label class="pr22-label">Fecha de alta <span style="color:#ef4444">*</span></label>
+            <input class="pr22-input" type="date" id="altaFechaAlta">
+          </div>
+          <div class="pr22-field">
+            <label class="pr22-label">Fecha de compra</label>
+            <input class="pr22-input" type="date" id="altaFechaCompra">
+          </div>
+        </div>
+      </div>
+
+      <div class="pr6-section">
+        <div class="pr6-section-title"><span>📍</span> Ubicación</div>
+        <div class="ge-form-grid">
+          <div class="pr22-field">
+            <label class="pr22-label">¿Asociado a cámara?</label>
+            <div class="pr6-turno-btns" id="altaAsocTurnoBtns">
+              <button class="pr6-turno-btn active" data-asoc="si">Sí — Cámara</button>
+              <button class="pr6-turno-btn" data-asoc="no">No — Espacio común</button>
+            </div>
+            <input type="hidden" id="altaAsocTipo" value="si">
+          </div>
+          <div class="pr22-field" id="altaSectorWrap">
+            <label class="pr22-label" id="altaSectorLabel">Cámara</label>
+            <select class="pr22-input" id="altaSector">
+              <option value="">— Seleccionar —</option>
+              ${PR6_CAMARAS.map((c,i) => {
+                const cam = camarasDB.find(x=>x.nombre_display===c);
+                const val = cam ? `cam_${cam.CamaraID}` : `cam_${i}`;
+                return `<option value="${val}">${c}</option>`;
+              }).join('')}
+              <optgroup label="── Espacios comunes ──">
+                ${opsEspacios}
+              </optgroup>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="pr6-section">
+        <div class="pr6-section-title"><span>⚙️</span> Operación y mantenimiento</div>
+        <div class="ge-form-grid">
+          <div class="pr22-field">
+            <label class="pr22-label">Estado inicial</label>
+            <select class="pr22-input" id="altaEstado">
+              <option value="Operativo">✅ Operativo</option>
+              <option value="En falla">⚠️ En falla</option>
+              <option value="En mantenimiento">🔧 En mantenimiento</option>
+            </select>
+          </div>
+          <div class="pr22-field">
+            <label class="pr22-label">Criticidad</label>
+            <select class="pr22-input" id="altaCriticidad">
+              <option value="alta">Alta</option>
+              <option value="media" selected>Media</option>
+              <option value="baja">Baja</option>
+            </select>
+          </div>
+          <div class="pr22-field">
+            <label class="pr22-label">¿Requiere mantenimiento periódico?</label>
+            <div class="pr6-turno-btns" id="altaMantBtns">
+              <button class="pr6-turno-btn" data-mant="1">Sí</button>
+              <button class="pr6-turno-btn active" data-mant="0">No</button>
+            </div>
+            <input type="hidden" id="altaRequiereMant" value="0">
+          </div>
+          <div class="pr22-field" id="altaPeriodWrap" style="display:none">
+            <label class="pr22-label">Periodicidad (días)</label>
+            <input class="pr22-input" type="number" id="altaPeriod" min="1" placeholder="Ej: 90">
+          </div>
+          <div class="pr22-field" id="altaUltMantWrap" style="display:none">
+            <label class="pr22-label">Último mantenimiento</label>
+            <input class="pr22-input" type="date" id="altaUltMant">
+          </div>
+        </div>
+      </div>
+
+      <div class="pr6-actions">
+        <button class="pr6-guardar-btn" id="altaGuardarBtn">💾 Guardar equipo</button>
+      </div>
+    </div>`;
+
+  // Fecha alta por defecto = hoy
+  const hoy = new Date().toISOString().split('T')[0];
+  document.getElementById('altaFechaAlta').value = hoy;
+
+  document.getElementById('altaBack').addEventListener('click', () => {
+    historyStack.pop(); renderNode(historyStack.pop() || menuTree);
+  });
+
+  // Toggle cámara / espacio común
+  document.getElementById('altaAsocTurnoBtns').addEventListener('click', e => {
+    const btn = e.target.closest('[data-asoc]');
+    if (!btn) return;
+    document.querySelectorAll('#altaAsocTurnoBtns .pr6-turno-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('altaAsocTipo').value = btn.dataset.asoc;
+    document.getElementById('altaSectorLabel').textContent =
+      btn.dataset.asoc === 'si' ? 'Cámara' : 'Espacio común';
+  });
+
+  // Toggle requiere mantenimiento
+  document.getElementById('altaMantBtns').addEventListener('click', e => {
+    const btn = e.target.closest('[data-mant]');
+    if (!btn) return;
+    document.querySelectorAll('#altaMantBtns .pr6-turno-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('altaRequiereMant').value = btn.dataset.mant;
+    const show = btn.dataset.mant === '1';
+    document.getElementById('altaPeriodWrap').style.display   = show ? 'flex' : 'none';
+    document.getElementById('altaUltMantWrap').style.display  = show ? 'flex' : 'none';
+  });
+
+  document.getElementById('altaGuardarBtn').addEventListener('click', guardarAltaEquipoMant);
+}
+
+async function guardarAltaEquipoMant() {
+  const nombre   = document.getElementById('altaNombre').value.trim();
+  const codigo   = document.getElementById('altaCodigo').value.trim();
+  const cat      = document.getElementById('altaCategoria').value;
+  const fecha    = document.getElementById('altaFechaAlta').value;
+  const sector   = document.getElementById('altaSector').value;
+
+  if (!nombre || !codigo || !cat || !fecha) {
+    pr6MostrarToast('Completá los campos obligatorios (*)', 'error'); return;
+  }
+
+  // Parsear sector
+  let camaraId = null, espacioId = null;
+  if (sector.startsWith('cam_'))    camaraId  = parseInt(sector.replace('cam_',''));
+  else if (sector.startsWith('ec_')) espacioId = parseInt(sector.replace('ec_',''));
+
+  const reqMant   = document.getElementById('altaRequiereMant').value === '1';
+  const periodDias= reqMant ? parseInt(document.getElementById('altaPeriod').value)||null : null;
+  const ultMant   = reqMant ? document.getElementById('altaUltMant').value||null : null;
+
+  const payload = {
+    secret:             API_SECRET,
+    codigo_interno:     codigo,
+    nombre,
+    categoria:          cat,
+    subcategoria:       document.getElementById('altaSubcat').value.trim()||null,
+    marca:              document.getElementById('altaMarca').value.trim()||null,
+    modelo:             document.getElementById('altaModelo').value.trim()||null,
+    numero_serie:       document.getElementById('altaSerie').value.trim()||null,
+    anio_fabricacion:   parseInt(document.getElementById('altaAnioFab').value)||null,
+    anio_instalacion:   parseInt(document.getElementById('altaAnioInst').value)||null,
+    proveedor:          document.getElementById('altaProveedor').value.trim()||null,
+    empresa_instaladora:document.getElementById('altaInstaladora').value.trim()||null,
+    valor_compra:       parseFloat(document.getElementById('altaValor').value)||null,
+    fecha_alta:         fecha,
+    fecha_compra:       document.getElementById('altaFechaCompra').value||null,
+    camara_id:          camaraId,
+    espacio_comun_id:   espacioId,
+    estado:             document.getElementById('altaEstado').value,
+    criticidad:         document.getElementById('altaCriticidad').value,
+    requiere_periodico: reqMant ? 1 : 0,
+    periodicidad_dias:  periodDias,
+    ultimo_mantenimiento: ultMant,
+    created_by_nombre:  perfilData.nombre,
+  };
+
+  const btn = document.getElementById('altaGuardarBtn');
+  btn.disabled = true; btn.textContent = 'Guardando...';
+
+  try {
+    const res  = await fetch(`${API_EQUIPOS_URL}?action=mant_equipo_nuevo`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data.ok) {
+      pr6MostrarToast(`✓ Equipo "${nombre}" dado de alta (ID: ${data.id})`, 'ok');
+      await cargarSectores();
+      historyStack.pop(); renderNode(historyStack.pop() || menuTree);
+    } else {
+      pr6MostrarToast('Error: ' + data.error, 'error');
+      btn.disabled = false; btn.textContent = '💾 Guardar equipo';
+    }
+  } catch(e) {
+    pr6MostrarToast('Sin conexión a DB', 'info');
+    btn.disabled = false; btn.textContent = '💾 Guardar equipo';
+  }
 }
