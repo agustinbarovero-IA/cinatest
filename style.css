@@ -1,4 +1,5 @@
 :root{
+  color-scheme: dark;
   --bg-main:#001F60;
   --bg-deep:#00174a;
   --bg-dark:#000f30;
@@ -6190,6 +6191,41 @@ body{
   .ia-wrap { height: calc(100dvh - 160px); }
   .ia-topbar-actions { display: none; }
   .ia-bubble { max-width: 92%; }
+}
+
+/* ── Selects oscuros globales (evita fondo blanco del SO) ── */
+select {
+  color-scheme: dark;
+}
+.pr22-input[type="date"],
+.pr22-input[type="time"],
+.pr22-input[type="number"],
+.pr22-input,
+.pr22-textarea,
+.pr6-sel-maq,
+.pr6-sel-inline,
+.pr6-turno-btn,
+.ge-form-grid select,
+.pr6-section select {
+  color-scheme: dark;
+}
+/* Opciones dentro de cualquier select de la app */
+.pr6-wrap select option,
+.pr22-input option,
+.pr6-sel-maq option,
+.pr6-sel-inline option,
+.ge-form-grid select option,
+.chk-modal select option,
+.pr6-hist-modal select option {
+  background: #0d2a6e;
+  color: #ffffff;
+}
+/* Select de módulos oscuros — fondo explícito */
+.pr6-wrap select,
+.pr22-input:is(select),
+.ge-form-grid select {
+  background-color: rgba(13, 42, 110, 0.95);
+  color: #fff;
 }
 
 /* ═══════════════════════════════════════════════════════
