@@ -8030,18 +8030,28 @@ function renderAltaEquipoMant(equipoEditar) {
             </div>
             <input type="hidden" id="altaAsocTipo" value="si">
           </div>
-          <div class="pr22-field" id="altaSectorWrap">
-            <label class="pr22-label" id="altaSectorLabel">Cámara</label>
-            <select class="pr22-input" id="altaSector">
-              <option value="">— Seleccionar —</option>
+
+          <!-- Selector de CÁMARA (visible por defecto) -->
+          <div class="pr22-field" id="altaCamaraWrap">
+            <label class="pr22-label">Cámara <span style="color:#ef4444">*</span></label>
+            <select class="pr22-input" id="altaCamaraSelect">
+              <option value="">— Seleccionar cámara —</option>
               ${PR6_CAMARAS.map((c,i) => {
                 const cam = camarasDB.find(x=>x.nombre_display===c);
-                const val = cam ? `cam_${cam.CamaraID}` : `cam_${i}`;
-                return `<option value="${val}">${c}</option>`;
+                const val = cam ? 'cam_'+cam.CamaraID : 'cam_'+i;
+                return '<option value="'+val+'">'+c+'</option>';
               }).join('')}
-              <optgroup label="── Espacios comunes ──">
-                ${opsEspacios}
-              </optgroup>
+            </select>
+          </div>
+
+          <!-- Selector de ESPACIO COMÚN (oculto por defecto) -->
+          <div class="pr22-field" id="altaEspacioWrap" style="display:none">
+            <label class="pr22-label">Espacio común <span style="color:#ef4444">*</span></label>
+            <select class="pr22-input" id="altaEspacioSelect">
+              <option value="">— Seleccionar espacio —</option>
+              ${mantEspaciosCache.map(ec =>
+                '<option value="ec_'+ec.id+'">'+ec.nombre+' ('+ec.tipo+')</option>'
+              ).join('')}
             </select>
           </div>
         </div>
@@ -8098,15 +8108,22 @@ function renderAltaEquipoMant(equipoEditar) {
     historyStack.pop(); renderNode(historyStack.pop() || menuTree);
   });
 
-  // Toggle cámara / espacio común
+  // Toggle cámara / espacio común — muestra el select correcto
   document.getElementById('altaAsocTurnoBtns').addEventListener('click', e => {
     const btn = e.target.closest('[data-asoc]');
     if (!btn) return;
     document.querySelectorAll('#altaAsocTurnoBtns .pr6-turno-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
+    const esCamara = btn.dataset.asoc === 'si';
     document.getElementById('altaAsocTipo').value = btn.dataset.asoc;
-    document.getElementById('altaSectorLabel').textContent =
-      btn.dataset.asoc === 'si' ? 'Cámara' : 'Espacio común';
+    document.getElementById('altaCamaraWrap').style.display = esCamara ? 'flex' : 'none';
+    document.getElementById('altaEspacioWrap').style.display = esCamara ? 'none'  : 'flex';
+    // Limpiar selección anterior
+    if (esCamara) {
+      document.getElementById('altaEspacioSelect').value = '';
+    } else {
+      document.getElementById('altaCamaraSelect').value = '';
+    }
   });
 
   // Toggle requiere mantenimiento
@@ -8129,15 +8146,22 @@ async function guardarAltaEquipoMant() {
   const codigo   = document.getElementById('altaCodigo').value.trim();
   const cat      = document.getElementById('altaCategoria').value;
   const fecha    = document.getElementById('altaFechaAlta').value;
-  const sector   = document.getElementById('altaSector').value;
+  // Leer sector según el tipo seleccionado
+  const asocTipo = document.getElementById('altaAsocTipo').value;
+  const sector   = asocTipo === 'si'
+    ? document.getElementById('altaCamaraSelect').value
+    : document.getElementById('altaEspacioSelect').value;
 
   if (!nombre || !codigo || !cat || !fecha) {
     pr6MostrarToast('Completá los campos obligatorios (*)', 'error'); return;
   }
+  if (!sector) {
+    pr6MostrarToast(asocTipo === 'si' ? 'Seleccioná una cámara' : 'Seleccioná un espacio común', 'error'); return;
+  }
 
   // Parsear sector
   let camaraId = null, espacioId = null;
-  if (sector.startsWith('cam_'))    camaraId  = parseInt(sector.replace('cam_',''));
+  if (sector.startsWith('cam_'))     camaraId  = parseInt(sector.replace('cam_',''));
   else if (sector.startsWith('ec_')) espacioId = parseInt(sector.replace('ec_',''));
 
   const reqMant   = document.getElementById('altaRequiereMant').value === '1';
